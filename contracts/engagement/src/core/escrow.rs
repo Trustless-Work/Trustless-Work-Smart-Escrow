@@ -1,7 +1,7 @@
-use soroban_sdk::{Address, Env, String, Vec};
+use soroban_sdk::{Address, Env, String};
 use soroban_sdk::token::Client as TokenClient;
 
-use crate::storage::types::{Escrow, Milestone, DataKey};
+use crate::storage::types::{Escrow, DataKey};
 use crate::error::ContractError;
 use crate::events::escrows_by_engagement_id;
 
@@ -11,44 +11,21 @@ impl EscrowManager{
 
     pub fn initialize_escrow(
         e: Env,
-        engagement_id: String,
-        client: Address,
-        service_provider: Address,
-        platform_address: Address,
-        amount: i128,
-        platform_fee: i128,
-        milestones: Vec<Milestone>,
-        release_signer: Address,
-        dispute_resolver: Address,
+        escrow_properties: Escrow
     ) -> Result<String, ContractError> {
 
         if e.storage().instance().has(&DataKey::Admin) {
             panic!("An escrow has already been initialized for this contract");
         }
 
-
-        if amount == 0 {
+        if escrow_properties.amount == 0 {
             return Err(ContractError::AmountCannotBeZero);
         }
-
-        let engagement_id_copy = engagement_id.clone();
-        let escrow = Escrow {
-            engagement_id: engagement_id.clone(),
-            client: client.clone(),
-            platform_address,
-            release_signer: release_signer.clone(),
-            service_provider: service_provider.clone(),
-            amount,
-            platform_fee: platform_fee,
-            milestones: milestones,
-            dispute_resolver: dispute_resolver.clone(),
-            dispute_flag: false,
-        };
         
-        e.storage().instance().set(&DataKey::Escrow(engagement_id.clone().into()), &escrow);
+        e.storage().instance().set(&DataKey::Escrow(escrow_properties.engagement_id.clone()), &escrow_properties);
         e.storage().instance().set(&DataKey::Admin, &true);
 
-        Ok(engagement_id_copy)
+        Ok(escrow_properties.engagement_id)
     }
 
     pub fn fund_escrow(
@@ -172,43 +149,24 @@ impl EscrowManager{
 
     pub fn change_escrow_properties(
         e: Env,
-        engagement_id: String,
-        client: Address,
-        service_provider: Address,
-        platform_address: Address,
-        amount: i128,
-        platform_fee: i128,
-        milestones: Vec<Milestone>,
-        release_signer: Address,
-        dispute_resolver: Address,
+        escrow_properties: Escrow
     ) -> Result<(), ContractError> {
-        let existing_escrow = Self::get_escrow_by_id(e.clone(), engagement_id.clone())?;
+        let existing_escrow = Self::get_escrow_by_id(e.clone(), escrow_properties.engagement_id.clone())?;
 
-        if platform_address != existing_escrow.platform_address {
+        if escrow_properties.platform_address != existing_escrow.platform_address {
             return Err(ContractError::OnlyPlatformAddressExecuteThisFunction);
         }
         
-        platform_address.require_auth();
-
-        let updated_escrow = Escrow {
-            engagement_id: engagement_id.clone(),
-            client,
-            platform_address,
-            release_signer,
-            service_provider,
-            amount,
-            platform_fee,
-            milestones,
-            dispute_resolver,
-            dispute_flag: false,
-        };
+        escrow_properties.platform_address.require_auth();
 
         e.storage().instance().set(
-            &DataKey::Escrow(engagement_id.into()),
-            &updated_escrow
+            &DataKey::Escrow(escrow_properties.engagement_id.clone()),
+            &escrow_properties
         );
 
-        escrows_by_engagement_id(&e, updated_escrow.engagement_id.clone(), updated_escrow);
+        let engagement_id_copy = escrow_properties.engagement_id.clone();
+
+        escrows_by_engagement_id(&e, engagement_id_copy, escrow_properties);
 
         Ok(())
     }

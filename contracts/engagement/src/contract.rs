@@ -3,10 +3,10 @@ use soroban_sdk::{
 };
 use soroban_sdk::token::Client as TokenClient;
 
-use crate::storage::types::{Escrow, Milestone};
+use crate::storage::types::Escrow;
 use crate::error::ContractError;
-use crate::events::{balance_retrieved_event};
-use crate::core::{EscrowManager, MilestoneManager, DisputeManager, UserManager};
+use crate::events::balance_retrieved_event;
+use crate::core::{DisputeManager, EscrowManager, MilestoneManager, UserManager};
 
 #[contract]
 pub struct EngagementContract;
@@ -41,28 +41,9 @@ impl EngagementContract {
 
     pub fn initialize_escrow(
         e: Env,
-        engagement_id: String,
-        client: Address,
-        service_provider: Address,
-        platform_address: Address,
-        amount: i128,
-        platform_fee: i128,
-        milestones: Vec<Milestone>,
-        release_signer: Address,
-        dispute_resolver: Address,
+        escrow_properties: Escrow
     ) -> Result<String, ContractError> {
-        EscrowManager::initialize_escrow(
-            e, 
-            engagement_id, 
-            client, 
-            service_provider, 
-            platform_address, 
-            amount, 
-            platform_fee, 
-            milestones, 
-            release_signer, 
-            dispute_resolver
-        )
+        EscrowManager::initialize_escrow(e, escrow_properties)
     }
     
     pub fn fund_escrow(
@@ -99,28 +80,9 @@ impl EngagementContract {
 
     pub fn change_escrow_properties(
         e: Env,
-        engagement_id: String,
-        client: Address,
-        service_provider: Address,
-        platform_address: Address,
-        amount: i128,
-        platform_fee: i128,
-        milestones: Vec<Milestone>,
-        release_signer: Address,
-        dispute_resolver: Address,
+        escrow_properties: Escrow
     ) -> Result<(), ContractError> {
-        EscrowManager::change_escrow_properties(
-            e,
-            engagement_id,
-            client,
-            service_provider,
-            platform_address,
-            amount,
-            platform_fee,
-            milestones,
-            release_signer,
-            dispute_resolver
-        )
+        EscrowManager::change_escrow_properties(e, escrow_properties)
     }
 
     pub fn get_escrow_by_id(e: Env, engagement_id: String) -> Result<Escrow, ContractError> {
