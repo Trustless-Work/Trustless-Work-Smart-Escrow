@@ -2,7 +2,7 @@
 
 extern crate std;
 
-use crate::storage::types::Milestone;
+use crate::storage::types::{Escrow, Milestone};
 use crate::token::token::{Token, TokenClient};
 use crate::contract::EngagementContract;
 use crate::contract::EngagementContractClient;
@@ -45,28 +45,33 @@ fn test_initialize_excrow() {
 
     let engagement_id = String::from_str(&env, "41431");
 
-    let engagement_id = engagement_client.initialize_escrow(
-        &engagement_id.clone(),
-        &client_address,
-        &service_provider_address,
-        &platform_address,
-        &amount,
-        &platform_fee,
-        &milestones,
-        &release_signer_address,
-        &dispute_resolver_address,
-    );
+    let escrow_properties: Escrow = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address,
+        service_provider: service_provider_address,
+        platform_address: platform_address,
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: milestones,
+        release_signer: release_signer_address,
+        dispute_resolver: dispute_resolver_address,
+        dispute_flag: false,
+    };
+
+    let engagement_id = engagement_client.initialize_escrow(&escrow_properties);
 
     let escrow = engagement_client.get_escrow_by_id(&engagement_id);
     assert_eq!(escrow.engagement_id, engagement_id);
-    assert_eq!(escrow.client, client_address);
-    assert_eq!(escrow.service_provider, service_provider_address);
-    assert_eq!(escrow.platform_address, platform_address);
+    assert_eq!(escrow.client, escrow_properties.client);
+    assert_eq!(escrow.service_provider, escrow_properties.service_provider);
+    assert_eq!(escrow.platform_address, escrow_properties.platform_address);
     assert_eq!(escrow.amount, amount);
     assert_eq!(escrow.platform_fee, platform_fee);
-    assert_eq!(escrow.milestones, milestones);
-    assert_eq!(escrow.release_signer, release_signer_address);
-    assert_eq!(escrow.dispute_resolver, dispute_resolver_address);
+    assert_eq!(escrow.milestones, escrow_properties.milestones);
+    assert_eq!(escrow.release_signer, escrow_properties.release_signer);
+    assert_eq!(escrow.dispute_resolver, escrow_properties.dispute_resolver);
 }
 
 #[test]
@@ -101,17 +106,23 @@ fn test_change_escrow_properties() {
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
 
     let engagement_id = String::from_str(&env, "41431");
-    let initialized_id = engagement_client.initialize_escrow(
-        &engagement_id.clone(),
-        &client_address,
-        &service_provider_address,
-        &platform_address,
-        &amount,
-        &platform_fee,
-        &initial_milestones,
-        &release_signer_address,
-        &dispute_resolver_address,
-    );
+
+    let escrow_properties: Escrow = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address,
+        service_provider: service_provider_address,
+        platform_address: platform_address.clone(),
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: initial_milestones,
+        release_signer: release_signer_address,
+        dispute_resolver: dispute_resolver_address,
+        dispute_flag: false,
+    };
+
+    let initialized_id = engagement_client.initialize_escrow(&escrow_properties);
 
     // Verify escrow was initialized
     let initial_escrow = engagement_client.get_escrow_by_id(&initialized_id);
@@ -147,59 +158,76 @@ fn test_change_escrow_properties() {
     // Test unauthorized access (should fail)
     let unauthorized_address = Address::generate(&env);
     env.mock_all_auths();
-    let result = engagement_client.try_change_escrow_properties(
-        &engagement_id,
-        &new_client_address,
-        &new_service_provider,
-        &unauthorized_address, // Using unauthorized address
-        &new_amount,
-        &new_platform_fee,
-        &new_milestones,
-        &new_release_signer,
-        &new_dispute_resolver,
-    );
-    assert!(result.is_err());
 
+    let escrow_properties_v2: Escrow = Escrow {
+        engagement_id: initialized_id.clone(),
+        title: String::from_str(&env, "Updated Escrow"),
+        description: String::from_str(&env, "Updated Escrow Description"),
+        client: new_client_address.clone(),
+        service_provider: new_service_provider.clone(),
+        platform_address: unauthorized_address,
+        amount: new_amount,
+        platform_fee: new_platform_fee,
+        milestones: new_milestones.clone(),
+        release_signer: new_release_signer.clone(),
+        dispute_resolver: new_dispute_resolver.clone(),
+        dispute_flag: false,
+    };
+
+    let result = engagement_client.try_change_escrow_properties(&escrow_properties_v2);
+    assert!(result.is_err());
     // Update escrow with authorized platform_address
     env.mock_all_auths();
-    engagement_client.change_escrow_properties(
-        &engagement_id,
-        &new_client_address,
-        &new_service_provider,
-        &platform_address, // Using original platform_address
-        &new_amount,
-        &new_platform_fee,
-        &new_milestones,
-        &new_release_signer,
-        &new_dispute_resolver,
-    );
+
+    let escrow_properties_v3: Escrow = Escrow {
+        engagement_id: initialized_id.clone(),
+        title: String::from_str(&env, "Updated Escrow"),
+        description: String::from_str(&env, "Updated Escrow Description"),
+        client: new_client_address.clone(),
+        service_provider: new_service_provider.clone(),
+        platform_address: platform_address.clone(),
+        amount: new_amount,
+        platform_fee: new_platform_fee,
+        milestones: new_milestones.clone(),
+        release_signer: new_release_signer.clone(),
+        dispute_resolver: new_dispute_resolver.clone(),
+        dispute_flag: false,
+    };
+
+    engagement_client.change_escrow_properties(&escrow_properties_v3);
 
     // Verify updated escrow properties
     let updated_escrow = engagement_client.get_escrow_by_id(&engagement_id);
     assert_eq!(updated_escrow.engagement_id, engagement_id);
-    assert_eq!(updated_escrow.client, new_client_address);
-    assert_eq!(updated_escrow.service_provider, new_service_provider);
-    assert_eq!(updated_escrow.platform_address, platform_address);
+    assert_eq!(updated_escrow.client, escrow_properties_v3.client);
+    assert_eq!(updated_escrow.service_provider, escrow_properties_v3.service_provider);
+    assert_eq!(updated_escrow.platform_address, escrow_properties_v3.platform_address);
     assert_eq!(updated_escrow.amount, new_amount);
     assert_eq!(updated_escrow.platform_fee, new_platform_fee);
-    assert_eq!(updated_escrow.milestones, new_milestones);
-    assert_eq!(updated_escrow.release_signer, new_release_signer);
-    assert_eq!(updated_escrow.dispute_resolver, new_dispute_resolver);
+    assert_eq!(updated_escrow.milestones, escrow_properties_v3.milestones);
+    assert_eq!(updated_escrow.release_signer, escrow_properties_v3.release_signer);
+    assert_eq!(updated_escrow.dispute_resolver, escrow_properties_v3.dispute_resolver);
 
     // Test with non-existent escrow (should fail)
     let non_existent_id = String::from_str(&env, "99999");
     env.mock_all_auths();
-    let result = engagement_client.try_change_escrow_properties(
-        &non_existent_id,
-        &new_client_address,
-        &new_service_provider,
-        &platform_address,
-        &new_amount,
-        &new_platform_fee,
-        &new_milestones,
-        &new_release_signer,
-        &new_dispute_resolver,
-    );
+
+    let escrow_properties_v4: Escrow = Escrow {
+        engagement_id: non_existent_id.clone(),
+        title: String::from_str(&env, "Updated Escrow"),
+        description: String::from_str(&env, "Updated Escrow Description"),
+        client: new_client_address,
+        service_provider: new_service_provider,
+        platform_address: platform_address,
+        amount: new_amount,
+        platform_fee: new_platform_fee,
+        milestones: new_milestones,
+        release_signer: new_release_signer,
+        dispute_resolver: new_dispute_resolver,
+        dispute_flag: false,
+    };
+
+    let result = engagement_client.try_change_escrow_properties(&escrow_properties_v4);
     assert!(result.is_err());
 }
 
@@ -234,17 +262,22 @@ fn test_change_milestone_status_and_flag() {
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
 
     let engagement_id = String::from_str(&env, "test_engagement");
-    engagement_client.initialize_escrow(
-        &engagement_id.clone(),
-        &client_address,
-        &service_provider_address,
-        &platform_address,
-        &amount,
-        &platform_fee,
-        &initial_milestones,
-        &release_signer_address,
-        &dispute_resolver_address,
-    );
+    let escrow_properties: Escrow = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address.clone(),
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: initial_milestones.clone(),
+        release_signer: release_signer_address.clone(),
+        dispute_resolver: dispute_resolver_address.clone(),
+        dispute_flag: false,
+    };
+
+    engagement_client.initialize_escrow(&escrow_properties);
 
     // Change milestone status (valid case)
     let new_status = String::from_str(&env, "completed");
@@ -331,17 +364,22 @@ fn test_change_milestone_status_and_flag() {
     assert!(result.is_err());
 
     //Escrow Test with no milestone
-    engagement_client.change_escrow_properties(
-        &engagement_id,
-        &client_address,
-        &service_provider_address,
-        &platform_address,
-        &amount,
-        &platform_fee,
-        &vec![&env],
-        &release_signer_address,
-        &dispute_resolver_address,
-    );
+    let escrow_properties_v2: Escrow = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address,
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: vec![&env],
+        release_signer: release_signer_address,
+        dispute_resolver: dispute_resolver_address,
+        dispute_flag: false,
+    };
+
+    engagement_client.change_escrow_properties(&escrow_properties_v2);
     // Test for `change_status` on escrow with no milestones
     let result = engagement_client.try_change_milestone_status(
         &engagement_id,
@@ -399,17 +437,22 @@ fn test_distribute_escrow_earnings_successful_flow() {
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
 
     let engagement_id = String::from_str(&env, "test_escrow_1");
-    engagement_client.initialize_escrow(
-        &engagement_id,
-        &client_address,
-        &service_provider_address,
-        &platform_address,
-        &amount,
-        &platform_fee,
-        &milestones,
-        &release_signer_address,
-        &dispute_resolver_address,
-    );
+    let escrow_properties: Escrow = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address.clone(),
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: milestones.clone(),
+        release_signer: release_signer_address.clone(),
+        dispute_resolver: dispute_resolver_address.clone(),
+        dispute_flag: false,
+    };
+
+    engagement_client.initialize_escrow(&escrow_properties);
 
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
     
@@ -474,17 +517,22 @@ fn test_distribute_escrow_earnings_no_milestones() {
     let amount: i128 = 100_000_000;
     let platform_fee = (0.3 * 10i128 as f64) as i128;
 
-    engagement_client.initialize_escrow(
-        &engagement_id_no_milestones,
-        &client_address,
-        &service_provider_address,
-        &platform_address,
-        &amount,
-        &platform_fee,
-        &vec![&env], // Empty milestones
-        &release_signer_address,
-        &dispute_resolver_address,
-    );
+    let escrow_properties: Escrow = Escrow {
+        engagement_id: engagement_id_no_milestones.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address.clone(),
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: vec![&env],
+        release_signer: release_signer_address.clone(),
+        dispute_resolver: dispute_resolver_address.clone(),
+        dispute_flag: false,
+    };
+
+    engagement_client.initialize_escrow(&escrow_properties);
 
     // Try to claim earnings with no milestones (should fail)
     let result = engagement_client.try_distribute_escrow_earnings(
@@ -530,17 +578,22 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
     let amount: i128 = 100_000_000;
     let platform_fee = (0.3 * 10i128.pow(18) as f64) as i128;
 
-    engagement_client.initialize_escrow(
-        &engagement_id_incomplete,
-        &client_address,
-        &service_provider_address,
-        &platform_address,
-        &amount,
-        &platform_fee,
-        &milestones_incomplete,
-        &release_signer_address,
-        &dispute_resolver_address,
-    );
+    let escrow_properties: Escrow = Escrow {
+        engagement_id: engagement_id_incomplete.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address.clone(),
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: milestones_incomplete.clone(),
+        release_signer: release_signer_address.clone(),
+        dispute_resolver: dispute_resolver_address.clone(),
+        dispute_flag: false,
+    };
+
+    engagement_client.initialize_escrow(&escrow_properties);
 
     // Try to claim earnings with incomplete milestones (should fail)
     let result = engagement_client.try_distribute_escrow_earnings(
@@ -583,17 +636,22 @@ fn test_dispute_flag_management() {
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
 
     let engagement_id = String::from_str(&env, "test_dispute");
-    engagement_client.initialize_escrow(
-        &engagement_id,
-        &client_address,
-        &service_provider_address,
-        &platform_address,
-        &amount,
-        &platform_fee,
-        &milestones,
-        &release_signer_address,
-        &dispute_resolver_address,
-    );
+    let escrow_properties: Escrow = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address.clone(),
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: milestones.clone(),
+        release_signer: release_signer_address.clone(),
+        dispute_resolver: dispute_resolver_address.clone(),
+        dispute_flag: false,
+    };
+
+    engagement_client.initialize_escrow(&escrow_properties);
 
     // Save initial state for later comparison
     let initial_escrow = engagement_client.get_escrow_by_id(&engagement_id);
@@ -647,17 +705,22 @@ fn test_dispute_resolution_process() {
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
 
     let engagement_id = String::from_str(&env, "test_resolution");
-    engagement_client.initialize_escrow(
-        &engagement_id,
-        &client_address,
-        &service_provider_address,
-        &platform_address,
-        &amount,
-        &platform_fee,
-        &vec![&env],
-        &release_signer_address,
-        &dispute_resolver_address,
-    );
+    let escrow_properties: Escrow = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address.clone(),
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: vec![&env],
+        release_signer: release_signer_address.clone(),
+        dispute_resolver: dispute_resolver_address.clone(),
+        dispute_flag: false,
+    };
+
+    engagement_client.initialize_escrow(&escrow_properties);
 
     let token_admin = Address::generate(&env);
     let token_contract = env.register_contract(None, crate::token::token::Token);
@@ -738,18 +801,22 @@ fn test_fund_escrow_successful_deposit() {
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
 
     let engagement_id = String::from_str(&env, "12345");
+    let escrow_properties: Escrow = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address.clone(),
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: milestones.clone(),
+        release_signer: release_signer_address.clone(),
+        dispute_resolver: dispute_resolver_address.clone(),
+        dispute_flag: false,
+    };
 
-    let engagement_id = engagement_client.initialize_escrow(
-        &engagement_id.clone(),
-        &client_address,
-        &service_provider_address,
-        &platform_address,
-        &amount,
-        &platform_fee,
-        &milestones,
-        &release_signer_address,
-        &dispute_resolver_address,
-    );
+    let engagement_id = engagement_client.initialize_escrow(&escrow_properties);
 
     let usdc_token = create_usdc_token(&env, &admin);
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
@@ -804,18 +871,22 @@ fn test_fund_escrow_fully_funded_error() {
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
 
     let engagement_id = String::from_str(&env, "12345");
+    let escrow_properties: Escrow = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address.clone(),
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: milestones.clone(),
+        release_signer: release_signer_address.clone(),
+        dispute_resolver: dispute_resolver_address.clone(),
+        dispute_flag: false,
+    };
 
-    let engagement_id = engagement_client.initialize_escrow(
-        &engagement_id.clone(),
-        &client_address,
-        &service_provider_address,
-        &platform_address,
-        &amount,
-        &platform_fee,
-        &milestones,
-        &release_signer_address,
-        &dispute_resolver_address,
-    );
+    let engagement_id = engagement_client.initialize_escrow(&escrow_properties);
 
     let usdc_token = create_usdc_token(&env, &admin);
     let funded_amount: i128 = 100_000_000; 
@@ -868,18 +939,22 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
 
     let engagement_id = String::from_str(&env, "12345");
+    let escrow_properties: Escrow = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address.clone(),
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: milestones.clone(),
+        release_signer: release_signer_address.clone(),
+        dispute_resolver: dispute_resolver_address.clone(),
+        dispute_flag: false,
+    };
 
-    let engagement_id = engagement_client.initialize_escrow(
-        &engagement_id.clone(),
-        &client_address,
-        &service_provider_address,
-        &platform_address,
-        &amount,
-        &platform_fee,
-        &milestones,
-        &release_signer_address,
-        &dispute_resolver_address,
-    );
+    let engagement_id = engagement_client.initialize_escrow(&escrow_properties);
 
     let usdc_token = create_usdc_token(&env, &admin);
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
@@ -933,27 +1008,29 @@ fn test_fund_escrow_dispute_flag_error() {
     let engagement_contract_address = env.register_contract(None, EngagementContract);
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
 
-    let engagement_id = String::from_str(&env, "12345");
+    let engagement_id = String::from_str(&env, "12321");
+    let escrow_properties: Escrow = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address,
+        service_provider: service_provider_address,
+        platform_address: platform_address,
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: milestones,
+        release_signer: release_signer_address.clone(),
+        dispute_resolver: dispute_resolver_address,
+        dispute_flag: false,
+    };
 
-    let engagement_id = engagement_client.initialize_escrow(
-        &engagement_id.clone(),
-        &client_address,
-        &service_provider_address,
-        &platform_address,
-        &amount,
-        &platform_fee,
-        &milestones,
-        &release_signer_address,
-        &dispute_resolver_address,
-    );
+    let engagement_id = engagement_client.initialize_escrow(&escrow_properties);
 
     let usdc_token = create_usdc_token(&env, &admin);
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
     usdc_token.mint(&release_signer_address, &(amount as i128));
 
-    engagement_client.change_dispute_flag(
-        &engagement_id,
-    );
+    engagement_client.change_dispute_flag(&engagement_id);
 
     let amount_to_deposit: i128 = 80_000;
 

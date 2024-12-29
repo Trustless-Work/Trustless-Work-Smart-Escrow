@@ -203,6 +203,14 @@
                             },
                             {
                               "key": {
+                                "symbol": "description"
+                              },
+                              "val": {
+                                "string": "Test Escrow Description"
+                              }
+                            },
+                            {
+                              "key": {
                                 "symbol": "dispute_flag"
                               },
                               "val": {
@@ -323,6 +331,14 @@
                               },
                               "val": {
                                 "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                              }
+                            },
+                            {
+                              "key": {
+                                "symbol": "title"
+                              },
+                              "val": {
+                                "string": "Test Escrow"
                               }
                             }
                           ]
@@ -555,96 +571,165 @@
               }
             ],
             "data": {
-              "vec": [
+              "map": [
                 {
-                  "string": "12345"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
-                },
-                {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 100000
-                  }
-                },
-                {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 300000000000000000
-                  }
-                },
-                {
-                  "vec": [
-                    {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "First milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "Second milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
+                  "key": {
+                    "symbol": "amount"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 100000
                     }
-                  ]
+                  }
                 },
                 {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                  "key": {
+                    "symbol": "client"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                  }
                 },
                 {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4"
+                  "key": {
+                    "symbol": "description"
+                  },
+                  "val": {
+                    "string": "Test Escrow Description"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "dispute_flag"
+                  },
+                  "val": {
+                    "bool": false
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "dispute_resolver"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "engagement_id"
+                  },
+                  "val": {
+                    "string": "12345"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "milestones"
+                  },
+                  "val": {
+                    "vec": [
+                      {
+                        "map": [
+                          {
+                            "key": {
+                              "symbol": "description"
+                            },
+                            "val": {
+                              "string": "First milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "status"
+                            },
+                            "val": {
+                              "string": "Pending"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "map": [
+                          {
+                            "key": {
+                              "symbol": "description"
+                            },
+                            "val": {
+                              "string": "Second milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "status"
+                            },
+                            "val": {
+                              "string": "Pending"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "platform_address"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "platform_fee"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 300000000000000000
+                    }
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "release_signer"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "service_provider"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "title"
+                  },
+                  "val": {
+                    "string": "Test Escrow"
+                  }
                 }
               ]
             }
@@ -990,6 +1075,14 @@
                     },
                     {
                       "key": {
+                        "symbol": "description"
+                      },
+                      "val": {
+                        "string": "Test Escrow Description"
+                      }
+                    },
+                    {
+                      "key": {
                         "symbol": "dispute_flag"
                       },
                       "val": {
@@ -1110,6 +1203,14 @@
                       },
                       "val": {
                         "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "title"
+                      },
+                      "val": {
+                        "string": "Test Escrow"
                       }
                     }
                   ]

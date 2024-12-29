@@ -165,6 +165,14 @@
                             },
                             {
                               "key": {
+                                "symbol": "description"
+                              },
+                              "val": {
+                                "string": "Test Escrow Description"
+                              }
+                            },
+                            {
+                              "key": {
                                 "symbol": "dispute_flag"
                               },
                               "val": {
@@ -228,6 +236,14 @@
                               },
                               "val": {
                                 "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
+                              }
+                            },
+                            {
+                              "key": {
+                                "symbol": "title"
+                              },
+                              "val": {
+                                "string": "Test Escrow"
                               }
                             }
                           ]
@@ -346,39 +362,108 @@
               }
             ],
             "data": {
-              "vec": [
+              "map": [
                 {
-                  "string": "test_no_milestones"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
-                },
-                {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 100000000
+                  "key": {
+                    "symbol": "amount"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 100000000
+                    }
                   }
                 },
                 {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 3
+                  "key": {
+                    "symbol": "client"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
                   }
                 },
                 {
-                  "vec": []
+                  "key": {
+                    "symbol": "description"
+                  },
+                  "val": {
+                    "string": "Test Escrow Description"
+                  }
                 },
                 {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                  "key": {
+                    "symbol": "dispute_flag"
+                  },
+                  "val": {
+                    "bool": false
+                  }
                 },
                 {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4"
+                  "key": {
+                    "symbol": "dispute_resolver"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "engagement_id"
+                  },
+                  "val": {
+                    "string": "test_no_milestones"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "milestones"
+                  },
+                  "val": {
+                    "vec": []
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "platform_address"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "platform_fee"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 3
+                    }
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "release_signer"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "service_provider"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "title"
+                  },
+                  "val": {
+                    "string": "Test Escrow"
+                  }
                 }
               ]
             }
@@ -489,6 +574,14 @@
                     },
                     {
                       "key": {
+                        "symbol": "description"
+                      },
+                      "val": {
+                        "string": "Test Escrow Description"
+                      }
+                    },
+                    {
+                      "key": {
                         "symbol": "dispute_flag"
                       },
                       "val": {
@@ -552,6 +645,14 @@
                       },
                       "val": {
                         "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "title"
+                      },
+                      "val": {
+                        "string": "Test Escrow"
                       }
                     }
                   ]

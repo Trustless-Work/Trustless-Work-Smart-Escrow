@@ -17,122 +17,195 @@
               "function_name": "change_escrow_properties",
               "args": [
                 {
-                  "string": "41431"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                },
-                {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 200000000
-                  }
-                },
-                {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 500000000000000000
-                  }
-                },
-                {
-                  "vec": [
+                  "map": [
                     {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "Updated first milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
+                      "key": {
+                        "symbol": "amount"
+                      },
+                      "val": {
+                        "i128": {
+                          "hi": 0,
+                          "lo": 200000000
                         }
-                      ]
+                      }
                     },
                     {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "Updated second milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
+                      "key": {
+                        "symbol": "client"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
+                      }
                     },
                     {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
+                      "key": {
+                        "symbol": "description"
+                      },
+                      "val": {
+                        "string": "Updated Escrow Description"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "dispute_flag"
+                      },
+                      "val": {
+                        "bool": false
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "dispute_resolver"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "engagement_id"
+                      },
+                      "val": {
+                        "string": "41431"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "milestones"
+                      },
+                      "val": {
+                        "vec": [
+                          {
+                            "map": [
+                              {
+                                "key": {
+                                  "symbol": "description"
+                                },
+                                "val": {
+                                  "string": "Updated first milestone"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "flag"
+                                },
+                                "val": {
+                                  "bool": false
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "status"
+                                },
+                                "val": {
+                                  "string": "Pending"
+                                }
+                              }
+                            ]
                           },
-                          "val": {
-                            "string": "New third milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
+                          {
+                            "map": [
+                              {
+                                "key": {
+                                  "symbol": "description"
+                                },
+                                "val": {
+                                  "string": "Updated second milestone"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "flag"
+                                },
+                                "val": {
+                                  "bool": false
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "status"
+                                },
+                                "val": {
+                                  "string": "Pending"
+                                }
+                              }
+                            ]
                           },
-                          "val": {
-                            "bool": false
+                          {
+                            "map": [
+                              {
+                                "key": {
+                                  "symbol": "description"
+                                },
+                                "val": {
+                                  "string": "New third milestone"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "flag"
+                                },
+                                "val": {
+                                  "bool": false
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "status"
+                                },
+                                "val": {
+                                  "string": "Pending"
+                                }
+                              }
+                            ]
                           }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "platform_address"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "platform_fee"
+                      },
+                      "val": {
+                        "i128": {
+                          "hi": 0,
+                          "lo": 500000000000000000
                         }
-                      ]
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "release_signer"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "service_provider"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "title"
+                      },
+                      "val": {
+                        "string": "Updated Escrow"
+                      }
                     }
                   ]
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
                 }
               ]
             }
@@ -252,6 +325,14 @@
                               },
                               "val": {
                                 "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
+                              }
+                            },
+                            {
+                              "key": {
+                                "symbol": "description"
+                              },
+                              "val": {
+                                "string": "Updated Escrow Description"
                               }
                             },
                             {
@@ -405,6 +486,14 @@
                               "val": {
                                 "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
                               }
+                            },
+                            {
+                              "key": {
+                                "symbol": "title"
+                              },
+                              "val": {
+                                "string": "Updated Escrow"
+                              }
                             }
                           ]
                         }
@@ -462,340 +551,6 @@
               }
             ],
             "data": {
-              "vec": [
-                {
-                  "string": "41431"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                },
-                {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 100000000
-                  }
-                },
-                {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 300000000000000000
-                  }
-                },
-                {
-                  "vec": [
-                    {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "First milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "Second milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
-                }
-              ]
-            }
-          }
-        }
-      },
-      "failed_call": false
-    },
-    {
-      "event": {
-        "ext": "v0",
-        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
-        "type_": "diagnostic",
-        "body": {
-          "v0": {
-            "topics": [
-              {
-                "symbol": "fn_return"
-              },
-              {
-                "symbol": "initialize_escrow"
-              }
-            ],
-            "data": {
-              "string": "41431"
-            }
-          }
-        }
-      },
-      "failed_call": false
-    },
-    {
-      "event": {
-        "ext": "v0",
-        "contract_id": null,
-        "type_": "diagnostic",
-        "body": {
-          "v0": {
-            "topics": [
-              {
-                "symbol": "fn_call"
-              },
-              {
-                "bytes": "0000000000000000000000000000000000000000000000000000000000000006"
-              },
-              {
-                "symbol": "get_escrow_by_id"
-              }
-            ],
-            "data": {
-              "string": "41431"
-            }
-          }
-        }
-      },
-      "failed_call": false
-    },
-    {
-      "event": {
-        "ext": "v0",
-        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
-        "type_": "contract",
-        "body": {
-          "v0": {
-            "topics": [
-              {
-                "symbol": "p_by_spdr"
-              }
-            ],
-            "data": {
-              "vec": [
-                {
-                  "string": "41431"
-                },
-                {
-                  "map": [
-                    {
-                      "key": {
-                        "symbol": "amount"
-                      },
-                      "val": {
-                        "i128": {
-                          "hi": 0,
-                          "lo": 100000000
-                        }
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "client"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "dispute_flag"
-                      },
-                      "val": {
-                        "bool": false
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "dispute_resolver"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "engagement_id"
-                      },
-                      "val": {
-                        "string": "41431"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "milestones"
-                      },
-                      "val": {
-                        "vec": [
-                          {
-                            "map": [
-                              {
-                                "key": {
-                                  "symbol": "description"
-                                },
-                                "val": {
-                                  "string": "First milestone"
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "flag"
-                                },
-                                "val": {
-                                  "bool": false
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "status"
-                                },
-                                "val": {
-                                  "string": "Pending"
-                                }
-                              }
-                            ]
-                          },
-                          {
-                            "map": [
-                              {
-                                "key": {
-                                  "symbol": "description"
-                                },
-                                "val": {
-                                  "string": "Second milestone"
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "flag"
-                                },
-                                "val": {
-                                  "bool": false
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "status"
-                                },
-                                "val": {
-                                  "string": "Pending"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "platform_address"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "platform_fee"
-                      },
-                      "val": {
-                        "i128": {
-                          "hi": 0,
-                          "lo": 300000000000000000
-                        }
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "release_signer"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "service_provider"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        }
-      },
-      "failed_call": false
-    },
-    {
-      "event": {
-        "ext": "v0",
-        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
-        "type_": "diagnostic",
-        "body": {
-          "v0": {
-            "topics": [
-              {
-                "symbol": "fn_return"
-              },
-              {
-                "symbol": "get_escrow_by_id"
-              }
-            ],
-            "data": {
               "map": [
                 {
                   "key": {
@@ -814,6 +569,14 @@
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "description"
+                  },
+                  "val": {
+                    "string": "Test Escrow Description"
                   }
                 },
                 {
@@ -939,8 +702,39 @@
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
                   }
+                },
+                {
+                  "key": {
+                    "symbol": "title"
+                  },
+                  "val": {
+                    "string": "Test Escrow"
+                  }
                 }
               ]
+            }
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
+        "type_": "diagnostic",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "fn_return"
+              },
+              {
+                "symbol": "initialize_escrow"
+              }
+            ],
+            "data": {
+              "string": "41431"
             }
           }
         }
@@ -962,130 +756,11 @@
                 "bytes": "0000000000000000000000000000000000000000000000000000000000000006"
               },
               {
-                "symbol": "change_escrow_properties"
+                "symbol": "get_escrow_by_id"
               }
             ],
             "data": {
-              "vec": [
-                {
-                  "string": "41431"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXI7N"
-                },
-                {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 200000000
-                  }
-                },
-                {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 500000000000000000
-                  }
-                },
-                {
-                  "vec": [
-                    {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "Updated first milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "Updated second milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "New third milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
-                }
-              ]
+              "string": "41431"
             }
           }
         }
@@ -1128,6 +803,14 @@
                       },
                       "val": {
                         "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "description"
+                      },
+                      "val": {
+                        "string": "Test Escrow Description"
                       }
                     },
                     {
@@ -1252,6 +935,598 @@
                       },
                       "val": {
                         "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "title"
+                      },
+                      "val": {
+                        "string": "Test Escrow"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
+        "type_": "diagnostic",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "fn_return"
+              },
+              {
+                "symbol": "get_escrow_by_id"
+              }
+            ],
+            "data": {
+              "map": [
+                {
+                  "key": {
+                    "symbol": "amount"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 100000000
+                    }
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "client"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "description"
+                  },
+                  "val": {
+                    "string": "Test Escrow Description"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "dispute_flag"
+                  },
+                  "val": {
+                    "bool": false
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "dispute_resolver"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "engagement_id"
+                  },
+                  "val": {
+                    "string": "41431"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "milestones"
+                  },
+                  "val": {
+                    "vec": [
+                      {
+                        "map": [
+                          {
+                            "key": {
+                              "symbol": "description"
+                            },
+                            "val": {
+                              "string": "First milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "status"
+                            },
+                            "val": {
+                              "string": "Pending"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "map": [
+                          {
+                            "key": {
+                              "symbol": "description"
+                            },
+                            "val": {
+                              "string": "Second milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "status"
+                            },
+                            "val": {
+                              "string": "Pending"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "platform_address"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "platform_fee"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 300000000000000000
+                    }
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "release_signer"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "service_provider"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "title"
+                  },
+                  "val": {
+                    "string": "Test Escrow"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": null,
+        "type_": "diagnostic",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "fn_call"
+              },
+              {
+                "bytes": "0000000000000000000000000000000000000000000000000000000000000006"
+              },
+              {
+                "symbol": "change_escrow_properties"
+              }
+            ],
+            "data": {
+              "map": [
+                {
+                  "key": {
+                    "symbol": "amount"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 200000000
+                    }
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "client"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "description"
+                  },
+                  "val": {
+                    "string": "Updated Escrow Description"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "dispute_flag"
+                  },
+                  "val": {
+                    "bool": false
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "dispute_resolver"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "engagement_id"
+                  },
+                  "val": {
+                    "string": "41431"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "milestones"
+                  },
+                  "val": {
+                    "vec": [
+                      {
+                        "map": [
+                          {
+                            "key": {
+                              "symbol": "description"
+                            },
+                            "val": {
+                              "string": "Updated first milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "status"
+                            },
+                            "val": {
+                              "string": "Pending"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "map": [
+                          {
+                            "key": {
+                              "symbol": "description"
+                            },
+                            "val": {
+                              "string": "Updated second milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "status"
+                            },
+                            "val": {
+                              "string": "Pending"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "map": [
+                          {
+                            "key": {
+                              "symbol": "description"
+                            },
+                            "val": {
+                              "string": "New third milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "status"
+                            },
+                            "val": {
+                              "string": "Pending"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "platform_address"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXI7N"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "platform_fee"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 500000000000000000
+                    }
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "release_signer"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "service_provider"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "title"
+                  },
+                  "val": {
+                    "string": "Updated Escrow"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
+        "type_": "contract",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "p_by_spdr"
+              }
+            ],
+            "data": {
+              "vec": [
+                {
+                  "string": "41431"
+                },
+                {
+                  "map": [
+                    {
+                      "key": {
+                        "symbol": "amount"
+                      },
+                      "val": {
+                        "i128": {
+                          "hi": 0,
+                          "lo": 100000000
+                        }
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "client"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "description"
+                      },
+                      "val": {
+                        "string": "Test Escrow Description"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "dispute_flag"
+                      },
+                      "val": {
+                        "bool": false
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "dispute_resolver"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "engagement_id"
+                      },
+                      "val": {
+                        "string": "41431"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "milestones"
+                      },
+                      "val": {
+                        "vec": [
+                          {
+                            "map": [
+                              {
+                                "key": {
+                                  "symbol": "description"
+                                },
+                                "val": {
+                                  "string": "First milestone"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "flag"
+                                },
+                                "val": {
+                                  "bool": false
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "status"
+                                },
+                                "val": {
+                                  "string": "Pending"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "map": [
+                              {
+                                "key": {
+                                  "symbol": "description"
+                                },
+                                "val": {
+                                  "string": "Second milestone"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "flag"
+                                },
+                                "val": {
+                                  "bool": false
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "status"
+                                },
+                                "val": {
+                                  "string": "Pending"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "platform_address"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "platform_fee"
+                      },
+                      "val": {
+                        "i128": {
+                          "hi": 0,
+                          "lo": 300000000000000000
+                        }
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "release_signer"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "service_provider"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "title"
+                      },
+                      "val": {
+                        "string": "Test Escrow"
                       }
                     }
                   ]
@@ -1341,122 +1616,195 @@
                 {
                   "vec": [
                     {
-                      "string": "41431"
-                    },
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
-                    },
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
-                    },
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXI7N"
-                    },
-                    {
-                      "i128": {
-                        "hi": 0,
-                        "lo": 200000000
-                      }
-                    },
-                    {
-                      "i128": {
-                        "hi": 0,
-                        "lo": 500000000000000000
-                      }
-                    },
-                    {
-                      "vec": [
+                      "map": [
                         {
-                          "map": [
-                            {
-                              "key": {
-                                "symbol": "description"
-                              },
-                              "val": {
-                                "string": "Updated first milestone"
-                              }
-                            },
-                            {
-                              "key": {
-                                "symbol": "flag"
-                              },
-                              "val": {
-                                "bool": false
-                              }
-                            },
-                            {
-                              "key": {
-                                "symbol": "status"
-                              },
-                              "val": {
-                                "string": "Pending"
-                              }
+                          "key": {
+                            "symbol": "amount"
+                          },
+                          "val": {
+                            "i128": {
+                              "hi": 0,
+                              "lo": 200000000
                             }
-                          ]
+                          }
                         },
                         {
-                          "map": [
-                            {
-                              "key": {
-                                "symbol": "description"
-                              },
-                              "val": {
-                                "string": "Updated second milestone"
-                              }
-                            },
-                            {
-                              "key": {
-                                "symbol": "flag"
-                              },
-                              "val": {
-                                "bool": false
-                              }
-                            },
-                            {
-                              "key": {
-                                "symbol": "status"
-                              },
-                              "val": {
-                                "string": "Pending"
-                              }
-                            }
-                          ]
+                          "key": {
+                            "symbol": "client"
+                          },
+                          "val": {
+                            "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
+                          }
                         },
                         {
-                          "map": [
-                            {
-                              "key": {
-                                "symbol": "description"
+                          "key": {
+                            "symbol": "description"
+                          },
+                          "val": {
+                            "string": "Updated Escrow Description"
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "dispute_flag"
+                          },
+                          "val": {
+                            "bool": false
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "dispute_resolver"
+                          },
+                          "val": {
+                            "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "engagement_id"
+                          },
+                          "val": {
+                            "string": "41431"
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "milestones"
+                          },
+                          "val": {
+                            "vec": [
+                              {
+                                "map": [
+                                  {
+                                    "key": {
+                                      "symbol": "description"
+                                    },
+                                    "val": {
+                                      "string": "Updated first milestone"
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "symbol": "flag"
+                                    },
+                                    "val": {
+                                      "bool": false
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "symbol": "status"
+                                    },
+                                    "val": {
+                                      "string": "Pending"
+                                    }
+                                  }
+                                ]
                               },
-                              "val": {
-                                "string": "New third milestone"
-                              }
-                            },
-                            {
-                              "key": {
-                                "symbol": "flag"
+                              {
+                                "map": [
+                                  {
+                                    "key": {
+                                      "symbol": "description"
+                                    },
+                                    "val": {
+                                      "string": "Updated second milestone"
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "symbol": "flag"
+                                    },
+                                    "val": {
+                                      "bool": false
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "symbol": "status"
+                                    },
+                                    "val": {
+                                      "string": "Pending"
+                                    }
+                                  }
+                                ]
                               },
-                              "val": {
-                                "bool": false
+                              {
+                                "map": [
+                                  {
+                                    "key": {
+                                      "symbol": "description"
+                                    },
+                                    "val": {
+                                      "string": "New third milestone"
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "symbol": "flag"
+                                    },
+                                    "val": {
+                                      "bool": false
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "symbol": "status"
+                                    },
+                                    "val": {
+                                      "string": "Pending"
+                                    }
+                                  }
+                                ]
                               }
-                            },
-                            {
-                              "key": {
-                                "symbol": "status"
-                              },
-                              "val": {
-                                "string": "Pending"
-                              }
+                            ]
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "platform_address"
+                          },
+                          "val": {
+                            "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXI7N"
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "platform_fee"
+                          },
+                          "val": {
+                            "i128": {
+                              "hi": 0,
+                              "lo": 500000000000000000
                             }
-                          ]
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "release_signer"
+                          },
+                          "val": {
+                            "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "service_provider"
+                          },
+                          "val": {
+                            "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "title"
+                          },
+                          "val": {
+                            "string": "Updated Escrow"
+                          }
                         }
                       ]
-                    },
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
-                    },
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
                     }
                   ]
                 }
@@ -1483,764 +1831,6 @@
               },
               {
                 "symbol": "change_escrow_properties"
-              }
-            ],
-            "data": {
-              "vec": [
-                {
-                  "string": "41431"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                },
-                {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 200000000
-                  }
-                },
-                {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 500000000000000000
-                  }
-                },
-                {
-                  "vec": [
-                    {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "Updated first milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "Updated second milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "New third milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
-                }
-              ]
-            }
-          }
-        }
-      },
-      "failed_call": false
-    },
-    {
-      "event": {
-        "ext": "v0",
-        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
-        "type_": "contract",
-        "body": {
-          "v0": {
-            "topics": [
-              {
-                "symbol": "p_by_spdr"
-              }
-            ],
-            "data": {
-              "vec": [
-                {
-                  "string": "41431"
-                },
-                {
-                  "map": [
-                    {
-                      "key": {
-                        "symbol": "amount"
-                      },
-                      "val": {
-                        "i128": {
-                          "hi": 0,
-                          "lo": 100000000
-                        }
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "client"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "dispute_flag"
-                      },
-                      "val": {
-                        "bool": false
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "dispute_resolver"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "engagement_id"
-                      },
-                      "val": {
-                        "string": "41431"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "milestones"
-                      },
-                      "val": {
-                        "vec": [
-                          {
-                            "map": [
-                              {
-                                "key": {
-                                  "symbol": "description"
-                                },
-                                "val": {
-                                  "string": "First milestone"
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "flag"
-                                },
-                                "val": {
-                                  "bool": false
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "status"
-                                },
-                                "val": {
-                                  "string": "Pending"
-                                }
-                              }
-                            ]
-                          },
-                          {
-                            "map": [
-                              {
-                                "key": {
-                                  "symbol": "description"
-                                },
-                                "val": {
-                                  "string": "Second milestone"
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "flag"
-                                },
-                                "val": {
-                                  "bool": false
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "status"
-                                },
-                                "val": {
-                                  "string": "Pending"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "platform_address"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "platform_fee"
-                      },
-                      "val": {
-                        "i128": {
-                          "hi": 0,
-                          "lo": 300000000000000000
-                        }
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "release_signer"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "service_provider"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        }
-      },
-      "failed_call": false
-    },
-    {
-      "event": {
-        "ext": "v0",
-        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
-        "type_": "contract",
-        "body": {
-          "v0": {
-            "topics": [
-              {
-                "symbol": "p_by_spdr"
-              }
-            ],
-            "data": {
-              "vec": [
-                {
-                  "string": "41431"
-                },
-                {
-                  "map": [
-                    {
-                      "key": {
-                        "symbol": "amount"
-                      },
-                      "val": {
-                        "i128": {
-                          "hi": 0,
-                          "lo": 200000000
-                        }
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "client"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "dispute_flag"
-                      },
-                      "val": {
-                        "bool": false
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "dispute_resolver"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "engagement_id"
-                      },
-                      "val": {
-                        "string": "41431"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "milestones"
-                      },
-                      "val": {
-                        "vec": [
-                          {
-                            "map": [
-                              {
-                                "key": {
-                                  "symbol": "description"
-                                },
-                                "val": {
-                                  "string": "Updated first milestone"
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "flag"
-                                },
-                                "val": {
-                                  "bool": false
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "status"
-                                },
-                                "val": {
-                                  "string": "Pending"
-                                }
-                              }
-                            ]
-                          },
-                          {
-                            "map": [
-                              {
-                                "key": {
-                                  "symbol": "description"
-                                },
-                                "val": {
-                                  "string": "Updated second milestone"
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "flag"
-                                },
-                                "val": {
-                                  "bool": false
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "status"
-                                },
-                                "val": {
-                                  "string": "Pending"
-                                }
-                              }
-                            ]
-                          },
-                          {
-                            "map": [
-                              {
-                                "key": {
-                                  "symbol": "description"
-                                },
-                                "val": {
-                                  "string": "New third milestone"
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "flag"
-                                },
-                                "val": {
-                                  "bool": false
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "status"
-                                },
-                                "val": {
-                                  "string": "Pending"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "platform_address"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "platform_fee"
-                      },
-                      "val": {
-                        "i128": {
-                          "hi": 0,
-                          "lo": 500000000000000000
-                        }
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "release_signer"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "service_provider"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        }
-      },
-      "failed_call": false
-    },
-    {
-      "event": {
-        "ext": "v0",
-        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
-        "type_": "diagnostic",
-        "body": {
-          "v0": {
-            "topics": [
-              {
-                "symbol": "fn_return"
-              },
-              {
-                "symbol": "change_escrow_properties"
-              }
-            ],
-            "data": "void"
-          }
-        }
-      },
-      "failed_call": false
-    },
-    {
-      "event": {
-        "ext": "v0",
-        "contract_id": null,
-        "type_": "diagnostic",
-        "body": {
-          "v0": {
-            "topics": [
-              {
-                "symbol": "fn_call"
-              },
-              {
-                "bytes": "0000000000000000000000000000000000000000000000000000000000000006"
-              },
-              {
-                "symbol": "get_escrow_by_id"
-              }
-            ],
-            "data": {
-              "string": "41431"
-            }
-          }
-        }
-      },
-      "failed_call": false
-    },
-    {
-      "event": {
-        "ext": "v0",
-        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
-        "type_": "contract",
-        "body": {
-          "v0": {
-            "topics": [
-              {
-                "symbol": "p_by_spdr"
-              }
-            ],
-            "data": {
-              "vec": [
-                {
-                  "string": "41431"
-                },
-                {
-                  "map": [
-                    {
-                      "key": {
-                        "symbol": "amount"
-                      },
-                      "val": {
-                        "i128": {
-                          "hi": 0,
-                          "lo": 200000000
-                        }
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "client"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "dispute_flag"
-                      },
-                      "val": {
-                        "bool": false
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "dispute_resolver"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "engagement_id"
-                      },
-                      "val": {
-                        "string": "41431"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "milestones"
-                      },
-                      "val": {
-                        "vec": [
-                          {
-                            "map": [
-                              {
-                                "key": {
-                                  "symbol": "description"
-                                },
-                                "val": {
-                                  "string": "Updated first milestone"
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "flag"
-                                },
-                                "val": {
-                                  "bool": false
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "status"
-                                },
-                                "val": {
-                                  "string": "Pending"
-                                }
-                              }
-                            ]
-                          },
-                          {
-                            "map": [
-                              {
-                                "key": {
-                                  "symbol": "description"
-                                },
-                                "val": {
-                                  "string": "Updated second milestone"
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "flag"
-                                },
-                                "val": {
-                                  "bool": false
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "status"
-                                },
-                                "val": {
-                                  "string": "Pending"
-                                }
-                              }
-                            ]
-                          },
-                          {
-                            "map": [
-                              {
-                                "key": {
-                                  "symbol": "description"
-                                },
-                                "val": {
-                                  "string": "New third milestone"
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "flag"
-                                },
-                                "val": {
-                                  "bool": false
-                                }
-                              },
-                              {
-                                "key": {
-                                  "symbol": "status"
-                                },
-                                "val": {
-                                  "string": "Pending"
-                                }
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "platform_address"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "platform_fee"
-                      },
-                      "val": {
-                        "i128": {
-                          "hi": 0,
-                          "lo": 500000000000000000
-                        }
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "release_signer"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
-                      }
-                    },
-                    {
-                      "key": {
-                        "symbol": "service_provider"
-                      },
-                      "val": {
-                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-          }
-        }
-      },
-      "failed_call": false
-    },
-    {
-      "event": {
-        "ext": "v0",
-        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
-        "type_": "diagnostic",
-        "body": {
-          "v0": {
-            "topics": [
-              {
-                "symbol": "fn_return"
-              },
-              {
-                "symbol": "get_escrow_by_id"
               }
             ],
             "data": {
@@ -2262,6 +1852,14 @@
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "description"
+                  },
+                  "val": {
+                    "string": "Updated Escrow Description"
                   }
                 },
                 {
@@ -2415,6 +2013,889 @@
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
                   }
+                },
+                {
+                  "key": {
+                    "symbol": "title"
+                  },
+                  "val": {
+                    "string": "Updated Escrow"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
+        "type_": "contract",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "p_by_spdr"
+              }
+            ],
+            "data": {
+              "vec": [
+                {
+                  "string": "41431"
+                },
+                {
+                  "map": [
+                    {
+                      "key": {
+                        "symbol": "amount"
+                      },
+                      "val": {
+                        "i128": {
+                          "hi": 0,
+                          "lo": 100000000
+                        }
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "client"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "description"
+                      },
+                      "val": {
+                        "string": "Test Escrow Description"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "dispute_flag"
+                      },
+                      "val": {
+                        "bool": false
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "dispute_resolver"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "engagement_id"
+                      },
+                      "val": {
+                        "string": "41431"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "milestones"
+                      },
+                      "val": {
+                        "vec": [
+                          {
+                            "map": [
+                              {
+                                "key": {
+                                  "symbol": "description"
+                                },
+                                "val": {
+                                  "string": "First milestone"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "flag"
+                                },
+                                "val": {
+                                  "bool": false
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "status"
+                                },
+                                "val": {
+                                  "string": "Pending"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "map": [
+                              {
+                                "key": {
+                                  "symbol": "description"
+                                },
+                                "val": {
+                                  "string": "Second milestone"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "flag"
+                                },
+                                "val": {
+                                  "bool": false
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "status"
+                                },
+                                "val": {
+                                  "string": "Pending"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "platform_address"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "platform_fee"
+                      },
+                      "val": {
+                        "i128": {
+                          "hi": 0,
+                          "lo": 300000000000000000
+                        }
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "release_signer"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "service_provider"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHK3M"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "title"
+                      },
+                      "val": {
+                        "string": "Test Escrow"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
+        "type_": "contract",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "p_by_spdr"
+              }
+            ],
+            "data": {
+              "vec": [
+                {
+                  "string": "41431"
+                },
+                {
+                  "map": [
+                    {
+                      "key": {
+                        "symbol": "amount"
+                      },
+                      "val": {
+                        "i128": {
+                          "hi": 0,
+                          "lo": 200000000
+                        }
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "client"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "description"
+                      },
+                      "val": {
+                        "string": "Updated Escrow Description"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "dispute_flag"
+                      },
+                      "val": {
+                        "bool": false
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "dispute_resolver"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "engagement_id"
+                      },
+                      "val": {
+                        "string": "41431"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "milestones"
+                      },
+                      "val": {
+                        "vec": [
+                          {
+                            "map": [
+                              {
+                                "key": {
+                                  "symbol": "description"
+                                },
+                                "val": {
+                                  "string": "Updated first milestone"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "flag"
+                                },
+                                "val": {
+                                  "bool": false
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "status"
+                                },
+                                "val": {
+                                  "string": "Pending"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "map": [
+                              {
+                                "key": {
+                                  "symbol": "description"
+                                },
+                                "val": {
+                                  "string": "Updated second milestone"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "flag"
+                                },
+                                "val": {
+                                  "bool": false
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "status"
+                                },
+                                "val": {
+                                  "string": "Pending"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "map": [
+                              {
+                                "key": {
+                                  "symbol": "description"
+                                },
+                                "val": {
+                                  "string": "New third milestone"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "flag"
+                                },
+                                "val": {
+                                  "bool": false
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "status"
+                                },
+                                "val": {
+                                  "string": "Pending"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "platform_address"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "platform_fee"
+                      },
+                      "val": {
+                        "i128": {
+                          "hi": 0,
+                          "lo": 500000000000000000
+                        }
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "release_signer"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "service_provider"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "title"
+                      },
+                      "val": {
+                        "string": "Updated Escrow"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
+        "type_": "diagnostic",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "fn_return"
+              },
+              {
+                "symbol": "change_escrow_properties"
+              }
+            ],
+            "data": "void"
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": null,
+        "type_": "diagnostic",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "fn_call"
+              },
+              {
+                "bytes": "0000000000000000000000000000000000000000000000000000000000000006"
+              },
+              {
+                "symbol": "get_escrow_by_id"
+              }
+            ],
+            "data": {
+              "string": "41431"
+            }
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
+        "type_": "contract",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "p_by_spdr"
+              }
+            ],
+            "data": {
+              "vec": [
+                {
+                  "string": "41431"
+                },
+                {
+                  "map": [
+                    {
+                      "key": {
+                        "symbol": "amount"
+                      },
+                      "val": {
+                        "i128": {
+                          "hi": 0,
+                          "lo": 200000000
+                        }
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "client"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "description"
+                      },
+                      "val": {
+                        "string": "Updated Escrow Description"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "dispute_flag"
+                      },
+                      "val": {
+                        "bool": false
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "dispute_resolver"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "engagement_id"
+                      },
+                      "val": {
+                        "string": "41431"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "milestones"
+                      },
+                      "val": {
+                        "vec": [
+                          {
+                            "map": [
+                              {
+                                "key": {
+                                  "symbol": "description"
+                                },
+                                "val": {
+                                  "string": "Updated first milestone"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "flag"
+                                },
+                                "val": {
+                                  "bool": false
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "status"
+                                },
+                                "val": {
+                                  "string": "Pending"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "map": [
+                              {
+                                "key": {
+                                  "symbol": "description"
+                                },
+                                "val": {
+                                  "string": "Updated second milestone"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "flag"
+                                },
+                                "val": {
+                                  "bool": false
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "status"
+                                },
+                                "val": {
+                                  "string": "Pending"
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "map": [
+                              {
+                                "key": {
+                                  "symbol": "description"
+                                },
+                                "val": {
+                                  "string": "New third milestone"
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "flag"
+                                },
+                                "val": {
+                                  "bool": false
+                                }
+                              },
+                              {
+                                "key": {
+                                  "symbol": "status"
+                                },
+                                "val": {
+                                  "string": "Pending"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "platform_address"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "platform_fee"
+                      },
+                      "val": {
+                        "i128": {
+                          "hi": 0,
+                          "lo": 500000000000000000
+                        }
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "release_signer"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "service_provider"
+                      },
+                      "val": {
+                        "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "title"
+                      },
+                      "val": {
+                        "string": "Updated Escrow"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000006",
+        "type_": "diagnostic",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "fn_return"
+              },
+              {
+                "symbol": "get_escrow_by_id"
+              }
+            ],
+            "data": {
+              "map": [
+                {
+                  "key": {
+                    "symbol": "amount"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 200000000
+                    }
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "client"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "description"
+                  },
+                  "val": {
+                    "string": "Updated Escrow Description"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "dispute_flag"
+                  },
+                  "val": {
+                    "bool": false
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "dispute_resolver"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "engagement_id"
+                  },
+                  "val": {
+                    "string": "41431"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "milestones"
+                  },
+                  "val": {
+                    "vec": [
+                      {
+                        "map": [
+                          {
+                            "key": {
+                              "symbol": "description"
+                            },
+                            "val": {
+                              "string": "Updated first milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "status"
+                            },
+                            "val": {
+                              "string": "Pending"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "map": [
+                          {
+                            "key": {
+                              "symbol": "description"
+                            },
+                            "val": {
+                              "string": "Updated second milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "status"
+                            },
+                            "val": {
+                              "string": "Pending"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "map": [
+                          {
+                            "key": {
+                              "symbol": "description"
+                            },
+                            "val": {
+                              "string": "New third milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "status"
+                            },
+                            "val": {
+                              "string": "Pending"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "platform_address"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "platform_fee"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 500000000000000000
+                    }
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "release_signer"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "service_provider"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "title"
+                  },
+                  "val": {
+                    "string": "Updated Escrow"
+                  }
                 }
               ]
             }
@@ -2442,124 +2923,193 @@
               }
             ],
             "data": {
-              "vec": [
+              "map": [
                 {
-                  "string": "99999"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
-                },
-                {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                },
-                {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 200000000
-                  }
-                },
-                {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 500000000000000000
-                  }
-                },
-                {
-                  "vec": [
-                    {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "Updated first milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "Updated second milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
-                    },
-                    {
-                      "map": [
-                        {
-                          "key": {
-                            "symbol": "description"
-                          },
-                          "val": {
-                            "string": "New third milestone"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "flag"
-                          },
-                          "val": {
-                            "bool": false
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "status"
-                          },
-                          "val": {
-                            "string": "Pending"
-                          }
-                        }
-                      ]
+                  "key": {
+                    "symbol": "amount"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 200000000
                     }
-                  ]
+                  }
                 },
                 {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
+                  "key": {
+                    "symbol": "client"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
+                  }
                 },
                 {
-                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
+                  "key": {
+                    "symbol": "description"
+                  },
+                  "val": {
+                    "string": "Updated Escrow Description"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "dispute_flag"
+                  },
+                  "val": {
+                    "bool": false
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "dispute_resolver"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "engagement_id"
+                  },
+                  "val": {
+                    "string": "99999"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "milestones"
+                  },
+                  "val": {
+                    "vec": [
+                      {
+                        "map": [
+                          {
+                            "key": {
+                              "symbol": "description"
+                            },
+                            "val": {
+                              "string": "Updated first milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "status"
+                            },
+                            "val": {
+                              "string": "Pending"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "map": [
+                          {
+                            "key": {
+                              "symbol": "description"
+                            },
+                            "val": {
+                              "string": "Updated second milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "status"
+                            },
+                            "val": {
+                              "string": "Pending"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "map": [
+                          {
+                            "key": {
+                              "symbol": "description"
+                            },
+                            "val": {
+                              "string": "New third milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "status"
+                            },
+                            "val": {
+                              "string": "Pending"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "platform_address"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "platform_fee"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 500000000000000000
+                    }
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "release_signer"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "service_provider"
+                  },
+                  "val": {
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "title"
+                  },
+                  "val": {
+                    "string": "Updated Escrow"
+                  }
                 }
               ]
             }
@@ -2646,122 +3196,195 @@
                 {
                   "vec": [
                     {
-                      "string": "99999"
-                    },
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
-                    },
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
-                    },
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
-                    },
-                    {
-                      "i128": {
-                        "hi": 0,
-                        "lo": 200000000
-                      }
-                    },
-                    {
-                      "i128": {
-                        "hi": 0,
-                        "lo": 500000000000000000
-                      }
-                    },
-                    {
-                      "vec": [
+                      "map": [
                         {
-                          "map": [
-                            {
-                              "key": {
-                                "symbol": "description"
-                              },
-                              "val": {
-                                "string": "Updated first milestone"
-                              }
-                            },
-                            {
-                              "key": {
-                                "symbol": "flag"
-                              },
-                              "val": {
-                                "bool": false
-                              }
-                            },
-                            {
-                              "key": {
-                                "symbol": "status"
-                              },
-                              "val": {
-                                "string": "Pending"
-                              }
+                          "key": {
+                            "symbol": "amount"
+                          },
+                          "val": {
+                            "i128": {
+                              "hi": 0,
+                              "lo": 200000000
                             }
-                          ]
+                          }
                         },
                         {
-                          "map": [
-                            {
-                              "key": {
-                                "symbol": "description"
-                              },
-                              "val": {
-                                "string": "Updated second milestone"
-                              }
-                            },
-                            {
-                              "key": {
-                                "symbol": "flag"
-                              },
-                              "val": {
-                                "bool": false
-                              }
-                            },
-                            {
-                              "key": {
-                                "symbol": "status"
-                              },
-                              "val": {
-                                "string": "Pending"
-                              }
-                            }
-                          ]
+                          "key": {
+                            "symbol": "client"
+                          },
+                          "val": {
+                            "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
+                          }
                         },
                         {
-                          "map": [
-                            {
-                              "key": {
-                                "symbol": "description"
+                          "key": {
+                            "symbol": "description"
+                          },
+                          "val": {
+                            "string": "Updated Escrow Description"
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "dispute_flag"
+                          },
+                          "val": {
+                            "bool": false
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "dispute_resolver"
+                          },
+                          "val": {
+                            "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "engagement_id"
+                          },
+                          "val": {
+                            "string": "99999"
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "milestones"
+                          },
+                          "val": {
+                            "vec": [
+                              {
+                                "map": [
+                                  {
+                                    "key": {
+                                      "symbol": "description"
+                                    },
+                                    "val": {
+                                      "string": "Updated first milestone"
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "symbol": "flag"
+                                    },
+                                    "val": {
+                                      "bool": false
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "symbol": "status"
+                                    },
+                                    "val": {
+                                      "string": "Pending"
+                                    }
+                                  }
+                                ]
                               },
-                              "val": {
-                                "string": "New third milestone"
-                              }
-                            },
-                            {
-                              "key": {
-                                "symbol": "flag"
+                              {
+                                "map": [
+                                  {
+                                    "key": {
+                                      "symbol": "description"
+                                    },
+                                    "val": {
+                                      "string": "Updated second milestone"
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "symbol": "flag"
+                                    },
+                                    "val": {
+                                      "bool": false
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "symbol": "status"
+                                    },
+                                    "val": {
+                                      "string": "Pending"
+                                    }
+                                  }
+                                ]
                               },
-                              "val": {
-                                "bool": false
+                              {
+                                "map": [
+                                  {
+                                    "key": {
+                                      "symbol": "description"
+                                    },
+                                    "val": {
+                                      "string": "New third milestone"
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "symbol": "flag"
+                                    },
+                                    "val": {
+                                      "bool": false
+                                    }
+                                  },
+                                  {
+                                    "key": {
+                                      "symbol": "status"
+                                    },
+                                    "val": {
+                                      "string": "Pending"
+                                    }
+                                  }
+                                ]
                               }
-                            },
-                            {
-                              "key": {
-                                "symbol": "status"
-                              },
-                              "val": {
-                                "string": "Pending"
-                              }
+                            ]
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "platform_address"
+                          },
+                          "val": {
+                            "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "platform_fee"
+                          },
+                          "val": {
+                            "i128": {
+                              "hi": 0,
+                              "lo": 500000000000000000
                             }
-                          ]
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "release_signer"
+                          },
+                          "val": {
+                            "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "service_provider"
+                          },
+                          "val": {
+                            "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
+                          }
+                        },
+                        {
+                          "key": {
+                            "symbol": "title"
+                          },
+                          "val": {
+                            "string": "Updated Escrow"
+                          }
                         }
                       ]
-                    },
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATYON"
-                    },
-                    {
-                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
                     }
                   ]
                 }
