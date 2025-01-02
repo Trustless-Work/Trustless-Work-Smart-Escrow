@@ -236,3 +236,8 @@ Where:
 - `<wasm_hash>` is the hash of the `.wasm` file generated during the contract installation.
 - `<source_account>` is the account from which the deployment will be made.
 - `<network>` is the network you are working on (e.g., testnet).
+
+
+## **Thanks to all the contributors who have made this project possible!**
+
+[![Contributors](https://contrib.rocks/image?repo=Tico4Chain-Coders/Trustless-Work-Smart-Escrow)](https://github.com/Tico4Chain-Coders/Trustless-Work-Smart-Escrow/graphs/contributors)
