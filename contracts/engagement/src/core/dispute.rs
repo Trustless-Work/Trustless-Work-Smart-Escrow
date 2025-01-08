@@ -1,4 +1,4 @@
-use soroban_sdk::{Address, Env, String};
+use soroban_sdk::{Address, Env};
 use soroban_sdk::token::Client as TokenClient;
 
 use crate::storage::types::DataKey;
@@ -12,7 +12,6 @@ impl DisputeManager {
     
     pub fn resolving_disputes(
         e: Env,
-        engagement_id: String,
         dispute_resolver: Address,
         usdc_contract: Address,
         client_funds: i128,
@@ -20,9 +19,7 @@ impl DisputeManager {
     ) -> Result<(), ContractError> {
         dispute_resolver.require_auth();
     
-        let escrow_key = DataKey::Escrow(engagement_id.clone());
-        let escrow_result = EscrowManager::get_escrow_by_id(e.clone(), engagement_id.clone());
-    
+        let escrow_result = EscrowManager::get_escrow(e.clone());
         let escrow = match escrow_result {
             Ok(esc) => esc,
             Err(err) => return Err(err),
@@ -60,21 +57,18 @@ impl DisputeManager {
             );
         }
     
-        e.storage().instance().set(&escrow_key, &escrow);
+        e.storage().instance().set(&DataKey::Escrow, &escrow);
     
-        escrows_by_engagement_id(&e, engagement_id, escrow);
+        escrows_by_engagement_id(&e, escrow.engagement_id.clone(), escrow);
     
         Ok(())
     }
 
     pub fn change_dispute_flag(
         e: Env, 
-        engagement_id: String,
     ) -> Result<(), ContractError> {
     
-        let escrow_key = DataKey::Escrow(engagement_id.clone());
-        let escrow_result = EscrowManager::get_escrow_by_id(e.clone(), engagement_id.clone());
-    
+        let escrow_result = EscrowManager::get_escrow(e.clone());
         let mut escrow = match escrow_result {
             Ok(esc) => esc,
             Err(err) => return Err(err),
@@ -85,9 +79,9 @@ impl DisputeManager {
         }
     
         escrow.dispute_flag = true;
-        e.storage().instance().set(&escrow_key, &escrow);
+        e.storage().instance().set(&DataKey::Escrow, &escrow);
     
-        escrows_by_engagement_id(&e, engagement_id, escrow);
+        escrows_by_engagement_id(&e, escrow.engagement_id.clone(), escrow);
     
         Ok(())
     }

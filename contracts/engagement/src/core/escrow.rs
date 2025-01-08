@@ -1,4 +1,4 @@
-use soroban_sdk::{Address, Env, String};
+use soroban_sdk::{Address, Env};
 use soroban_sdk::token::Client as TokenClient;
 
 use crate::storage::types::{Escrow, DataKey};
@@ -12,34 +12,30 @@ impl EscrowManager{
     pub fn initialize_escrow(
         e: Env,
         escrow_properties: Escrow
-    ) -> Result<String, ContractError> {
+    ) -> Result<Escrow, ContractError> {
 
-        if e.storage().instance().has(&DataKey::Admin) {
-            panic!("An escrow has already been initialized for this contract");
+        if e.storage().instance().has(&DataKey::Escrow) {
+            return Err(ContractError::EscrowAlreadyInitialized);
         }
 
         if escrow_properties.amount == 0 {
             return Err(ContractError::AmountCannotBeZero);
         }
         
-        e.storage().instance().set(&DataKey::Escrow(escrow_properties.engagement_id.clone()), &escrow_properties);
-        e.storage().instance().set(&DataKey::Admin, &true);
+        e.storage().instance().set(&DataKey::Escrow, &escrow_properties);
 
-        Ok(escrow_properties.engagement_id)
+        Ok(escrow_properties)
     }
 
     pub fn fund_escrow(
         e: Env, 
-        engagement_id: String, 
         signer: Address, 
         usdc_contract: Address, 
         amount_to_deposit: i128
     ) -> Result<(), ContractError> {
         signer.require_auth();
 
-        let escrow_key = DataKey::Escrow(engagement_id.clone());
-        let escrow_result = Self::get_escrow_by_id(e.clone(), engagement_id);
-    
+        let escrow_result = Self::get_escrow(e.clone());
         let escrow = match escrow_result {
             Ok(esc) => esc,
             Err(err) => return Err(err),
@@ -69,22 +65,20 @@ impl EscrowManager{
 
         usdc_client.transfer(&signer, &contract_address, &amount_to_deposit);
     
-        e.storage().instance().set(&escrow_key, &escrow);
+        e.storage().instance().set(&DataKey::Escrow, &escrow);
     
         Ok(())
     }
 
     pub fn distribute_escrow_earnings(
         e: Env, 
-        engagement_id: String, 
         release_signer: Address, 
         usdc_contract: Address,
         trustless_work_address: Address
     ) -> Result<(), ContractError> {
         release_signer.require_auth();
-        let escrow_key = DataKey::Escrow(engagement_id.clone());
-        let escrow_result = Self::get_escrow_by_id(e.clone(), engagement_id);
         
+        let escrow_result = Self::get_escrow(e.clone());
         let escrow = match escrow_result {
             Ok(esc) => esc,
             Err(err) => return Err(err),
@@ -142,7 +136,7 @@ impl EscrowManager{
             &service_provider_amount
         );
     
-        e.storage().instance().set(&escrow_key, &escrow);
+        e.storage().instance().set(&DataKey::Escrow, &escrow);
     
         Ok(())
     }
@@ -151,7 +145,11 @@ impl EscrowManager{
         e: Env,
         escrow_properties: Escrow
     ) -> Result<(), ContractError> {
-        let existing_escrow = Self::get_escrow_by_id(e.clone(), escrow_properties.engagement_id.clone())?;
+        let escrow_result = Self::get_escrow(e.clone());
+        let existing_escrow = match escrow_result {
+            Ok(esc) => esc,
+            Err(err) => return Err(err),
+        };
 
         if escrow_properties.platform_address != existing_escrow.platform_address {
             return Err(ContractError::OnlyPlatformAddressExecuteThisFunction);
@@ -160,7 +158,7 @@ impl EscrowManager{
         escrow_properties.platform_address.require_auth();
 
         e.storage().instance().set(
-            &DataKey::Escrow(escrow_properties.engagement_id.clone()),
+            &DataKey::Escrow,
             &escrow_properties
         );
 
@@ -171,13 +169,18 @@ impl EscrowManager{
         Ok(())
     }
 
-    pub fn get_escrow_by_id(e: Env, engagement_id: String) -> Result<Escrow, ContractError> {
-        let escrow_key = DataKey::Escrow(engagement_id.clone());
-        if let Some(escrow) = e.storage().instance().get::<DataKey, Escrow>(&escrow_key) {
-            escrows_by_engagement_id(&e, engagement_id.clone(), escrow.clone());
-            Ok(escrow)
-        } else {
-            return Err(ContractError::EscrowNotFound)
-        }
+    pub fn get_escrow_balance(e: Env, usdc_token_address: Address) -> i128 {
+        let usdc_client = TokenClient::new(&e, &usdc_token_address);
+        let address = e.current_contract_address();
+        let balance = usdc_client.balance(&address);
+        balance
+    }
+
+    pub fn get_escrow(e: Env) -> Result<Escrow, ContractError> {
+        let escrow = e.storage()
+            .instance()
+            .get::<_, Escrow>(&DataKey::Escrow)
+            .ok_or(ContractError::EscrowNotFound);
+        Ok(escrow?)
     }
 }

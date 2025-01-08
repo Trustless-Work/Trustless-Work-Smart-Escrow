@@ -6,7 +6,7 @@ use soroban_sdk::token::Client as TokenClient;
 use crate::storage::types::Escrow;
 use crate::error::ContractError;
 use crate::events::balance_retrieved_event;
-use crate::core::{DisputeManager, EscrowManager, MilestoneManager, UserManager};
+use crate::core::{DisputeManager, EscrowManager, MilestoneManager};
 
 #[contract]
 pub struct EngagementContract;
@@ -42,20 +42,18 @@ impl EngagementContract {
     pub fn initialize_escrow(
         e: Env,
         escrow_properties: Escrow
-    ) -> Result<String, ContractError> {
+    ) -> Result<Escrow, ContractError> {
         EscrowManager::initialize_escrow(e, escrow_properties)
     }
     
     pub fn fund_escrow(
         e: Env, 
-        engagement_id: String, 
         signer: Address, 
         usdc_contract: Address, 
         amount_to_deposit: i128
     ) -> Result<(), ContractError> {
         EscrowManager::fund_escrow(
             e, 
-            engagement_id, 
             signer, 
             usdc_contract, 
             amount_to_deposit
@@ -64,14 +62,12 @@ impl EngagementContract {
 
     pub fn distribute_escrow_earnings(
         e: Env, 
-        engagement_id: String, 
         release_signer: Address, 
         usdc_contract: Address,
         trustless_work_address: Address
     ) -> Result<(), ContractError> {
         EscrowManager::distribute_escrow_earnings(
             e, 
-            engagement_id, 
             release_signer, 
             usdc_contract,
             trustless_work_address
@@ -85,8 +81,12 @@ impl EngagementContract {
         EscrowManager::change_escrow_properties(e, escrow_properties)
     }
 
-    pub fn get_escrow_by_id(e: Env, engagement_id: String) -> Result<Escrow, ContractError> {
-        EscrowManager::get_escrow_by_id(e, engagement_id)
+    pub fn get_escrow(e: Env) -> Result<Escrow, ContractError> {
+        EscrowManager::get_escrow(e)
+    }
+
+    pub fn get_escrow_balance(e: Env, usdc_token_address: Address) -> i128 {
+        EscrowManager::get_escrow_balance(e, usdc_token_address)
     }
 
     ////////////////////////
@@ -95,14 +95,12 @@ impl EngagementContract {
 
     pub fn change_milestone_status(
         e: Env,
-        engagement_id: String,
         milestone_index: i128,
         new_status: String,
         service_provider: Address,
     ) -> Result<(), ContractError> {
         MilestoneManager::change_milestone_status(
             e,
-            engagement_id,
             milestone_index,
             new_status,
             service_provider
@@ -111,14 +109,12 @@ impl EngagementContract {
     
     pub fn change_milestone_flag(
         e: Env,
-        engagement_id: String,
         milestone_index: i128,
         new_flag: bool,
         client: Address,
     ) -> Result<(), ContractError> {
         MilestoneManager::change_milestone_flag(
             e,
-            engagement_id,
             milestone_index,
             new_flag,
             client
@@ -131,7 +127,6 @@ impl EngagementContract {
 
     pub fn resolving_disputes(
         e: Env,
-        engagement_id: String,
         dispute_resolver: Address,
         usdc_contract: Address,
         client_funds: i128,
@@ -139,7 +134,6 @@ impl EngagementContract {
     ) -> Result<(), ContractError> {
         DisputeManager::resolving_disputes(
             e,
-            engagement_id,
             dispute_resolver,
             usdc_contract,
             client_funds,
@@ -149,27 +143,13 @@ impl EngagementContract {
     
     pub fn change_dispute_flag(
         e: Env, 
-        engagement_id: String,
     ) -> Result<(), ContractError> {
-        DisputeManager::change_dispute_flag(e, engagement_id)
+        DisputeManager::change_dispute_flag(e)
     }
 
     ////////////////////////
     // User /////
     ////////////////////////
-
-    pub fn register_user(
-        e: Env, 
-        user_address: Address, 
-        name: String, 
-        email: String
-    ) -> bool {
-        UserManager::register(e, user_address, name, email)
-    }
-
-    pub fn login(e: Env, user_address: Address) -> String {
-        UserManager::login(&e, user_address)
-    }
 
     pub fn get_balance(e: Env, address: Address, usdc_token_address: Address) {
         let usdc_token = TokenClient::new(&e, &usdc_token_address);

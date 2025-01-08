@@ -9,16 +9,15 @@ pub struct MilestoneManager;
 impl MilestoneManager {
     pub fn change_milestone_status(
         e: Env,
-        engagement_id: String,
         milestone_index: i128,
         new_status: String,
         service_provider: Address,
     ) -> Result<(), ContractError> {
-        let existing_escrow = EscrowManager::get_escrow_by_id(e.clone(), engagement_id.clone())?;
-    
-        if existing_escrow.engagement_id != engagement_id {
-            return Err(ContractError::EscrowNotInitialized);
-        }
+        let escrow_result = EscrowManager::get_escrow(e.clone());
+        let existing_escrow = match escrow_result {
+            Ok(esc) => esc,
+            Err(err) => return Err(err),
+        };
     
         if service_provider != existing_escrow.service_provider {
             return Err(ContractError::OnlyServiceProviderChangeMilstoneStatus);
@@ -48,27 +47,26 @@ impl MilestoneManager {
         };
     
         e.storage().instance().set(
-            &DataKey::Escrow(engagement_id.clone().into()),
+            &DataKey::Escrow,
             &updated_escrow,
         );
     
-        escrows_by_engagement_id(&e, engagement_id, updated_escrow);
+        escrows_by_engagement_id(&e, updated_escrow.engagement_id.clone(), updated_escrow);
     
         Ok(())
     }
     
     pub fn change_milestone_flag(
         e: Env,
-        engagement_id: String,
         milestone_index: i128,
         new_flag: bool,
         client: Address,
     ) -> Result<(), ContractError> {
-        let existing_escrow = EscrowManager::get_escrow_by_id(e.clone(), engagement_id.clone())?;
-    
-        if existing_escrow.engagement_id != engagement_id {
-            return Err(ContractError::EscrowNotInitialized);
-        }
+        let escrow_result = EscrowManager::get_escrow(e.clone());
+        let existing_escrow = match escrow_result {
+            Ok(esc) => esc,
+            Err(err) => return Err(err),
+        };
     
         if client != existing_escrow.client {
             return Err(ContractError::OnlyClientChangeMilstoneFlag);
@@ -99,11 +97,11 @@ impl MilestoneManager {
         };
     
         e.storage().instance().set(
-            &DataKey::Escrow(engagement_id.clone().into()),
+            &DataKey::Escrow,
             &updated_escrow,
         );
     
-        escrows_by_engagement_id(&e, engagement_id, updated_escrow);
+        escrows_by_engagement_id(&e, updated_escrow.engagement_id.clone(), updated_escrow);
     
         Ok(())
     }
