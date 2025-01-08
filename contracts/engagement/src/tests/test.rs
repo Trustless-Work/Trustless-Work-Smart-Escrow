@@ -60,10 +60,10 @@ fn test_initialize_excrow() {
         dispute_flag: false,
     };
 
-    let engagement_id = engagement_client.initialize_escrow(&escrow_properties);
+    let initialized_escrow = engagement_client.initialize_escrow(&escrow_properties);
 
-    let escrow = engagement_client.get_escrow_by_id(&engagement_id);
-    assert_eq!(escrow.engagement_id, engagement_id);
+    let escrow = engagement_client.get_escrow();
+    assert_eq!(escrow.engagement_id, initialized_escrow.engagement_id);
     assert_eq!(escrow.client, escrow_properties.client);
     assert_eq!(escrow.service_provider, escrow_properties.service_provider);
     assert_eq!(escrow.platform_address, escrow_properties.platform_address);
@@ -72,6 +72,9 @@ fn test_initialize_excrow() {
     assert_eq!(escrow.milestones, escrow_properties.milestones);
     assert_eq!(escrow.release_signer, escrow_properties.release_signer);
     assert_eq!(escrow.dispute_resolver, escrow_properties.dispute_resolver);
+
+    let result = engagement_client.try_initialize_escrow(&escrow_properties);
+    assert!(result.is_err());
 }
 
 #[test]
@@ -122,11 +125,11 @@ fn test_change_escrow_properties() {
         dispute_flag: false,
     };
 
-    let initialized_id = engagement_client.initialize_escrow(&escrow_properties);
+    let initialized_escrow = engagement_client.initialize_escrow(&escrow_properties);
 
     // Verify escrow was initialized
-    let initial_escrow = engagement_client.get_escrow_by_id(&initialized_id);
-    assert_eq!(initial_escrow.engagement_id, initialized_id);
+    let escrow = engagement_client.get_escrow();
+    assert_eq!(escrow.engagement_id, initialized_escrow.engagement_id);
 
     // Create new values for updating the escrow
     let new_client_address = Address::generate(&env);
@@ -160,7 +163,7 @@ fn test_change_escrow_properties() {
     env.mock_all_auths();
 
     let escrow_properties_v2: Escrow = Escrow {
-        engagement_id: initialized_id.clone(),
+        engagement_id: initialized_escrow.engagement_id.clone(),
         title: String::from_str(&env, "Updated Escrow"),
         description: String::from_str(&env, "Updated Escrow Description"),
         client: new_client_address.clone(),
@@ -180,7 +183,7 @@ fn test_change_escrow_properties() {
     env.mock_all_auths();
 
     let escrow_properties_v3: Escrow = Escrow {
-        engagement_id: initialized_id.clone(),
+        engagement_id: initialized_escrow.engagement_id.clone(),
         title: String::from_str(&env, "Updated Escrow"),
         description: String::from_str(&env, "Updated Escrow Description"),
         client: new_client_address.clone(),
@@ -197,7 +200,7 @@ fn test_change_escrow_properties() {
     engagement_client.change_escrow_properties(&escrow_properties_v3);
 
     // Verify updated escrow properties
-    let updated_escrow = engagement_client.get_escrow_by_id(&engagement_id);
+    let updated_escrow = engagement_client.get_escrow();
     assert_eq!(updated_escrow.engagement_id, engagement_id);
     assert_eq!(updated_escrow.client, escrow_properties_v3.client);
     assert_eq!(updated_escrow.service_provider, escrow_properties_v3.service_provider);
@@ -207,28 +210,6 @@ fn test_change_escrow_properties() {
     assert_eq!(updated_escrow.milestones, escrow_properties_v3.milestones);
     assert_eq!(updated_escrow.release_signer, escrow_properties_v3.release_signer);
     assert_eq!(updated_escrow.dispute_resolver, escrow_properties_v3.dispute_resolver);
-
-    // Test with non-existent escrow (should fail)
-    let non_existent_id = String::from_str(&env, "99999");
-    env.mock_all_auths();
-
-    let escrow_properties_v4: Escrow = Escrow {
-        engagement_id: non_existent_id.clone(),
-        title: String::from_str(&env, "Updated Escrow"),
-        description: String::from_str(&env, "Updated Escrow Description"),
-        client: new_client_address,
-        service_provider: new_service_provider,
-        platform_address: platform_address,
-        amount: new_amount,
-        platform_fee: new_platform_fee,
-        milestones: new_milestones,
-        release_signer: new_release_signer,
-        dispute_resolver: new_dispute_resolver,
-        dispute_flag: false,
-    };
-
-    let result = engagement_client.try_change_escrow_properties(&escrow_properties_v4);
-    assert!(result.is_err());
 }
 
 #[test]
@@ -282,21 +263,20 @@ fn test_change_milestone_status_and_flag() {
     // Change milestone status (valid case)
     let new_status = String::from_str(&env, "completed");
     engagement_client.change_milestone_status(
-        &engagement_id.clone(),
         &(0 as i128), // Milestone index
         &new_status,
         &service_provider_address,
     );
 
     // Verify milestone status change
-    let updated_escrow = engagement_client.get_escrow_by_id(&engagement_id);
+    let updated_escrow = engagement_client.get_escrow();
     assert_eq!(updated_escrow.milestones.get(0).unwrap().status, new_status);
 
     // Change milestone flag (valid case)
-    engagement_client.change_milestone_flag(&engagement_id, &(0 as i128), &true, &client_address);
+    engagement_client.change_milestone_flag( &(0 as i128), &true, &client_address);
 
     // Verify milestone flag change
-    let final_escrow = engagement_client.get_escrow_by_id(&engagement_id);
+    let final_escrow = engagement_client.get_escrow();
     assert!(final_escrow.milestones.get(0).unwrap().flag);
 
     // Invalid index test
@@ -305,7 +285,6 @@ fn test_change_milestone_status_and_flag() {
 
     // Test for `change_status` with invalid index
     let result = engagement_client.try_change_milestone_status(
-        &engagement_id,
         &invalid_index,
         &new_status,
         &service_provider_address,
@@ -314,29 +293,7 @@ fn test_change_milestone_status_and_flag() {
 
     // Test for `change_flag` with invalid index
     let result = engagement_client.try_change_milestone_flag(
-        &engagement_id,
         &invalid_index,
-        &true,
-        &client_address,
-    );
-    assert!(result.is_err());
-
-    // Invalid Engagement ID test
-    let invalid_engagement_id = String::from_str(&env, "invalid_engagement");
-
-    // Test for `change_status` with invalid engagement ID
-    let result = engagement_client.try_change_milestone_status(
-        &invalid_engagement_id,
-        &(0 as i128),
-        &new_status,
-        &service_provider_address,
-    );
-    assert!(result.is_err());
-
-    // Test for `change_flag` with invalid engagement ID
-    let result = engagement_client.try_change_milestone_flag(
-        &invalid_engagement_id,
-        &(0 as i128),
         &true,
         &client_address,
     );
@@ -347,7 +304,6 @@ fn test_change_milestone_status_and_flag() {
 
     // Test for `change_status` by invalid service provider
     let result = engagement_client.try_change_milestone_status(
-        &engagement_id,
         &(0 as i128),
         &new_status,
         &unauthorized_address,
@@ -356,7 +312,6 @@ fn test_change_milestone_status_and_flag() {
 
     // Test for `change_flag` by invalid client
     let result = engagement_client.try_change_milestone_flag(
-        &engagement_id,
         &(0 as i128),
         &true,
         &unauthorized_address,
@@ -382,7 +337,6 @@ fn test_change_milestone_status_and_flag() {
     engagement_client.change_escrow_properties(&escrow_properties_v2);
     // Test for `change_status` on escrow with no milestones
     let result = engagement_client.try_change_milestone_status(
-        &engagement_id,
         &(0 as i128),
         &new_status,
         &service_provider_address,
@@ -391,7 +345,6 @@ fn test_change_milestone_status_and_flag() {
 
     // Test for `change_flag` on escrow with no milestones
     let result = engagement_client.try_change_milestone_flag(
-        &engagement_id,
         &(0 as i128),
         &true,
         &client_address,
@@ -457,7 +410,6 @@ fn test_distribute_escrow_earnings_successful_flow() {
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
     
     engagement_client.distribute_escrow_earnings(
-        &engagement_id,
         &release_signer_address,
         &usdc_token.address,
         &trustless_work_address,
@@ -536,7 +488,6 @@ fn test_distribute_escrow_earnings_no_milestones() {
 
     // Try to claim earnings with no milestones (should fail)
     let result = engagement_client.try_distribute_escrow_earnings(
-        &engagement_id_no_milestones,
         &release_signer_address,
         &usdc_token.address,
         &platform_address, 
@@ -597,7 +548,6 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
 
     // Try to claim earnings with incomplete milestones (should fail)
     let result = engagement_client.try_distribute_escrow_earnings(
-        &engagement_id_incomplete,
         &release_signer_address,
         &usdc_token.address,
         &platform_address,
@@ -654,16 +604,14 @@ fn test_dispute_flag_management() {
     engagement_client.initialize_escrow(&escrow_properties);
 
     // Save initial state for later comparison
-    let initial_escrow = engagement_client.get_escrow_by_id(&engagement_id);
+    let initial_escrow = engagement_client.get_escrow();
     assert_eq!(initial_escrow.dispute_flag, false);
 
     // Test 1: Change dispute flag successfully
-    engagement_client.change_dispute_flag(
-        &engagement_id,
-    );
+    engagement_client.change_dispute_flag();
 
     // Verify dispute flag changed but nothing else did
-    let disputed_escrow = engagement_client.get_escrow_by_id(&engagement_id);
+    let disputed_escrow = engagement_client.get_escrow();
     assert_eq!(disputed_escrow.dispute_flag, true);
     assert_eq!(disputed_escrow.client, initial_escrow.client);
     assert_eq!(disputed_escrow.service_provider, initial_escrow.service_provider);
@@ -672,17 +620,7 @@ fn test_dispute_flag_management() {
     assert_eq!(disputed_escrow.milestones, initial_escrow.milestones);
 
     // Test 2: Try to change flag when already in dispute
-    let result = engagement_client.try_change_dispute_flag(
-        &engagement_id,
-    );
-    assert!(result.is_err());
-
-
-    // Test 3: Try with non-existent escrow
-    let non_existent_id = String::from_str(&env, "non_existent");
-    let result = engagement_client.try_change_dispute_flag(
-        &non_existent_id,
-    );
+    let result = engagement_client.try_change_dispute_flag();
     assert!(result.is_err());
 }
 
@@ -741,12 +679,10 @@ fn test_dispute_resolution_process() {
     assert_eq!(escrow_balance, amount as i128);
 
     // Change dispute flag
-    engagement_client.change_dispute_flag(
-        &engagement_id,
-    );
+    engagement_client.change_dispute_flag( );
 
     // Verify flag changed
-    let disputed_escrow = engagement_client.get_escrow_by_id(&engagement_id);
+    let disputed_escrow = engagement_client.get_escrow();
     assert_eq!(disputed_escrow.dispute_flag, true);
 
     // Resolve dispute
@@ -754,7 +690,6 @@ fn test_dispute_resolution_process() {
     let provider_amount: i128 = 60_000_000;
 
     engagement_client.resolving_disputes(
-        &engagement_id,
         &dispute_resolver_address,
         &token_contract,
         &client_amount,
@@ -816,7 +751,7 @@ fn test_fund_escrow_successful_deposit() {
         dispute_flag: false,
     };
 
-    let engagement_id = engagement_client.initialize_escrow(&escrow_properties);
+    engagement_client.initialize_escrow(&escrow_properties);
 
     let usdc_token = create_usdc_token(&env, &admin);
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
@@ -825,7 +760,6 @@ fn test_fund_escrow_successful_deposit() {
     let amount_to_deposit: i128 = 100_000;
 
     engagement_client.fund_escrow(
-        &engagement_id, 
         &release_signer_address, 
         &usdc_token.address, 
         &amount_to_deposit
@@ -886,7 +820,7 @@ fn test_fund_escrow_fully_funded_error() {
         dispute_flag: false,
     };
 
-    let engagement_id = engagement_client.initialize_escrow(&escrow_properties);
+    engagement_client.initialize_escrow(&escrow_properties);
 
     let usdc_token = create_usdc_token(&env, &admin);
     let funded_amount: i128 = 100_000_000; 
@@ -896,7 +830,6 @@ fn test_fund_escrow_fully_funded_error() {
     let amount_to_deposit: i128 = 100_000;
 
     let result = engagement_client.try_fund_escrow(
-        &engagement_id, 
         &release_signer_address, 
         &usdc_token.address, 
         &amount_to_deposit
@@ -954,7 +887,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
         dispute_flag: false,
     };
 
-    let engagement_id = engagement_client.initialize_escrow(&escrow_properties);
+    engagement_client.initialize_escrow(&escrow_properties);
 
     let usdc_token = create_usdc_token(&env, &admin);
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
@@ -965,7 +898,6 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
     let amount_to_deposit: i128 = 180_000;
 
     let result = engagement_client.try_fund_escrow(
-        &engagement_id, 
         &release_signer_address, 
         &usdc_token.address, 
         &amount_to_deposit
@@ -1024,18 +956,17 @@ fn test_fund_escrow_dispute_flag_error() {
         dispute_flag: false,
     };
 
-    let engagement_id = engagement_client.initialize_escrow(&escrow_properties);
+    engagement_client.initialize_escrow(&escrow_properties);
 
     let usdc_token = create_usdc_token(&env, &admin);
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
     usdc_token.mint(&release_signer_address, &(amount as i128));
 
-    engagement_client.change_dispute_flag(&engagement_id);
+    engagement_client.change_dispute_flag();
 
     let amount_to_deposit: i128 = 80_000;
 
     let result = engagement_client.try_fund_escrow(
-        &engagement_id, 
         &release_signer_address, 
         &usdc_token.address, 
         &amount_to_deposit
