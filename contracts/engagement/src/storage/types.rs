@@ -57,13 +57,8 @@ pub struct User {
 #[derive(Clone)]
 #[contracttype]
 pub enum DataKey {
-    Escrow(String),
+    Escrow,
     Balance(Address),
     Allowance(AllowanceDataKey),
     Admin,
-
-    // User storage
-    User(Address),
-    UserRegId(Address),
-    UserCounter,
 }
