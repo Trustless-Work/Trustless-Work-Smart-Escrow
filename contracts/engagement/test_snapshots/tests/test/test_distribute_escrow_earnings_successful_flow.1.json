@@ -607,18 +607,18 @@
                                     "map": [
                                       {
                                         "key": {
-                                          "symbol": "description"
+                                          "symbol": "approved_flag"
                                         },
                                         "val": {
-                                          "string": "First milestone"
+                                          "bool": true
                                         }
                                       },
                                       {
                                         "key": {
-                                          "symbol": "flag"
+                                          "symbol": "description"
                                         },
                                         "val": {
-                                          "bool": true
+                                          "string": "First milestone"
                                         }
                                       },
                                       {
@@ -635,18 +635,18 @@
                                     "map": [
                                       {
                                         "key": {
-                                          "symbol": "description"
+                                          "symbol": "approved_flag"
                                         },
                                         "val": {
-                                          "string": "Second milestone"
+                                          "bool": true
                                         }
                                       },
                                       {
                                         "key": {
-                                          "symbol": "flag"
+                                          "symbol": "description"
                                         },
                                         "val": {
-                                          "bool": true
+                                          "string": "Second milestone"
                                         }
                                       },
                                       {
@@ -969,18 +969,18 @@
                         "map": [
                           {
                             "key": {
-                              "symbol": "description"
+                              "symbol": "approved_flag"
                             },
                             "val": {
-                              "string": "First milestone"
+                              "bool": true
                             }
                           },
                           {
                             "key": {
-                              "symbol": "flag"
+                              "symbol": "description"
                             },
                             "val": {
-                              "bool": true
+                              "string": "First milestone"
                             }
                           },
                           {
@@ -997,18 +997,18 @@
                         "map": [
                           {
                             "key": {
-                              "symbol": "description"
+                              "symbol": "approved_flag"
                             },
                             "val": {
-                              "string": "Second milestone"
+                              "bool": true
                             }
                           },
                           {
                             "key": {
-                              "symbol": "flag"
+                              "symbol": "description"
                             },
                             "val": {
-                              "bool": true
+                              "string": "Second milestone"
                             }
                           },
                           {
@@ -1152,18 +1152,18 @@
                         "map": [
                           {
                             "key": {
-                              "symbol": "description"
+                              "symbol": "approved_flag"
                             },
                             "val": {
-                              "string": "First milestone"
+                              "bool": true
                             }
                           },
                           {
                             "key": {
-                              "symbol": "flag"
+                              "symbol": "description"
                             },
                             "val": {
-                              "bool": true
+                              "string": "First milestone"
                             }
                           },
                           {
@@ -1180,18 +1180,18 @@
                         "map": [
                           {
                             "key": {
-                              "symbol": "description"
+                              "symbol": "approved_flag"
                             },
                             "val": {
-                              "string": "Second milestone"
+                              "bool": true
                             }
                           },
                           {
                             "key": {
-                              "symbol": "flag"
+                              "symbol": "description"
                             },
                             "val": {
-                              "bool": true
+                              "string": "Second milestone"
                             }
                           },
                           {

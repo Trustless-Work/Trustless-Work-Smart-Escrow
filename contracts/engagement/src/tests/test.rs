@@ -31,12 +31,12 @@ fn test_initialize_excrow() {
         Milestone {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
     ];
 
@@ -96,12 +96,12 @@ fn test_change_escrow_properties() {
         Milestone {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
     ];
 
@@ -144,17 +144,17 @@ fn test_change_escrow_properties() {
         Milestone {
             description: String::from_str(&env, "Updated first milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Updated second milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "New third milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
     ];
 
@@ -213,7 +213,7 @@ fn test_change_escrow_properties() {
 }
 
 #[test]
-fn test_change_milestone_status_and_flag() {
+fn test_change_milestone_status_and_approved_flag() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -230,12 +230,12 @@ fn test_change_milestone_status_and_flag() {
         Milestone {
             description: String::from_str(&env, "Milestone 1"),
             status: String::from_str(&env, "in-progress"),
-            flag: false,
+            approved_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Milestone 2"),
             status: String::from_str(&env, "in-progress"),
-            flag: false,
+            approved_flag: false,
         },
     ];
 
@@ -272,12 +272,12 @@ fn test_change_milestone_status_and_flag() {
     let updated_escrow = engagement_client.get_escrow();
     assert_eq!(updated_escrow.milestones.get(0).unwrap().status, new_status);
 
-    // Change milestone flag (valid case)
+    // Change milestone approved_flag (valid case)
     engagement_client.change_milestone_flag( &(0 as i128), &true, &client_address);
 
-    // Verify milestone flag change
+    // Verify milestone approved_flag change
     let final_escrow = engagement_client.get_escrow();
-    assert!(final_escrow.milestones.get(0).unwrap().flag);
+    assert!(final_escrow.milestones.get(0).unwrap().approved_flag);
 
     // Invalid index test
     let invalid_index = 10 as i128;
@@ -291,7 +291,7 @@ fn test_change_milestone_status_and_flag() {
     );
     assert!(result.is_err());
 
-    // Test for `change_flag` with invalid index
+    // Test for `change_approved_flag` with invalid index
     let result = engagement_client.try_change_milestone_flag(
         &invalid_index,
         &true,
@@ -310,7 +310,7 @@ fn test_change_milestone_status_and_flag() {
     );
     assert!(result.is_err());
 
-    // Test for `change_flag` by invalid client
+    // Test for `change_approved_flag` by invalid client
     let result = engagement_client.try_change_milestone_flag(
         &(0 as i128),
         &true,
@@ -343,7 +343,7 @@ fn test_change_milestone_status_and_flag() {
     );
     assert!(result.is_err());
 
-    // Test for `change_flag` on escrow with no milestones
+    // Test for `change_approved_flag` on escrow with no milestones
     let result = engagement_client.try_change_milestone_flag(
         &(0 as i128),
         &true,
@@ -377,12 +377,12 @@ fn test_distribute_escrow_earnings_successful_flow() {
         Milestone {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Completed"),
-            flag: true,
+            approved_flag: true,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Completed"),
-            flag: true,
+            approved_flag: true,
         },
     ];
 
@@ -522,7 +522,7 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
         Milestone {
             description: String::from_str(&env, "Incomplete milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
     ];
 
@@ -578,7 +578,7 @@ fn test_dispute_flag_management() {
         Milestone {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         }
     ];
 
@@ -607,10 +607,10 @@ fn test_dispute_flag_management() {
     let initial_escrow = engagement_client.get_escrow();
     assert_eq!(initial_escrow.dispute_flag, false);
 
-    // Test 1: Change dispute flag successfully
+    // Test 1: Change dispute approved_flag successfully
     engagement_client.change_dispute_flag();
 
-    // Verify dispute flag changed but nothing else did
+    // Verify dispute approved_flag changed but nothing else did
     let disputed_escrow = engagement_client.get_escrow();
     assert_eq!(disputed_escrow.dispute_flag, true);
     assert_eq!(disputed_escrow.client, initial_escrow.client);
@@ -619,7 +619,7 @@ fn test_dispute_flag_management() {
     assert_eq!(disputed_escrow.platform_fee, initial_escrow.platform_fee);
     assert_eq!(disputed_escrow.milestones, initial_escrow.milestones);
 
-    // Test 2: Try to change flag when already in dispute
+    // Test 2: Try to change approved_flag when already in dispute
     let result = engagement_client.try_change_dispute_flag();
     assert!(result.is_err());
 }
@@ -678,10 +678,10 @@ fn test_dispute_resolution_process() {
     let escrow_balance = token_client.balance(&engagement_contract_address);
     assert_eq!(escrow_balance, amount as i128);
 
-    // Change dispute flag
+    // Change dispute approved_flag
     engagement_client.change_dispute_flag( );
 
-    // Verify flag changed
+    // Verify approved_flag changed
     let disputed_escrow = engagement_client.get_escrow();
     assert_eq!(disputed_escrow.dispute_flag, true);
 
@@ -723,12 +723,12 @@ fn test_fund_escrow_successful_deposit() {
         Milestone {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
     ];
 
@@ -792,12 +792,12 @@ fn test_fund_escrow_fully_funded_error() {
         Milestone {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
     ];
 
@@ -859,12 +859,12 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
         Milestone {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
     ];
 
@@ -928,12 +928,12 @@ fn test_fund_escrow_dispute_flag_error() {
         Milestone {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
-            flag: false,
+            approved_flag: false,
         },
     ];
 
@@ -974,6 +974,6 @@ fn test_fund_escrow_dispute_flag_error() {
 
     assert!(
         result.is_err(),
-        "Should fail when the dispute flag is true"
+        "Should fail when the dispute approved_flag is true"
     );
 }

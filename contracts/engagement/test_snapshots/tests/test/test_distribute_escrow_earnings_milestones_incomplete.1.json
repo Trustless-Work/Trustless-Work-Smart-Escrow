@@ -190,18 +190,18 @@
                                     "map": [
                                       {
                                         "key": {
-                                          "symbol": "description"
+                                          "symbol": "approved_flag"
                                         },
                                         "val": {
-                                          "string": "Incomplete milestone"
+                                          "bool": false
                                         }
                                       },
                                       {
                                         "key": {
-                                          "symbol": "flag"
+                                          "symbol": "description"
                                         },
                                         "val": {
-                                          "bool": false
+                                          "string": "Incomplete milestone"
                                         }
                                       },
                                       {
@@ -438,18 +438,18 @@
                         "map": [
                           {
                             "key": {
-                              "symbol": "description"
+                              "symbol": "approved_flag"
                             },
                             "val": {
-                              "string": "Incomplete milestone"
+                              "bool": false
                             }
                           },
                           {
                             "key": {
-                              "symbol": "flag"
+                              "symbol": "description"
                             },
                             "val": {
-                              "bool": false
+                              "string": "Incomplete milestone"
                             }
                           },
                           {
@@ -593,18 +593,18 @@
                         "map": [
                           {
                             "key": {
-                              "symbol": "description"
+                              "symbol": "approved_flag"
                             },
                             "val": {
-                              "string": "Incomplete milestone"
+                              "bool": false
                             }
                           },
                           {
                             "key": {
-                              "symbol": "flag"
+                              "symbol": "description"
                             },
                             "val": {
-                              "bool": false
+                              "string": "Incomplete milestone"
                             }
                           },
                           {
