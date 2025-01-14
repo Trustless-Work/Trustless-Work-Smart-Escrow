@@ -26,7 +26,7 @@ pub struct Escrow {
 pub struct Milestone {
     pub description: String,
     pub status: String,
-    pub flag: bool,
+    pub approved_flag: bool,
 }
 
 #[contracttype]

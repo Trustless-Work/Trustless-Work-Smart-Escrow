@@ -92,7 +92,7 @@ impl EscrowManager{
             return Err(ContractError::NoMileStoneDefined);
         }
     
-        if !escrow.milestones.iter().all(|milestone| milestone.flag) {
+        if !escrow.milestones.iter().all(|milestone| milestone.approved_flag) {
             return Err(ContractError::EscrowNotCompleted);
         }
     

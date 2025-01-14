@@ -86,7 +86,7 @@ impl MilestoneManager {
         for (index, milestone) in existing_escrow.milestones.iter().enumerate() {
             let mut new_milestone = milestone.clone();
             if index as i128 == milestone_index {
-                new_milestone.flag = new_flag;
+                new_milestone.approved_flag = new_flag;
             }
             updated_milestones.push_back(new_milestone);
         }
