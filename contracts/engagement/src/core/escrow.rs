@@ -167,11 +167,16 @@ impl EscrowManager{
         Ok(())
     }
 
-    pub fn get_escrow_balance(e: Env, usdc_token_address: Address) -> i128 {
-        let usdc_client = TokenClient::new(&e, &usdc_token_address);
+    pub fn get_escrow_balance(e: Env) -> Result<i128, ContractError> {
+        let escrow_result = EscrowManager::get_escrow(e.clone());
+        let escrow = match escrow_result {
+            Ok(esc) => esc,
+            Err(err) => return Err(err),
+        };
+        let usdc_client = TokenClient::new(&e, &escrow.trustline);
         let address = e.current_contract_address();
         let balance = usdc_client.balance(&address);
-        balance
+        Ok(balance)
     }
 
     pub fn get_escrow(e: Env) -> Result<Escrow, ContractError> {

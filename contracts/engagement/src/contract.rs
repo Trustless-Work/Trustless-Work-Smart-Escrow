@@ -81,8 +81,8 @@ impl EngagementContract {
         EscrowManager::get_escrow(e)
     }
 
-    pub fn get_escrow_balance(e: Env, usdc_token_address: Address) -> i128 {
-        EscrowManager::get_escrow_balance(e, usdc_token_address)
+    pub fn get_escrow_balance(e: Env) -> Result<i128, ContractError> {
+        EscrowManager::get_escrow_balance(e)
     }
 
     ////////////////////////
@@ -141,15 +141,5 @@ impl EngagementContract {
         e: Env, 
     ) -> Result<(), ContractError> {
         DisputeManager::change_dispute_flag(e)
-    }
-
-    ////////////////////////
-    // User /////
-    ////////////////////////
-
-    pub fn get_balance(e: Env, address: Address, usdc_token_address: Address) {
-        let usdc_token = TokenClient::new(&e, &usdc_token_address);
-        let balance = usdc_token.balance(&address);
-        balance_retrieved_event(&e, address, usdc_token_address, balance);
     }
 }
