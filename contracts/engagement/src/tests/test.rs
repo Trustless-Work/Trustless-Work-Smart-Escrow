@@ -6,7 +6,6 @@ use crate::storage::types::{Escrow, Milestone};
 use crate::token::token::{Token, TokenClient};
 use crate::contract::EngagementContract;
 use crate::contract::EngagementContractClient;
-use soroban_sdk::log;
 use soroban_sdk::{testutils::Address as _, vec, Address, Env, IntoVal, String};
 
 fn create_usdc_token<'a>(e: &Env, admin: &Address) -> TokenClient<'a> {
@@ -21,6 +20,7 @@ fn test_initialize_excrow() {
     env.mock_all_auths();
 
     let client_address = Address::generate(&env);
+    let admin = Address::generate(&env);
     let platform_address = Address::generate(&env);
     let amount: i128 = 100_000_000;
     let service_provider_address = Address::generate(&env);
@@ -43,6 +43,7 @@ fn test_initialize_excrow() {
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
+    let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "41431");
 
@@ -59,6 +60,7 @@ fn test_initialize_excrow() {
         release_signer: release_signer_address,
         dispute_resolver: dispute_resolver_address,
         dispute_flag: false,
+        trustline: usdc_token.address,
     };
 
     let initialized_escrow = engagement_client.initialize_escrow(&escrow_properties);
@@ -84,6 +86,7 @@ fn test_change_escrow_properties() {
     env.mock_all_auths();
 
     let client_address = Address::generate(&env);
+    let admin = Address::generate(&env);
     let platform_address = Address::generate(&env);
     let service_provider_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
@@ -108,6 +111,7 @@ fn test_change_escrow_properties() {
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
+    let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "41431");
 
@@ -124,6 +128,7 @@ fn test_change_escrow_properties() {
         release_signer: release_signer_address,
         dispute_resolver: dispute_resolver_address,
         dispute_flag: false,
+        trustline: usdc_token.address.clone(),
     };
 
     let initialized_escrow = engagement_client.initialize_escrow(&escrow_properties);
@@ -176,6 +181,7 @@ fn test_change_escrow_properties() {
         release_signer: new_release_signer.clone(),
         dispute_resolver: new_dispute_resolver.clone(),
         dispute_flag: false,
+        trustline: usdc_token.address.clone(),
     };
 
     let result = engagement_client.try_change_escrow_properties(&escrow_properties_v2);
@@ -196,6 +202,7 @@ fn test_change_escrow_properties() {
         release_signer: new_release_signer.clone(),
         dispute_resolver: new_dispute_resolver.clone(),
         dispute_flag: false,
+        trustline: usdc_token.address,
     };
 
     engagement_client.change_escrow_properties(&escrow_properties_v3);
@@ -220,6 +227,7 @@ fn test_change_milestone_status_and_approved_flag() {
 
     let client_address = Address::generate(&env);
     let service_provider_address = Address::generate(&env);
+    let admin = Address::generate(&env);
     let platform_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
@@ -242,6 +250,7 @@ fn test_change_milestone_status_and_approved_flag() {
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
+    let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "test_engagement");
     let escrow_properties: Escrow = Escrow {
@@ -257,6 +266,7 @@ fn test_change_milestone_status_and_approved_flag() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        trustline: usdc_token.address.clone(),
     };
 
     engagement_client.initialize_escrow(&escrow_properties);
@@ -333,6 +343,7 @@ fn test_change_milestone_status_and_approved_flag() {
         release_signer: release_signer_address,
         dispute_resolver: dispute_resolver_address,
         dispute_flag: false,
+        trustline: usdc_token.address,
     };
 
     engagement_client.change_escrow_properties(&escrow_properties_v2);
@@ -404,6 +415,7 @@ fn test_distribute_escrow_earnings_successful_flow() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        trustline: usdc_token.address.clone(),
     };
 
     engagement_client.initialize_escrow(&escrow_properties);
@@ -412,7 +424,6 @@ fn test_distribute_escrow_earnings_successful_flow() {
     
     engagement_client.distribute_escrow_earnings(
         &release_signer_address,
-        &usdc_token.address,
         &trustless_work_address,
     );
 
@@ -424,7 +435,7 @@ fn test_distribute_escrow_earnings_successful_flow() {
 
     assert_eq!(
         usdc_token.balance(&trustless_work_address),
-        0,
+        trustless_work_commission,
         "Trustless Work commission amount is incorrect"
     );
 
@@ -483,6 +494,7 @@ fn test_distribute_escrow_earnings_no_milestones() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        trustline: usdc_token.address.clone(),
     };
 
     engagement_client.initialize_escrow(&escrow_properties);
@@ -490,7 +502,6 @@ fn test_distribute_escrow_earnings_no_milestones() {
     // Try to claim earnings with no milestones (should fail)
     let result = engagement_client.try_distribute_escrow_earnings(
         &release_signer_address,
-        &usdc_token.address,
         &platform_address, 
     );
     assert!(
@@ -543,6 +554,7 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        trustline: usdc_token.address.clone(),
     };
 
     engagement_client.initialize_escrow(&escrow_properties);
@@ -550,7 +562,6 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
     // Try to claim earnings with incomplete milestones (should fail)
     let result = engagement_client.try_distribute_escrow_earnings(
         &release_signer_address,
-        &usdc_token.address,
         &platform_address,
     );
     assert!(
@@ -566,6 +577,7 @@ fn test_dispute_flag_management() {
     env.mock_all_auths();
 
     let client_address = Address::generate(&env);
+    let admin = Address::generate(&env);
     let service_provider_address = Address::generate(&env);
     let platform_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
@@ -585,6 +597,7 @@ fn test_dispute_flag_management() {
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
+    let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "test_dispute");
     let escrow_properties: Escrow = Escrow {
@@ -600,6 +613,7 @@ fn test_dispute_flag_management() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        trustline: usdc_token.address.clone(),
     };
 
     engagement_client.initialize_escrow(&escrow_properties);
@@ -632,6 +646,7 @@ fn test_dispute_resolution_process() {
     env.mock_all_auths();
 
     let client_address = Address::generate(&env);
+    let admin = Address::generate(&env);
     let service_provider_address = Address::generate(&env);
     let platform_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
@@ -642,6 +657,7 @@ fn test_dispute_resolution_process() {
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
+    let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "test_resolution");
     let escrow_properties: Escrow = Escrow {
@@ -657,6 +673,7 @@ fn test_dispute_resolution_process() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        trustline: usdc_token.address.clone(),
     };
 
     engagement_client.initialize_escrow(&escrow_properties);
@@ -735,6 +752,7 @@ fn test_fund_escrow_successful_deposit() {
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
+    let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "12345");
     let escrow_properties: Escrow = Escrow {
@@ -750,11 +768,11 @@ fn test_fund_escrow_successful_deposit() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        trustline: usdc_token.address.clone(),
     };
 
     engagement_client.initialize_escrow(&escrow_properties);
 
-    let usdc_token = create_usdc_token(&env, &admin);
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
     usdc_token.mint(&release_signer_address, &(amount as i128));
 
@@ -762,7 +780,6 @@ fn test_fund_escrow_successful_deposit() {
 
     engagement_client.fund_escrow(
         &release_signer_address, 
-        &usdc_token.address, 
         &amount_to_deposit
     );
 
@@ -804,6 +821,7 @@ fn test_fund_escrow_fully_funded_error() {
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
+    let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "12345");
     let escrow_properties: Escrow = Escrow {
@@ -819,11 +837,11 @@ fn test_fund_escrow_fully_funded_error() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        trustline: usdc_token.address.clone(),
     };
 
     engagement_client.initialize_escrow(&escrow_properties);
 
-    let usdc_token = create_usdc_token(&env, &admin);
     let funded_amount: i128 = 100_000_000; 
     usdc_token.mint(&engagement_contract_address, &(funded_amount as i128));
     usdc_token.mint(&release_signer_address, &(amount as i128));
@@ -832,7 +850,6 @@ fn test_fund_escrow_fully_funded_error() {
 
     let result = engagement_client.try_fund_escrow(
         &release_signer_address, 
-        &usdc_token.address, 
         &amount_to_deposit
     );
 
@@ -871,6 +888,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
+    let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "12345");
     let escrow_properties: Escrow = Escrow {
@@ -886,11 +904,11 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        trustline: usdc_token.address.clone(),
     };
 
     engagement_client.initialize_escrow(&escrow_properties);
 
-    let usdc_token = create_usdc_token(&env, &admin);
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
 
     let signer_funds: i128 = 100_000; 
@@ -900,7 +918,6 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
 
     let result = engagement_client.try_fund_escrow(
         &release_signer_address, 
-        &usdc_token.address, 
         &amount_to_deposit
     );
 
@@ -940,6 +957,7 @@ fn test_fund_escrow_dispute_flag_error() {
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
+    let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "12321");
     let escrow_properties: Escrow = Escrow {
@@ -955,21 +973,16 @@ fn test_fund_escrow_dispute_flag_error() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address,
         dispute_flag: false,
+        trustline: usdc_token.address,
     };
 
     engagement_client.initialize_escrow(&escrow_properties);
-
-    let usdc_token = create_usdc_token(&env, &admin);
-    usdc_token.mint(&engagement_contract_address, &(amount as i128));
-    usdc_token.mint(&release_signer_address, &(amount as i128));
-
     engagement_client.change_dispute_flag();
 
     let amount_to_deposit: i128 = 80_000;
 
     let result = engagement_client.try_fund_escrow(
         &release_signer_address, 
-        &usdc_token.address, 
         &amount_to_deposit
     );
 
