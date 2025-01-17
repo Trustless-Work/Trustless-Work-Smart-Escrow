@@ -30,7 +30,6 @@ impl EscrowManager{
     pub fn fund_escrow(
         e: Env, 
         signer: Address, 
-        usdc_contract: Address, 
         amount_to_deposit: i128
     ) -> Result<(), ContractError> {
         signer.require_auth();
@@ -45,7 +44,7 @@ impl EscrowManager{
             return Err(ContractError::EscrowOpenedForDisputeResolution);
         }
     
-        let usdc_client = TokenClient::new(&e, &usdc_contract);
+        let usdc_client = TokenClient::new(&e, &escrow.trustline);
 
         let signer_balance = usdc_client.balance(&signer);
 
@@ -73,7 +72,6 @@ impl EscrowManager{
     pub fn distribute_escrow_earnings(
         e: Env, 
         release_signer: Address, 
-        usdc_contract: Address,
         trustless_work_address: Address
     ) -> Result<(), ContractError> {
         release_signer.require_auth();
@@ -100,7 +98,7 @@ impl EscrowManager{
             return Err(ContractError::InvalidState);
         }
     
-        let usdc_client = TokenClient::new(&e, &usdc_contract);
+        let usdc_client = TokenClient::new(&e, &escrow.trustline);
         let contract_address = e.current_contract_address();
     
         // Check the actual balance of the contract for this escrow

@@ -49,13 +49,11 @@ impl EngagementContract {
     pub fn fund_escrow(
         e: Env, 
         signer: Address, 
-        usdc_contract: Address, 
         amount_to_deposit: i128
     ) -> Result<(), ContractError> {
         EscrowManager::fund_escrow(
             e, 
             signer, 
-            usdc_contract, 
             amount_to_deposit
         )
     }
@@ -63,13 +61,11 @@ impl EngagementContract {
     pub fn distribute_escrow_earnings(
         e: Env, 
         release_signer: Address, 
-        usdc_contract: Address,
         trustless_work_address: Address
     ) -> Result<(), ContractError> {
         EscrowManager::distribute_escrow_earnings(
             e, 
             release_signer, 
-            usdc_contract,
             trustless_work_address
         )
     }
