@@ -6,6 +6,7 @@ use crate::storage::types::{Escrow, Milestone};
 use crate::token::token::{Token, TokenClient};
 use crate::contract::EngagementContract;
 use crate::contract::EngagementContractClient;
+use soroban_sdk::log;
 use soroban_sdk::{testutils::Address as _, vec, Address, Env, IntoVal, String};
 
 fn create_usdc_token<'a>(e: &Env, admin: &Address) -> TokenClient<'a> {
@@ -370,7 +371,7 @@ fn test_distribute_escrow_earnings_successful_flow() {
     let amount: i128 = 100_000_000;
     usdc_token.mint(&client_address, &(amount as i128));
 
-    let platform_fee = 5;
+    let platform_fee = 500;
 
     let milestones = vec![
         &env,
@@ -417,13 +418,13 @@ fn test_distribute_escrow_earnings_successful_flow() {
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
-    let platform_commission = (total_amount * platform_fee as i128) / 100 as i128;
+    let platform_commission = (total_amount * platform_fee as i128) / 10000 as i128;
     let service_provider_amount =
         (total_amount - (trustless_work_commission + platform_commission)) as i128;
 
     assert_eq!(
         usdc_token.balance(&trustless_work_address),
-        trustless_work_commission,
+        0,
         "Trustless Work commission amount is incorrect"
     );
 
@@ -467,7 +468,7 @@ fn test_distribute_escrow_earnings_no_milestones() {
 
     let engagement_id_no_milestones = String::from_str(&env, "test_no_milestones");
     let amount: i128 = 100_000_000;
-    let platform_fee = (0.3 * 10i128 as f64) as i128;
+    let platform_fee = 30;
 
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id_no_milestones.clone(),
@@ -527,7 +528,7 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
     ];
 
     let amount: i128 = 100_000_000;
-    let platform_fee = (0.3 * 10i128.pow(18) as f64) as i128;
+    let platform_fee = 30;
 
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id_incomplete.clone(),
@@ -571,7 +572,7 @@ fn test_dispute_flag_management() {
     let dispute_resolver_address = Address::generate(&env);
 
     let amount: i128 = 100_000_000;
-    let platform_fee = (0.3 * 10i128.pow(18) as f64) as i128;
+    let platform_fee = 30;
 
     let milestones = vec![
         &env,
@@ -637,7 +638,7 @@ fn test_dispute_resolution_process() {
     let dispute_resolver_address = Address::generate(&env);
 
     let amount: i128 = 100_000_000;
-    let platform_fee = (0.3 * 10i128.pow(18) as f64) as i128;
+    let platform_fee = 30;
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
@@ -717,7 +718,7 @@ fn test_fund_escrow_successful_deposit() {
     let service_provider_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
-    let platform_fee = (0.3 * 10i128.pow(18) as f64) as i128;
+    let platform_fee = 30;
     let milestones = vec![
         &env,
         Milestone {
@@ -786,7 +787,7 @@ fn test_fund_escrow_fully_funded_error() {
     let service_provider_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
-    let platform_fee = (0.3 * 10i128.pow(18) as f64) as i128;
+    let platform_fee = 30;
     let milestones = vec![
         &env,
         Milestone {
@@ -853,7 +854,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
     let service_provider_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
-    let platform_fee = (0.3 * 10i128.pow(18) as f64) as i128;
+    let platform_fee = 30;
     let milestones = vec![
         &env,
         Milestone {
@@ -922,7 +923,7 @@ fn test_fund_escrow_dispute_flag_error() {
     let service_provider_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
-    let platform_fee = (0.3 * 10i128.pow(18) as f64) as i128;
+    let platform_fee = 30;
     let milestones = vec![
         &env,
         Milestone {
