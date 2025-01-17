@@ -114,7 +114,7 @@ impl EscrowManager{
     
         let total_amount = escrow.amount as i128;
         let trustless_work_commission = ((total_amount * 30) / 10000) as i128; 
-        let platform_commission = (total_amount * platform_fee_percentage) / 100 as i128;
+        let platform_commission = (total_amount * platform_fee_percentage) / 10000 as i128;
             
         usdc_client.transfer(
             &contract_address, 
