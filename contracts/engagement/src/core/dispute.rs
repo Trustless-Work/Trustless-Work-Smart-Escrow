@@ -13,7 +13,6 @@ impl DisputeManager {
     pub fn resolving_disputes(
         e: Env,
         dispute_resolver: Address,
-        usdc_contract: Address,
         client_funds: i128,
         service_provider_funds: i128
     ) -> Result<(), ContractError> {
@@ -33,7 +32,7 @@ impl DisputeManager {
             return Err(ContractError::EscrowNotInDispute);
         }
  
-        let usdc_client = TokenClient::new(&e, &usdc_contract);
+        let usdc_client = TokenClient::new(&e, &escrow.trustline);
         let contract_balance = usdc_client.balance(&e.current_contract_address());
 
         let total_funds = client_funds + service_provider_funds;

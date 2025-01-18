@@ -124,14 +124,12 @@ impl EngagementContract {
     pub fn resolving_disputes(
         e: Env,
         dispute_resolver: Address,
-        usdc_contract: Address,
         client_funds: i128,
         service_provider_funds: i128
     ) -> Result<(), ContractError> {
         DisputeManager::resolving_disputes(
             e,
             dispute_resolver,
-            usdc_contract,
             client_funds,
             service_provider_funds
         )
