@@ -678,26 +678,16 @@ fn test_dispute_resolution_process() {
 
     engagement_client.initialize_escrow(&escrow_properties);
 
-    let token_admin = Address::generate(&env);
-    let token_contract = env.register_contract(None, crate::token::token::Token);
-    let token_client = TokenClient::new(&env, &token_contract);
-
-    token_client.initialize(
-        &token_admin,
-        &9,
-        &String::from_str(&env, "USDC"),
-        &String::from_str(&env, "USDC")
-    );
-
-    token_client.mint(&token_admin, &(amount as i128));
-    token_client.transfer(&token_admin, &engagement_contract_address, &(amount as i128));
+    usdc_token.mint(&admin, &(amount as i128));
+    usdc_token.transfer(&admin, &engagement_contract_address, &(amount as i128));
 
     // Verify initial state
-    let escrow_balance = token_client.balance(&engagement_contract_address);
+    let escrow_balance = usdc_token.balance(&engagement_contract_address);
     assert_eq!(escrow_balance, amount as i128);
 
     // Change dispute approved_flag
     engagement_client.change_dispute_flag( );
+    // log!(&env, "ESCROW BALANCE!!!!!", escrow_balance);
 
     // Verify approved_flag changed
     let disputed_escrow = engagement_client.get_escrow();
@@ -709,18 +699,17 @@ fn test_dispute_resolution_process() {
 
     engagement_client.resolving_disputes(
         &dispute_resolver_address,
-        &token_contract,
         &client_amount,
         &provider_amount
     );
 
     // Verify final state
-    let final_escrow_balance = token_client.balance(&engagement_contract_address);
+    let final_escrow_balance = usdc_token.balance(&engagement_contract_address);
     assert_eq!(final_escrow_balance, 0);
 
     // Verify token balances
-    assert_eq!(token_client.balance(&client_address), client_amount as i128);
-    assert_eq!(token_client.balance(&service_provider_address), provider_amount as i128);
+    assert_eq!(usdc_token.balance(&client_address), client_amount as i128);
+    assert_eq!(usdc_token.balance(&service_provider_address), provider_amount as i128);
 }
 
 #[test]
