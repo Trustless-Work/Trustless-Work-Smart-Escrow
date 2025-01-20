@@ -44,15 +44,11 @@ pub struct AllowanceDataKey {
     pub spender: Address,
 }
 
-#[derive(Clone)]
 #[contracttype]
-pub struct User {
-    pub id: u64,
-    pub user: Address,
-    pub name: String,
-    pub email: String,
-    pub registered: bool,
-    pub timestamp: u64,
+#[derive(Clone, Debug)]
+pub struct AddressBalance {
+    pub address: Address,
+    pub balance: i128,
 }
 
 #[derive(Clone)]
