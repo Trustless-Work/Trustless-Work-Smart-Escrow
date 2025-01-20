@@ -1,11 +1,9 @@
 use soroban_sdk::{
     contract, contractimpl, Address, BytesN, Env, String, Symbol, Val, Vec
 };
-use soroban_sdk::token::Client as TokenClient;
 
-use crate::storage::types::Escrow;
+use crate::storage::types::{AddressBalance, Escrow};
 use crate::error::ContractError;
-use crate::events::balance_retrieved_event;
 use crate::core::{DisputeManager, EscrowManager, MilestoneManager};
 
 #[contract]
@@ -81,8 +79,8 @@ impl EngagementContract {
         EscrowManager::get_escrow(e)
     }
 
-    pub fn get_escrow_balance(e: Env) -> Result<i128, ContractError> {
-        EscrowManager::get_escrow_balance(e)
+    pub fn get_multiple_escrow_balances(e: Env, addresses: Vec<Address>) -> Result<Vec<AddressBalance>, ContractError> {
+        EscrowManager::get_multiple_escrow_balances(e, addresses)
     }
 
     ////////////////////////

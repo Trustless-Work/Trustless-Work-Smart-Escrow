@@ -1,7 +1,7 @@
-use soroban_sdk::{Address, Env};
+use soroban_sdk::{Address, Env, Symbol, Val, Vec};
 use soroban_sdk::token::Client as TokenClient;
 
-use crate::storage::types::{Escrow, DataKey};
+use crate::storage::types::{Escrow, DataKey, AddressBalance};
 use crate::error::ContractError;
 use crate::events::escrows_by_engagement_id;
 
@@ -167,16 +167,41 @@ impl EscrowManager{
         Ok(())
     }
 
-    pub fn get_escrow_balance(e: Env) -> Result<i128, ContractError> {
-        let escrow_result = EscrowManager::get_escrow(e.clone());
-        let escrow = match escrow_result {
-            Ok(esc) => esc,
-            Err(err) => return Err(err),
-        };
-        let usdc_client = TokenClient::new(&e, &escrow.trustline);
-        let address = e.current_contract_address();
-        let balance = usdc_client.balance(&address);
-        Ok(balance)
+    pub fn get_multiple_escrow_balances(
+        e: Env,
+        addresses: Vec<Address>
+    ) -> Result<Vec<AddressBalance>, ContractError> {
+        let mut balances: Vec<AddressBalance> = Vec::new(&e);
+        
+        for address in addresses.iter() {
+            let escrow_result = EscrowManager::get_escrow_for_address(e.clone(), &address);
+            let escrow = match escrow_result {
+                Ok(esc) => esc,
+                Err(err) => return Err(err),
+            };
+    
+            let token_client = TokenClient::new(&e, &escrow.trustline);
+            let balance = token_client.balance(&address);
+    
+            balances.push_back(AddressBalance {
+                address: address.clone(),
+                balance,
+            });
+        }
+        
+        Ok(balances)
+    }
+    
+    pub fn get_escrow_for_address(e: Env, contract_address: &Address) -> Result<Escrow, ContractError> {
+        let args: Vec<Val> = Vec::new(&e);
+
+        let result = e.invoke_contract::<Escrow>(
+            contract_address,
+            &Symbol::new(&e, "get_escrow"),
+            args.try_into().unwrap()
+        );
+
+        Ok(result)
     }
 
     pub fn get_escrow(e: Env) -> Result<Escrow, ContractError> {
