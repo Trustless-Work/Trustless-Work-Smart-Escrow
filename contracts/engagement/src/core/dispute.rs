@@ -33,10 +33,10 @@ impl DisputeManager {
         }
  
         let usdc_client = TokenClient::new(&e, &escrow.trustline);
-        let contract_balance = usdc_client.balance(&e.current_contract_address());
+        let escrow_balance = usdc_client.balance(&e.current_contract_address());
 
         let total_funds = client_funds + service_provider_funds;
-        if total_funds > contract_balance {
+        if total_funds > escrow_balance {
             return Err(ContractError::InsufficientFundsForResolution);
         }
     
