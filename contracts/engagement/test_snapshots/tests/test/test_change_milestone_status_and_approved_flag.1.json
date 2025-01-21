@@ -159,6 +159,14 @@
                     },
                     {
                       "key": {
+                        "symbol": "release_flag"
+                      },
+                      "val": {
+                        "bool": false
+                      }
+                    },
+                    {
+                      "key": {
                         "symbol": "release_signer"
                       },
                       "val": {
@@ -419,6 +427,14 @@
                                   "hi": 0,
                                   "lo": 300000000000000000
                                 }
+                              }
+                            },
+                            {
+                              "key": {
+                                "symbol": "release_flag"
+                              },
+                              "val": {
+                                "bool": false
                               }
                             },
                             {
@@ -785,6 +801,14 @@
                 },
                 {
                   "key": {
+                    "symbol": "release_flag"
+                  },
+                  "val": {
+                    "bool": false
+                  }
+                },
+                {
+                  "key": {
                     "symbol": "release_signer"
                   },
                   "val": {
@@ -972,6 +996,14 @@
                       "hi": 0,
                       "lo": 300000000000000000
                     }
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "release_flag"
+                  },
+                  "val": {
+                    "bool": false
                   }
                 },
                 {
@@ -1204,6 +1236,14 @@
                           "hi": 0,
                           "lo": 300000000000000000
                         }
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "release_flag"
+                      },
+                      "val": {
+                        "bool": false
                       }
                     },
                     {
@@ -1446,6 +1486,14 @@
                 },
                 {
                   "key": {
+                    "symbol": "release_flag"
+                  },
+                  "val": {
+                    "bool": false
+                  }
+                },
+                {
+                  "key": {
                     "symbol": "release_signer"
                   },
                   "val": {
@@ -1674,6 +1722,14 @@
                           "hi": 0,
                           "lo": 300000000000000000
                         }
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "release_flag"
+                      },
+                      "val": {
+                        "bool": false
                       }
                     },
                     {
@@ -1912,6 +1968,14 @@
                       "hi": 0,
                       "lo": 300000000000000000
                     }
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "release_flag"
+                  },
+                  "val": {
+                    "bool": false
                   }
                 },
                 {
@@ -2601,6 +2665,14 @@
                 },
                 {
                   "key": {
+                    "symbol": "release_flag"
+                  },
+                  "val": {
+                    "bool": false
+                  }
+                },
+                {
+                  "key": {
                     "symbol": "release_signer"
                   },
                   "val": {
@@ -2733,6 +2805,14 @@
                           "hi": 0,
                           "lo": 300000000000000000
                         }
+                      }
+                    },
+                    {
+                      "key": {
+                        "symbol": "release_flag"
+                      },
+                      "val": {
+                        "bool": false
                       }
                     },
                     {

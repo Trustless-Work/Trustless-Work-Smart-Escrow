@@ -304,6 +304,14 @@
                             },
                             {
                               "key": {
+                                "symbol": "release_flag"
+                              },
+                              "val": {
+                                "bool": false
+                              }
+                            },
+                            {
+                              "key": {
                                 "symbol": "release_signer"
                               },
                               "val": {
@@ -762,6 +770,14 @@
                 },
                 {
                   "key": {
+                    "symbol": "release_flag"
+                  },
+                  "val": {
+                    "bool": false
+                  }
+                },
+                {
+                  "key": {
                     "symbol": "release_signer"
                   },
                   "val": {
@@ -949,6 +965,14 @@
                       "hi": 0,
                       "lo": 30
                     }
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "release_flag"
+                  },
+                  "val": {
+                    "bool": false
                   }
                 },
                 {
