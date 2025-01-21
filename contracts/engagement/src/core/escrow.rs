@@ -77,7 +77,7 @@ impl EscrowManager{
         release_signer.require_auth();
         
         let escrow_result = Self::get_escrow(e.clone());
-        let escrow = match escrow_result {
+        let mut escrow = match escrow_result {
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
@@ -133,6 +133,8 @@ impl EscrowManager{
             &escrow.service_provider, 
             &service_provider_amount
         );
+
+        escrow.release_flag = true;
     
         e.storage().instance().set(&DataKey::Escrow, &escrow);
     
