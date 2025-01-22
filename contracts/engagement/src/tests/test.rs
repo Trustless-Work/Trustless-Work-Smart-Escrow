@@ -33,11 +33,17 @@ fn test_initialize_excrow() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
     ];
 
@@ -101,11 +107,17 @@ fn test_change_escrow_properties() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
     ];
 
@@ -151,16 +163,25 @@ fn test_change_escrow_properties() {
             description: String::from_str(&env, "Updated first milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Updated second milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "New third milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
     ];
 
@@ -240,11 +261,17 @@ fn test_change_milestone_status_and_approved_flag() {
             description: String::from_str(&env, "Milestone 1"),
             status: String::from_str(&env, "in-progress"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Milestone 2"),
             status: String::from_str(&env, "in-progress"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
     ];
 
@@ -390,11 +417,17 @@ fn test_distribute_escrow_earnings_successful_flow() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Completed"),
             approved_flag: true,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Completed"),
             approved_flag: true,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
     ];
 
@@ -535,6 +568,9 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
             description: String::from_str(&env, "Incomplete milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
     ];
 
@@ -592,6 +628,9 @@ fn test_dispute_flag_management() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         }
     ];
 
@@ -687,7 +726,6 @@ fn test_dispute_resolution_process() {
 
     // Change dispute approved_flag
     engagement_client.change_dispute_flag( );
-    // log!(&env, "ESCROW BALANCE!!!!!", escrow_balance);
 
     // Verify approved_flag changed
     let disputed_escrow = engagement_client.get_escrow();
@@ -731,11 +769,17 @@ fn test_fund_escrow_successful_deposit() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
     ];
 
@@ -800,11 +844,17 @@ fn test_fund_escrow_fully_funded_error() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
     ];
 
@@ -867,11 +917,17 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
     ];
 
@@ -936,11 +992,17 @@ fn test_fund_escrow_dispute_flag_error() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
+            amount: 100_000,
+            dispute_flag: false,
+            release_flag: false,
         },
     ];
 
