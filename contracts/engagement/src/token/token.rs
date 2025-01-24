@@ -41,7 +41,7 @@ impl Token {
     pub fn mint(e: Env, to: Address, amount: i128) {
         check_nonnegative_amount(amount);
         
-        let admin = read_administrator(&e);
+        let admin = read_administrator(&e).expect("Administrator address not found");
         admin.require_auth();
 
         e.storage()
