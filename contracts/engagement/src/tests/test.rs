@@ -661,6 +661,7 @@ fn test_dispute_resolution_process() {
     let platform_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
+    let trustless_work_address = Address::generate(&env);
 
     let amount: i128 = 100_000_000;
     let platform_fee = 30;
@@ -711,16 +712,24 @@ fn test_dispute_resolution_process() {
     engagement_client.resolving_disputes(
         &dispute_resolver_address,
         &client_amount,
-        &provider_amount
+        &provider_amount,
+        &trustless_work_address
     );
 
-    // Verify final state
-    let final_escrow_balance = usdc_token.balance(&engagement_contract_address);
-    assert_eq!(final_escrow_balance, 0);
+    let trustless_commission = (amount  * (3/1000)) as i128;
+    let expected_platform_fee = platform_fee;
+    let client_deductions: i128 = client_amount - platform_fee - (3 / 1000 * client_amount);
+    let service_provider_deductions: i128 = provider_amount - platform_fee - (3 / 1000 * provider_amount);
 
-    // Verify token balances
-    assert_eq!(usdc_token.balance(&client_address), client_amount as i128);
-    assert_eq!(usdc_token.balance(&service_provider_address), provider_amount as i128);
+    // Calculate expected final amounts after commission deduction
+    let expected_client_amount = client_amount - client_deductions;
+    let expected_service_provider_amount = provider_amount - service_provider_deductions;
+
+    //Verify token balances
+    assert_eq!(usdc_token.balance(&client_address), expected_client_amount as i128);
+    assert_eq!(usdc_token.balance(&service_provider_address), expected_service_provider_amount as i128);
+    assert_eq!(usdc_token.balance(&trustless_work_address), trustless_commission);
+    assert_eq!(usdc_token.balance(&platform_address), expected_platform_fee);
 }
 
 #[test]

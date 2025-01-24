@@ -35,6 +35,8 @@ pub enum ContractError {
     InvalidState = 29,
     EscrowOpenedForDisputeResolution = 30,
     AmountToDepositGreatherThanEscrowAmount = 31,
+    InsufficientClientFundsForCommissions = 32,
+    InsufficientServiceProviderFundsForCommissions = 33,
 
 }
 
@@ -72,6 +74,9 @@ impl fmt::Display for ContractError {
             ContractError::InvalidState => write!(f, "Invalid state"),
             ContractError::EscrowOpenedForDisputeResolution => write!(f, "Escrow has been opened for dispute resolution"),
             ContractError::AmountToDepositGreatherThanEscrowAmount => write!(f, "Amount to deposit is greater than the escrow amount"),
+            ContractError::InsufficientClientFundsForCommissions => write!(f, "Insufficient client funds for commissions"),
+            ContractError::InsufficientServiceProviderFundsForCommissions => write!(f, "Insufficient Service Provider funds for commissions"),
+            
         }
     }
 }
