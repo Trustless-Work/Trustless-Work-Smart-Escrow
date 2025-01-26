@@ -702,7 +702,7 @@ fn test_dispute_resolution_process() {
         platform_address: platform_address.clone(),
         amount: amount,
         platform_fee: platform_fee,
-        milestones: vec![&env],
+        milestones: milestones,
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
@@ -738,22 +738,18 @@ fn test_dispute_resolution_process() {
         &trustless_work_address
     );
 
-    // Calculate expected fees
     let expected_tw_fee = (total_amount * 30) / 10000; // 0.3%
     let expected_platform_fee = (total_amount * platform_fee) / 10000;
 
-    // Calculate expected amounts after fees
     let expected_client = client_amount - (client_amount * (expected_tw_fee + expected_platform_fee)) / total_amount;
     let expected_provider = provider_amount - (provider_amount * (expected_tw_fee + expected_platform_fee)) / total_amount;
 
-    // Verify balances
     assert_eq!(usdc_token.balance(&engagement_contract_address), 0);
     assert_eq!(usdc_token.balance(&trustless_work_address), expected_tw_fee);
     assert_eq!(usdc_token.balance(&platform_address), expected_platform_fee);
     assert_eq!(usdc_token.balance(&client_address), expected_client);
     assert_eq!(usdc_token.balance(&service_provider_address), expected_provider);
 
-    // Verify milestone status
     let final_escrow = engagement_client.get_escrow();
     let resolved_milestone = final_escrow.milestones.get(0).unwrap();
     assert_eq!(resolved_milestone.status, String::from_str(&env, "resolved"));
