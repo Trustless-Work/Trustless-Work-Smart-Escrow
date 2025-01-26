@@ -2,11 +2,12 @@
 
 extern crate std;
 
-use crate::storage::types::{Escrow, Milestone};
-use crate::token::token::{Token, TokenClient};
+use crate::storage::types::{ Escrow, Milestone };
+use crate::token::token::{ Token, TokenClient };
 use crate::contract::EngagementContract;
 use crate::contract::EngagementContractClient;
-use soroban_sdk::{testutils::Address as _, vec, Address, Env, IntoVal, String};
+use soroban_sdk::Vec;
+use soroban_sdk::{ testutils::Address as _, vec, Address, Env, IntoVal, String };
 
 fn create_usdc_token<'a>(e: &Env, admin: &Address) -> TokenClient<'a> {
     let token = TokenClient::new(e, &e.register_contract(None, Token {}));
@@ -44,7 +45,7 @@ fn test_initialize_excrow() {
             amount: 100_000,
             dispute_flag: false,
             release_flag: false,
-        },
+        }
     ];
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
@@ -99,7 +100,7 @@ fn test_change_escrow_properties() {
     let dispute_resolver_address = Address::generate(&env);
 
     let amount: i128 = 100_000_000;
-    let platform_fee = (0.3 * 10i128.pow(18) as f64) as i128;
+    let platform_fee = (0.3 * ((10i128).pow(18) as f64)) as i128;
 
     let initial_milestones = vec![
         &env,
@@ -118,7 +119,7 @@ fn test_change_escrow_properties() {
             amount: 100_000,
             dispute_flag: false,
             release_flag: false,
-        },
+        }
     ];
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
@@ -155,7 +156,7 @@ fn test_change_escrow_properties() {
     let new_release_signer = Address::generate(&env);
     let new_dispute_resolver = Address::generate(&env);
     let new_amount: i128 = 200_000_000;
-    let new_platform_fee = (0.5 * 10i128.pow(18) as f64) as i128;
+    let new_platform_fee = (0.5 * ((10i128).pow(18) as f64)) as i128;
 
     let new_milestones = vec![
         &env,
@@ -182,7 +183,7 @@ fn test_change_escrow_properties() {
             amount: 100_000,
             dispute_flag: false,
             release_flag: false,
-        },
+        }
     ];
 
     // Test unauthorized access (should fail)
@@ -253,7 +254,7 @@ fn test_change_milestone_status_and_approved_flag() {
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
     let amount: i128 = 100_000_000;
-    let platform_fee = (0.3 * 10i128.pow(18) as f64) as i128;
+    let platform_fee = (0.3 * ((10i128).pow(18) as f64)) as i128;
 
     let initial_milestones = vec![
         &env,
@@ -272,7 +273,7 @@ fn test_change_milestone_status_and_approved_flag() {
             amount: 100_000,
             dispute_flag: false,
             release_flag: false,
-        },
+        }
     ];
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
@@ -303,7 +304,7 @@ fn test_change_milestone_status_and_approved_flag() {
     engagement_client.change_milestone_status(
         &(0 as i128), // Milestone index
         &new_status,
-        &service_provider_address,
+        &service_provider_address
     );
 
     // Verify milestone status change
@@ -311,7 +312,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert_eq!(updated_escrow.milestones.get(0).unwrap().status, new_status);
 
     // Change milestone approved_flag (valid case)
-    engagement_client.change_milestone_flag( &(0 as i128), &true, &client_address);
+    engagement_client.change_milestone_flag(&(0 as i128), &true, &client_address);
 
     // Verify milestone approved_flag change
     let final_escrow = engagement_client.get_escrow();
@@ -325,7 +326,7 @@ fn test_change_milestone_status_and_approved_flag() {
     let result = engagement_client.try_change_milestone_status(
         &invalid_index,
         &new_status,
-        &service_provider_address,
+        &service_provider_address
     );
     assert!(result.is_err());
 
@@ -333,7 +334,7 @@ fn test_change_milestone_status_and_approved_flag() {
     let result = engagement_client.try_change_milestone_flag(
         &invalid_index,
         &true,
-        &client_address,
+        &client_address
     );
     assert!(result.is_err());
 
@@ -344,7 +345,7 @@ fn test_change_milestone_status_and_approved_flag() {
     let result = engagement_client.try_change_milestone_status(
         &(0 as i128),
         &new_status,
-        &unauthorized_address,
+        &unauthorized_address
     );
     assert!(result.is_err());
 
@@ -352,7 +353,7 @@ fn test_change_milestone_status_and_approved_flag() {
     let result = engagement_client.try_change_milestone_flag(
         &(0 as i128),
         &true,
-        &unauthorized_address,
+        &unauthorized_address
     );
     assert!(result.is_err());
 
@@ -378,16 +379,12 @@ fn test_change_milestone_status_and_approved_flag() {
     let result = engagement_client.try_change_milestone_status(
         &(0 as i128),
         &new_status,
-        &service_provider_address,
+        &service_provider_address
     );
     assert!(result.is_err());
 
     // Test for `change_approved_flag` on escrow with no milestones
-    let result = engagement_client.try_change_milestone_flag(
-        &(0 as i128),
-        &true,
-        &client_address,
-    );
+    let result = engagement_client.try_change_milestone_flag(&(0 as i128), &true, &client_address);
     assert!(result.is_err());
 }
 
@@ -428,7 +425,7 @@ fn test_distribute_escrow_earnings_successful_flow() {
             amount: 100_000,
             dispute_flag: false,
             release_flag: false,
-        },
+        }
     ];
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
@@ -454,17 +451,14 @@ fn test_distribute_escrow_earnings_successful_flow() {
     engagement_client.initialize_escrow(&escrow_properties);
 
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
-    
-    engagement_client.distribute_escrow_earnings(
-        &release_signer_address,
-        &trustless_work_address,
-    );
+
+    engagement_client.distribute_escrow_earnings(&release_signer_address, &trustless_work_address);
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
-    let platform_commission = (total_amount * platform_fee as i128) / 10000 as i128;
-    let service_provider_amount =
-        (total_amount - (trustless_work_commission + platform_commission)) as i128;
+    let platform_commission = (total_amount * (platform_fee as i128)) / (10000 as i128);
+    let service_provider_amount = (total_amount -
+        (trustless_work_commission + platform_commission)) as i128;
 
     assert_eq!(
         usdc_token.balance(&trustless_work_address),
@@ -535,12 +529,9 @@ fn test_distribute_escrow_earnings_no_milestones() {
     // Try to claim earnings with no milestones (should fail)
     let result = engagement_client.try_distribute_escrow_earnings(
         &release_signer_address,
-        &platform_address, 
+        &platform_address
     );
-    assert!(
-        result.is_err(),
-        "Should fail when no milestones are defined"
-    );
+    assert!(result.is_err(), "Should fail when no milestones are defined");
 }
 
 // Scenario 2: Milestones incomplete
@@ -562,17 +553,14 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
 
     let engagement_id_incomplete = String::from_str(&env, "test_incomplete_milestones");
-    let milestones_incomplete = vec![
-        &env,
-        Milestone {
-            description: String::from_str(&env, "Incomplete milestone"),
-            status: String::from_str(&env, "Pending"),
-            approved_flag: false,
-            amount: 100_000,
-            dispute_flag: false,
-            release_flag: false,
-        },
-    ];
+    let milestones_incomplete = vec![&env, Milestone {
+        description: String::from_str(&env, "Incomplete milestone"),
+        status: String::from_str(&env, "Pending"),
+        approved_flag: false,
+        amount: 100_000,
+        dispute_flag: false,
+        release_flag: false,
+    }];
 
     let amount: i128 = 100_000_000;
     let platform_fee = 30;
@@ -598,14 +586,10 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
     // Try to claim earnings with incomplete milestones (should fail)
     let result = engagement_client.try_distribute_escrow_earnings(
         &release_signer_address,
-        &platform_address,
+        &platform_address
     );
-    assert!(
-        result.is_err(),
-        "Should fail when milestones are not completed"
-    );
+    assert!(result.is_err(), "Should fail when milestones are not completed");
 }
-
 
 #[test]
 fn test_dispute_flag_management() {
@@ -622,17 +606,14 @@ fn test_dispute_flag_management() {
     let amount: i128 = 100_000_000;
     let platform_fee = 30;
 
-    let milestones = vec![
-        &env,
-        Milestone {
-            description: String::from_str(&env, "First milestone"),
-            status: String::from_str(&env, "Pending"),
-            approved_flag: false,
-            amount: 100_000,
-            dispute_flag: false,
-            release_flag: false,
-        }
-    ];
+    let milestones = vec![&env, Milestone {
+        description: String::from_str(&env, "First milestone"),
+        status: String::from_str(&env, "Pending"),
+        approved_flag: false,
+        amount: 100_000,
+        dispute_flag: false,
+        release_flag: false,
+    }];
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
@@ -678,7 +659,6 @@ fn test_dispute_flag_management() {
     assert!(result.is_err());
 }
 
-
 #[test]
 fn test_dispute_resolution_process() {
     let env = Env::default();
@@ -690,6 +670,7 @@ fn test_dispute_resolution_process() {
     let platform_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
+    let trustless_work_address = Address::generate(&env);
 
     let amount: i128 = 100_000_000;
     let platform_fee = 30;
@@ -697,6 +678,19 @@ fn test_dispute_resolution_process() {
     let engagement_contract_address = env.register_contract(None, EngagementContract);
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
     let usdc_token = create_usdc_token(&env, &admin);
+
+    // Create milestone
+    let milestone = Milestone {
+        description: String::from_str(&env, "Test Milestone"),
+        status: String::from_str(&env, "in_progress"),
+        approved_flag: false,
+        amount: amount,
+        dispute_flag: false,
+        release_flag: false,
+    };
+
+    let mut milestones = Vec::new(&env);
+    milestones.push_back(milestone);
 
     let engagement_id = String::from_str(&env, "test_resolution");
     let escrow_properties: Escrow = Escrow {
@@ -725,7 +719,7 @@ fn test_dispute_resolution_process() {
     assert_eq!(escrow_balance, amount as i128);
 
     // Change dispute approved_flag
-    engagement_client.change_dispute_flag( );
+    engagement_client.change_dispute_flag();
 
     // Verify approved_flag changed
     let disputed_escrow = engagement_client.get_escrow();
@@ -734,20 +728,36 @@ fn test_dispute_resolution_process() {
     // Resolve dispute
     let client_amount: i128 = 40_000_000;
     let provider_amount: i128 = 60_000_000;
+    let total_amount = client_amount + provider_amount;
 
-    engagement_client.resolving_disputes(
+    engagement_client.resolving_milestone_disputes(
         &dispute_resolver_address,
+        &0, // milestone_index
         &client_amount,
-        &provider_amount
+        &provider_amount,
+        &trustless_work_address
     );
 
-    // Verify final state
-    let final_escrow_balance = usdc_token.balance(&engagement_contract_address);
-    assert_eq!(final_escrow_balance, 0);
+    // Calculate expected fees
+    let expected_tw_fee = (total_amount * 30) / 10000; // 0.3%
+    let expected_platform_fee = (total_amount * platform_fee) / 10000;
 
-    // Verify token balances
-    assert_eq!(usdc_token.balance(&client_address), client_amount as i128);
-    assert_eq!(usdc_token.balance(&service_provider_address), provider_amount as i128);
+    // Calculate expected amounts after fees
+    let expected_client = client_amount - (client_amount * (expected_tw_fee + expected_platform_fee)) / total_amount;
+    let expected_provider = provider_amount - (provider_amount * (expected_tw_fee + expected_platform_fee)) / total_amount;
+
+    // Verify balances
+    assert_eq!(usdc_token.balance(&engagement_contract_address), 0);
+    assert_eq!(usdc_token.balance(&trustless_work_address), expected_tw_fee);
+    assert_eq!(usdc_token.balance(&platform_address), expected_platform_fee);
+    assert_eq!(usdc_token.balance(&client_address), expected_client);
+    assert_eq!(usdc_token.balance(&service_provider_address), expected_provider);
+
+    // Verify milestone status
+    let final_escrow = engagement_client.get_escrow();
+    let resolved_milestone = final_escrow.milestones.get(0).unwrap();
+    assert_eq!(resolved_milestone.status, String::from_str(&env, "resolved"));
+
 }
 
 #[test]
@@ -780,7 +790,7 @@ fn test_fund_escrow_successful_deposit() {
             amount: 100_000,
             dispute_flag: false,
             release_flag: false,
-        },
+        }
     ];
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
@@ -811,10 +821,7 @@ fn test_fund_escrow_successful_deposit() {
 
     let amount_to_deposit: i128 = 100_000;
 
-    engagement_client.fund_escrow(
-        &release_signer_address, 
-        &amount_to_deposit
-    );
+    engagement_client.fund_escrow(&release_signer_address, &amount_to_deposit);
 
     let expected_result_amount: i128 = 100_100_000;
 
@@ -855,7 +862,7 @@ fn test_fund_escrow_fully_funded_error() {
             amount: 100_000,
             dispute_flag: false,
             release_flag: false,
-        },
+        }
     ];
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
@@ -881,21 +888,15 @@ fn test_fund_escrow_fully_funded_error() {
 
     engagement_client.initialize_escrow(&escrow_properties);
 
-    let funded_amount: i128 = 100_000_000; 
+    let funded_amount: i128 = 100_000_000;
     usdc_token.mint(&engagement_contract_address, &(funded_amount as i128));
     usdc_token.mint(&release_signer_address, &(amount as i128));
 
     let amount_to_deposit: i128 = 100_000;
 
-    let result = engagement_client.try_fund_escrow(
-        &release_signer_address, 
-        &amount_to_deposit
-    );
+    let result = engagement_client.try_fund_escrow(&release_signer_address, &amount_to_deposit);
 
-    assert!(
-        result.is_err(),
-        "Should fail when the escrow is fully funded"
-    );
+    assert!(result.is_err(), "Should fail when the escrow is fully funded");
 }
 
 #[test]
@@ -928,7 +929,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
             amount: 100_000,
             dispute_flag: false,
             release_flag: false,
-        },
+        }
     ];
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
@@ -956,22 +957,15 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
 
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
 
-    let signer_funds: i128 = 100_000; 
+    let signer_funds: i128 = 100_000;
     usdc_token.mint(&release_signer_address, &(signer_funds as i128));
 
     let amount_to_deposit: i128 = 180_000;
 
-    let result = engagement_client.try_fund_escrow(
-        &release_signer_address, 
-        &amount_to_deposit
-    );
+    let result = engagement_client.try_fund_escrow(&release_signer_address, &amount_to_deposit);
 
-    assert!(
-        result.is_err(),
-        "Should fail when the signer has insufficient funds"
-    );
+    assert!(result.is_err(), "Should fail when the signer has insufficient funds");
 }
-
 
 #[test]
 fn test_fund_escrow_dispute_flag_error() {
@@ -1003,7 +997,7 @@ fn test_fund_escrow_dispute_flag_error() {
             amount: 100_000,
             dispute_flag: false,
             release_flag: false,
-        },
+        }
     ];
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
@@ -1032,13 +1026,7 @@ fn test_fund_escrow_dispute_flag_error() {
 
     let amount_to_deposit: i128 = 80_000;
 
-    let result = engagement_client.try_fund_escrow(
-        &release_signer_address, 
-        &amount_to_deposit
-    );
+    let result = engagement_client.try_fund_escrow(&release_signer_address, &amount_to_deposit);
 
-    assert!(
-        result.is_err(),
-        "Should fail when the dispute approved_flag is true"
-    );
+    assert!(result.is_err(), "Should fail when the dispute approved_flag is true");
 }
