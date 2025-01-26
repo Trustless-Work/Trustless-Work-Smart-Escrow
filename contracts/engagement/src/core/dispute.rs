@@ -10,11 +10,13 @@ pub struct DisputeManager;
 
 impl DisputeManager {
     
-    pub fn resolving_disputes(
+    pub fn resolving_milestone_disputes(
         e: Env,
         dispute_resolver: Address,
+        milestone_index: u32,
         client_funds: i128,
-        service_provider_funds: i128
+        service_provider_funds: i128,
+        trustless_work_address: Address
     ) -> Result<(), ContractError> {
         dispute_resolver.require_auth();
     
