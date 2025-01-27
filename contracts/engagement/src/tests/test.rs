@@ -454,6 +454,8 @@ fn test_release_milestone_payment_successful() {
     engagement_client.initialize_escrow(&escrow_properties);
 
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
+
+    let initial_contract_balance = usdc_token.balance(&engagement_contract_address);
     
     engagement_client.release_milestone_payment(
         &release_signer_address,
@@ -487,7 +489,7 @@ fn test_release_milestone_payment_successful() {
 
     assert_eq!(
         usdc_token.balance(&engagement_contract_address),
-        amount - total_amount,
+        initial_contract_balance - total_amount,
         "Contract balance is incorrect after claiming earnings"
     );
 }
