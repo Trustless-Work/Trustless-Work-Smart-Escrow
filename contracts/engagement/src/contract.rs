@@ -56,15 +56,17 @@ impl EngagementContract {
         )
     }
 
-    pub fn distribute_escrow_earnings(
+    pub fn release_milestone_payment(
         e: Env, 
         release_signer: Address, 
-        trustless_work_address: Address
+        trustless_work_address: Address,
+        milestone_index: i128
     ) -> Result<(), ContractError> {
-        EscrowManager::distribute_escrow_earnings(
+        EscrowManager::release_milestone_payment(
             e, 
             release_signer, 
-            trustless_work_address
+            trustless_work_address,
+            milestone_index
         )
     }
 
