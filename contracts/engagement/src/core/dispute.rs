@@ -40,6 +40,10 @@ impl DisputeManager {
             }
         };
 
+        if !milestone.dispute_flag {
+            return Err(ContractError::EscrowNotInDispute);
+        }
+
         let total_funds = client_funds + service_provider_funds;
         if total_funds != milestone.amount {
             return Err(ContractError::InsufficientFundsForResolution);
