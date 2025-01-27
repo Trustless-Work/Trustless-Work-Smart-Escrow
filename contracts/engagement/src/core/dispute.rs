@@ -46,7 +46,7 @@ impl DisputeManager {
         }
 
         let trustless_work_fee = (total_funds * 30) / 10000; // 0.3%
-        let platform_fee = (total_funds * (escrow.platform_fee as i128)) / 10000;
+        let platform_fee = (total_funds * escrow.platform_fee) / 10000;
         let total_fees = trustless_work_fee + platform_fee;
 
         let net_client_funds = client_funds - (client_funds * total_fees) / total_funds;
