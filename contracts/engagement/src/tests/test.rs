@@ -685,7 +685,7 @@ fn test_dispute_resolution_process() {
         status: String::from_str(&env, "in_progress"),
         approved_flag: false,
         amount: amount,
-        dispute_flag: false,
+        dispute_flag: true,
         release_flag: false,
     };
 
