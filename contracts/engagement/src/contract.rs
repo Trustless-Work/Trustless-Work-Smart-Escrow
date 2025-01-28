@@ -121,17 +121,21 @@ impl EngagementContract {
     // Disputes /////
     ////////////////////////
 
-    pub fn resolving_disputes(
+    pub fn resolving_milestone_disputes(
         e: Env,
         dispute_resolver: Address,
+        milestone_index: u32,
         client_funds: i128,
-        service_provider_funds: i128
+        service_provider_funds: i128,
+        trustless_work_address: Address
     ) -> Result<(), ContractError> {
-        DisputeManager::resolving_disputes(
+        DisputeManager::resolving_milestone_disputes(
             e,
             dispute_resolver,
+            milestone_index,
             client_funds,
-            service_provider_funds
+            service_provider_funds,
+            trustless_work_address
         )
     }
     
