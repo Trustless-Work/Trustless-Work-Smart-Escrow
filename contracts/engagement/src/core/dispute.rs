@@ -41,7 +41,7 @@ impl DisputeManager {
         };
 
         if !milestone.dispute_flag {
-            return Err(ContractError::EscrowNotInDispute);
+            return Err(ContractError::MilestoneNotInDispute);
         }
 
         let total_funds = client_funds + service_provider_funds;
