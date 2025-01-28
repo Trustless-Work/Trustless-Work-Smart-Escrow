@@ -389,7 +389,7 @@ fn test_change_milestone_status_and_approved_flag() {
 }
 
 #[test]
-fn test_distribute_escrow_earnings_successful_flow() {
+fn test_release_milestone_payment_successful() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -452,9 +452,15 @@ fn test_distribute_escrow_earnings_successful_flow() {
 
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
 
-    engagement_client.distribute_escrow_earnings(&release_signer_address, &trustless_work_address);
+    let initial_contract_balance = usdc_token.balance(&engagement_contract_address);
+    
+    engagement_client.release_milestone_payment(
+        &release_signer_address,
+        &trustless_work_address,
+        &(0 as i128)
+    );
 
-    let total_amount = amount as i128;
+    let total_amount = milestones.get(0).unwrap().amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
     let platform_commission = (total_amount * (platform_fee as i128)) / (10000 as i128);
     let service_provider_amount = (total_amount -
@@ -480,15 +486,16 @@ fn test_distribute_escrow_earnings_successful_flow() {
 
     assert_eq!(
         usdc_token.balance(&engagement_contract_address),
-        0,
-        "Contract should have zero balance after claiming earnings"
+        initial_contract_balance - total_amount,
+        "Contract balance is incorrect after claiming earnings"
     );
 }
 
 //test claim escrow earnings in failure scenarios
 // Scenario 1: Escrow with no milestones:
+
 #[test]
-fn test_distribute_escrow_earnings_no_milestones() {
+fn test_release_milestone_payment_no_milestones() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -527,16 +534,21 @@ fn test_distribute_escrow_earnings_no_milestones() {
     engagement_client.initialize_escrow(&escrow_properties);
 
     // Try to claim earnings with no milestones (should fail)
-    let result = engagement_client.try_distribute_escrow_earnings(
+    let result = engagement_client.try_release_milestone_payment(
         &release_signer_address,
-        &platform_address
+        &platform_address,
+        &(0 as i128)
+    );
+    assert!(
+        result.is_err(),
+        "Should fail when no milestones are defined"
     );
     assert!(result.is_err(), "Should fail when no milestones are defined");
 }
 
 // Scenario 2: Milestones incomplete
 #[test]
-fn test_distribute_escrow_earnings_milestones_incomplete() {
+fn test_release_milestone_payment_milestones_incomplete() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -584,9 +596,14 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
     engagement_client.initialize_escrow(&escrow_properties);
 
     // Try to claim earnings with incomplete milestones (should fail)
-    let result = engagement_client.try_distribute_escrow_earnings(
+    let result = engagement_client.try_release_milestone_payment(
         &release_signer_address,
-        &platform_address
+        &platform_address,
+        &(0 as i128)
+    );
+    assert!(
+        result.is_err(),
+        "Should fail when milestones are not completed"
     );
     assert!(result.is_err(), "Should fail when milestones are not completed");
 }
