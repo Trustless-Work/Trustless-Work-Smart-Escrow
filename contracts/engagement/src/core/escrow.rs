@@ -7,13 +7,11 @@ use crate::events::escrows_by_engagement_id;
 
 pub struct EscrowManager;
 
-impl EscrowManager{
-
+impl EscrowManager {
     pub fn initialize_escrow(
         e: Env,
         escrow_properties: Escrow
     ) -> Result<Escrow, ContractError> {
-
         if e.storage().instance().has(&DataKey::Escrow) {
             return Err(ContractError::EscrowAlreadyInitialized);
         }
@@ -45,9 +43,7 @@ impl EscrowManager{
         }
     
         let usdc_client = TokenClient::new(&e, &escrow.trustline);
-
         let signer_balance = usdc_client.balance(&signer);
-
         let contract_address = e.current_contract_address();
         
         if usdc_client.balance(&contract_address) as i128 > escrow.amount {
@@ -63,7 +59,6 @@ impl EscrowManager{
         }
 
         usdc_client.transfer(&signer, &contract_address, &amount_to_deposit);
-    
         e.storage().instance().set(&DataKey::Escrow, &escrow);
     
         Ok(())
@@ -117,8 +112,17 @@ impl EscrowManager{
         let platform_address = escrow.platform_address.clone();
 
         let total_amount = milestone.amount as i128;
-        let trustless_work_commission = ((total_amount * 30) / 10000) as i128; 
-        let platform_commission = (total_amount * platform_fee_percentage) / 10000 as i128;
+        let trustless_work_commission = total_amount
+            .checked_mul(30)
+            .ok_or(ContractError::Overflow)?
+            .checked_div(10000)
+            .ok_or(ContractError::DivisionError)?;
+        
+        let platform_commission = total_amount
+            .checked_mul(platform_fee_percentage)
+            .ok_or(ContractError::Overflow)?
+            .checked_div(10000)
+            .ok_or(ContractError::DivisionError)?;
 
         usdc_client.transfer(
             &contract_address, 
@@ -132,7 +136,11 @@ impl EscrowManager{
             &platform_commission
         );
 
-        let service_provider_amount = total_amount - trustless_work_commission - platform_commission;
+        let service_provider_amount = total_amount
+            .checked_sub(trustless_work_commission)
+            .ok_or(ContractError::Underflow)?
+            .checked_sub(platform_commission)
+            .ok_or(ContractError::Underflow)?;
 
         usdc_client.transfer(
             &contract_address, 
@@ -178,7 +186,6 @@ impl EscrowManager{
         );
 
         let engagement_id_copy = escrow_properties.engagement_id.clone();
-
         escrows_by_engagement_id(&e, engagement_id_copy, escrow_properties);
 
         Ok(())
@@ -199,11 +206,11 @@ impl EscrowManager{
     
             let token_client = TokenClient::new(&e, &escrow.trustline);
             let balance = token_client.balance(&address);
-    
+
             balances.push_back(AddressBalance {
                 address: address.clone(),
                 balance,
-            });
+            })
         }
         
         Ok(balances)

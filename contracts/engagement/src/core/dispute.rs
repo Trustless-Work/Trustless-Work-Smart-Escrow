@@ -44,8 +44,10 @@ impl DisputeManager {
             return Err(ContractError::MilestoneNotInDispute);
         }
 
-        let total_funds = client_funds + service_provider_funds;
+        let total_funds = client_funds.checked_add(service_provider_funds).ok_or(ContractError::Overflow)?;
         if total_funds != milestone.amount {
+            return Err(ContractError::InsufficientFundsForResolution);
+        }
             return Err(ContractError::InsufficientFundsForResolution);
         }
 

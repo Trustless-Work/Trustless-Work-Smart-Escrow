@@ -67,6 +67,7 @@ fn test_initialize_excrow() {
         release_signer: release_signer_address,
         dispute_resolver: dispute_resolver_address,
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address,
     };
 
@@ -141,6 +142,7 @@ fn test_change_escrow_properties() {
         release_signer: release_signer_address,
         dispute_resolver: dispute_resolver_address,
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address.clone(),
     };
 
@@ -203,6 +205,7 @@ fn test_change_escrow_properties() {
         release_signer: new_release_signer.clone(),
         dispute_resolver: new_dispute_resolver.clone(),
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address.clone(),
     };
 
@@ -224,6 +227,7 @@ fn test_change_escrow_properties() {
         release_signer: new_release_signer.clone(),
         dispute_resolver: new_dispute_resolver.clone(),
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address,
     };
 
@@ -294,6 +298,7 @@ fn test_change_milestone_status_and_approved_flag() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address.clone(),
     };
 
@@ -371,6 +376,7 @@ fn test_change_milestone_status_and_approved_flag() {
         release_signer: release_signer_address,
         dispute_resolver: dispute_resolver_address,
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address,
     };
 
@@ -445,6 +451,7 @@ fn test_release_milestone_payment_successful() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address.clone(),
     };
 
@@ -528,6 +535,7 @@ fn test_release_milestone_payment_no_milestones() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address.clone(),
     };
 
@@ -590,6 +598,7 @@ fn test_release_milestone_payment_milestones_incomplete() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address.clone(),
     };
 
@@ -650,6 +659,7 @@ fn test_dispute_flag_management() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address.clone(),
     };
 
@@ -723,6 +733,7 @@ fn test_dispute_resolution_process() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address.clone(),
     };
 
@@ -824,6 +835,7 @@ fn test_fund_escrow_successful_deposit() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address.clone(),
     };
 
@@ -896,6 +908,7 @@ fn test_fund_escrow_fully_funded_error() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address.clone(),
     };
 
@@ -963,6 +976,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address.clone(),
     };
 
@@ -1031,6 +1045,7 @@ fn test_fund_escrow_dispute_flag_error() {
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address,
         dispute_flag: false,
+        release_flag: false,
         trustline: usdc_token.address,
     };
 

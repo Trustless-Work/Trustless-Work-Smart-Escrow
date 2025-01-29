@@ -19,6 +19,7 @@ pub struct Escrow {
     pub release_signer: Address,
     pub dispute_resolver: Address,
     pub dispute_flag: bool,
+    pub release_flag: bool,
     pub trustline: Address,
 }
 
