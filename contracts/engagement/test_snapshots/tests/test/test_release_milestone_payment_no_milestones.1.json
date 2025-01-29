@@ -177,7 +177,7 @@
                                 "symbol": "engagement_id"
                               },
                               "val": {
-                                "string": "test_incomplete_milestones"
+                                "string": "test_no_milestones"
                               }
                             },
                             {
@@ -185,63 +185,7 @@
                                 "symbol": "milestones"
                               },
                               "val": {
-                                "vec": [
-                                  {
-                                    "map": [
-                                      {
-                                        "key": {
-                                          "symbol": "amount"
-                                        },
-                                        "val": {
-                                          "i128": {
-                                            "hi": 0,
-                                            "lo": 100000
-                                          }
-                                        }
-                                      },
-                                      {
-                                        "key": {
-                                          "symbol": "approved_flag"
-                                        },
-                                        "val": {
-                                          "bool": false
-                                        }
-                                      },
-                                      {
-                                        "key": {
-                                          "symbol": "description"
-                                        },
-                                        "val": {
-                                          "string": "Incomplete milestone"
-                                        }
-                                      },
-                                      {
-                                        "key": {
-                                          "symbol": "dispute_flag"
-                                        },
-                                        "val": {
-                                          "bool": false
-                                        }
-                                      },
-                                      {
-                                        "key": {
-                                          "symbol": "release_flag"
-                                        },
-                                        "val": {
-                                          "bool": false
-                                        }
-                                      },
-                                      {
-                                        "key": {
-                                          "symbol": "status"
-                                        },
-                                        "val": {
-                                          "string": "Pending"
-                                        }
-                                      }
-                                    ]
-                                  }
-                                ]
+                                "vec": []
                               }
                             },
                             {
@@ -261,14 +205,6 @@
                                   "hi": 0,
                                   "lo": 30
                                 }
-                              }
-                            },
-                            {
-                              "key": {
-                                "symbol": "release_flag"
-                              },
-                              "val": {
-                                "bool": false
                               }
                             },
                             {
@@ -468,7 +404,7 @@
                     "symbol": "engagement_id"
                   },
                   "val": {
-                    "string": "test_incomplete_milestones"
+                    "string": "test_no_milestones"
                   }
                 },
                 {
@@ -476,63 +412,7 @@
                     "symbol": "milestones"
                   },
                   "val": {
-                    "vec": [
-                      {
-                        "map": [
-                          {
-                            "key": {
-                              "symbol": "amount"
-                            },
-                            "val": {
-                              "i128": {
-                                "hi": 0,
-                                "lo": 100000
-                              }
-                            }
-                          },
-                          {
-                            "key": {
-                              "symbol": "approved_flag"
-                            },
-                            "val": {
-                              "bool": false
-                            }
-                          },
-                          {
-                            "key": {
-                              "symbol": "description"
-                            },
-                            "val": {
-                              "string": "Incomplete milestone"
-                            }
-                          },
-                          {
-                            "key": {
-                              "symbol": "dispute_flag"
-                            },
-                            "val": {
-                              "bool": false
-                            }
-                          },
-                          {
-                            "key": {
-                              "symbol": "release_flag"
-                            },
-                            "val": {
-                              "bool": false
-                            }
-                          },
-                          {
-                            "key": {
-                              "symbol": "status"
-                            },
-                            "val": {
-                              "string": "Pending"
-                            }
-                          }
-                        ]
-                      }
-                    ]
+                    "vec": []
                   }
                 },
                 {
@@ -552,14 +432,6 @@
                       "hi": 0,
                       "lo": 30
                     }
-                  }
-                },
-                {
-                  "key": {
-                    "symbol": "release_flag"
-                  },
-                  "val": {
-                    "bool": false
                   }
                 },
                 {
@@ -666,7 +538,7 @@
                     "symbol": "engagement_id"
                   },
                   "val": {
-                    "string": "test_incomplete_milestones"
+                    "string": "test_no_milestones"
                   }
                 },
                 {
@@ -674,63 +546,7 @@
                     "symbol": "milestones"
                   },
                   "val": {
-                    "vec": [
-                      {
-                        "map": [
-                          {
-                            "key": {
-                              "symbol": "amount"
-                            },
-                            "val": {
-                              "i128": {
-                                "hi": 0,
-                                "lo": 100000
-                              }
-                            }
-                          },
-                          {
-                            "key": {
-                              "symbol": "approved_flag"
-                            },
-                            "val": {
-                              "bool": false
-                            }
-                          },
-                          {
-                            "key": {
-                              "symbol": "description"
-                            },
-                            "val": {
-                              "string": "Incomplete milestone"
-                            }
-                          },
-                          {
-                            "key": {
-                              "symbol": "dispute_flag"
-                            },
-                            "val": {
-                              "bool": false
-                            }
-                          },
-                          {
-                            "key": {
-                              "symbol": "release_flag"
-                            },
-                            "val": {
-                              "bool": false
-                            }
-                          },
-                          {
-                            "key": {
-                              "symbol": "status"
-                            },
-                            "val": {
-                              "string": "Pending"
-                            }
-                          }
-                        ]
-                      }
-                    ]
+                    "vec": []
                   }
                 },
                 {
@@ -750,14 +566,6 @@
                       "hi": 0,
                       "lo": 30
                     }
-                  }
-                },
-                {
-                  "key": {
-                    "symbol": "release_flag"
-                  },
-                  "val": {
-                    "bool": false
                   }
                 },
                 {
@@ -814,7 +622,7 @@
                 "bytes": "0000000000000000000000000000000000000000000000000000000000000008"
               },
               {
-                "symbol": "distribute_escrow_earnings"
+                "symbol": "release_milestone_payment"
               }
             ],
             "data": {
@@ -824,6 +632,12 @@
                 },
                 {
                   "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                },
+                {
+                  "i128": {
+                    "hi": 0,
+                    "lo": 0
+                  }
                 }
               ]
             }
@@ -844,12 +658,12 @@
                 "symbol": "fn_return"
               },
               {
-                "symbol": "distribute_escrow_earnings"
+                "symbol": "release_milestone_payment"
               }
             ],
             "data": {
               "error": {
-                "contract": 16
+                "contract": 22
               }
             }
           }
@@ -870,7 +684,7 @@
               },
               {
                 "error": {
-                  "contract": 16
+                  "contract": 22
                 }
               }
             ],
@@ -895,7 +709,7 @@
               },
               {
                 "error": {
-                  "contract": 16
+                  "contract": 22
                 }
               }
             ],
@@ -905,7 +719,7 @@
                   "string": "contract try_call failed"
                 },
                 {
-                  "symbol": "distribute_escrow_earnings"
+                  "symbol": "release_milestone_payment"
                 },
                 {
                   "vec": [
@@ -914,6 +728,12 @@
                     },
                     {
                       "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                    },
+                    {
+                      "i128": {
+                        "hi": 0,
+                        "lo": 0
+                      }
                     }
                   ]
                 }

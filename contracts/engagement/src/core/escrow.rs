@@ -1,20 +1,17 @@
 use soroban_sdk::{Address, Env, Symbol, Val, Vec};
 use soroban_sdk::token::Client as TokenClient;
 
-use crate::storage::types::{Escrow, DataKey, AddressBalance};
+use crate::storage::types::{Escrow, DataKey, AddressBalance, Milestone};
 use crate::error::ContractError;
-
 use crate::events::escrows_by_engagement_id;
 
 pub struct EscrowManager;
 
-impl EscrowManager{
-
+impl EscrowManager {
     pub fn initialize_escrow(
         e: Env,
         escrow_properties: Escrow
     ) -> Result<Escrow, ContractError> {
-
         if e.storage().instance().has(&DataKey::Escrow) {
             return Err(ContractError::EscrowAlreadyInitialized);
         }
@@ -46,9 +43,7 @@ impl EscrowManager{
         }
     
         let usdc_client = TokenClient::new(&e, &escrow.trustline);
-
         let signer_balance = usdc_client.balance(&signer);
-
         let contract_address = e.current_contract_address();
         
         if usdc_client.balance(&contract_address) as i128 > escrow.amount {
@@ -64,16 +59,16 @@ impl EscrowManager{
         }
 
         usdc_client.transfer(&signer, &contract_address, &amount_to_deposit);
-    
         e.storage().instance().set(&DataKey::Escrow, &escrow);
     
         Ok(())
     }
 
-    pub fn distribute_escrow_earnings(
+    pub fn release_milestone_payment(
         e: Env, 
         release_signer: Address, 
-        trustless_work_address: Address
+        trustless_work_address: Address,
+        milestone_index: i128
     ) -> Result<(), ContractError> {
         release_signer.require_auth();
         
@@ -91,56 +86,81 @@ impl EscrowManager{
             return Err(ContractError::NoMileStoneDefined);
         }
     
-        if !escrow.milestones.iter().all(|milestone| milestone.approved_flag) {
+        if milestone_index < 0 || milestone_index >= escrow.milestones.len() as i128 {
+            return Err(ContractError::InvalidMileStoneIndex);
+        }
+
+        let milestone = escrow.milestones.get(milestone_index as u32).unwrap();
+
+        if !milestone.approved_flag {
             return Err(ContractError::EscrowNotCompleted);
         }
-    
+
         if escrow.dispute_flag {
             return Err(ContractError::InvalidState);
         }
-    
+
         let usdc_client = TokenClient::new(&e, &escrow.trustline);
         let contract_address = e.current_contract_address();
-    
-        // Check the actual balance of the contract for this escrow
+
         let contract_balance = usdc_client.balance(&contract_address);
-        if contract_balance < escrow.amount as i128 {
+        if contract_balance < milestone.amount as i128 {
             return Err(ContractError::EscrowBalanceNotSufficienteToSendEarnings);
         }
-    
+
         let platform_fee_percentage = escrow.platform_fee as i128;
         let platform_address = escrow.platform_address.clone();
-    
-        let total_amount = escrow.amount as i128;
-        let trustless_work_commission = total_amount.checked_mul(30).ok_or(ContractError::Overflow)?.checked_div(10000)
-        .ok_or(ContractError::DivisionError)?; 
-        let platform_commission = total_amount.checked_mul(platform_fee_percentage).ok_or(ContractError::Overflow)?.checked_div(10000_i128)
-        .ok_or(ContractError::DivisionError)?;
+
+        let total_amount = milestone.amount as i128;
+        let trustless_work_commission = total_amount
+            .checked_mul(30)
+            .ok_or(ContractError::Overflow)?
+            .checked_div(10000)
+            .ok_or(ContractError::DivisionError)?;
+        
+        let platform_commission = total_amount
+            .checked_mul(platform_fee_percentage)
+            .ok_or(ContractError::Overflow)?
+            .checked_div(10000)
+            .ok_or(ContractError::DivisionError)?;
 
         usdc_client.transfer(
             &contract_address, 
             &trustless_work_address, 
             &trustless_work_commission
         );
-    
+
         usdc_client.transfer(
             &contract_address, 
             &platform_address, 
             &platform_commission
         );
-    
-        let service_provider_amount = total_amount.checked_sub(trustless_work_commission).ok_or(ContractError::Underflow)?.checked_sub(platform_commission).ok_or(ContractError::Underflow)?;
-    
+
+        let service_provider_amount = total_amount
+            .checked_sub(trustless_work_commission)
+            .ok_or(ContractError::Underflow)?
+            .checked_sub(platform_commission)
+            .ok_or(ContractError::Underflow)?;
+
         usdc_client.transfer(
             &contract_address, 
             &escrow.service_provider, 
             &service_provider_amount
         );
 
-        escrow.release_flag = true;
-    
+        let mut updated_milestones = Vec::<Milestone>::new(&e);
+        for (index, milestone) in escrow.milestones.iter().enumerate() {
+            let mut new_milestone = milestone.clone();
+            if index as i128 == milestone_index {
+                new_milestone.release_flag = true;
+            }
+            updated_milestones.push_back(new_milestone);
+        }
+
+        escrow.milestones = updated_milestones;
+
         e.storage().instance().set(&DataKey::Escrow, &escrow);
-    
+
         Ok(())
     }
 
@@ -166,7 +186,6 @@ impl EscrowManager{
         );
 
         let engagement_id_copy = escrow_properties.engagement_id.clone();
-
         escrows_by_engagement_id(&e, engagement_id_copy, escrow_properties);
 
         Ok(())

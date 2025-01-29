@@ -265,14 +265,6 @@
                             },
                             {
                               "key": {
-                                "symbol": "release_flag"
-                              },
-                              "val": {
-                                "bool": false
-                              }
-                            },
-                            {
-                              "key": {
                                 "symbol": "release_signer"
                               },
                               "val": {
@@ -556,14 +548,6 @@
                 },
                 {
                   "key": {
-                    "symbol": "release_flag"
-                  },
-                  "val": {
-                    "bool": false
-                  }
-                },
-                {
-                  "key": {
                     "symbol": "release_signer"
                   },
                   "val": {
@@ -754,14 +738,6 @@
                 },
                 {
                   "key": {
-                    "symbol": "release_flag"
-                  },
-                  "val": {
-                    "bool": false
-                  }
-                },
-                {
-                  "key": {
                     "symbol": "release_signer"
                   },
                   "val": {
@@ -814,7 +790,7 @@
                 "bytes": "0000000000000000000000000000000000000000000000000000000000000008"
               },
               {
-                "symbol": "distribute_escrow_earnings"
+                "symbol": "release_milestone_payment"
               }
             ],
             "data": {
@@ -824,6 +800,12 @@
                 },
                 {
                   "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                },
+                {
+                  "i128": {
+                    "hi": 0,
+                    "lo": 0
+                  }
                 }
               ]
             }
@@ -844,7 +826,7 @@
                 "symbol": "fn_return"
               },
               {
-                "symbol": "distribute_escrow_earnings"
+                "symbol": "release_milestone_payment"
               }
             ],
             "data": {
@@ -905,7 +887,7 @@
                   "string": "contract try_call failed"
                 },
                 {
-                  "symbol": "distribute_escrow_earnings"
+                  "symbol": "release_milestone_payment"
                 },
                 {
                   "vec": [
@@ -914,6 +896,12 @@
                     },
                     {
                       "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAITA4"
+                    },
+                    {
+                      "i128": {
+                        "hi": 0,
+                        "lo": 0
+                      }
                     }
                   ]
                 }

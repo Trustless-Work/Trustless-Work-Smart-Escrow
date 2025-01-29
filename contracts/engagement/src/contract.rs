@@ -56,15 +56,17 @@ impl EngagementContract {
         )
     }
 
-    pub fn distribute_escrow_earnings(
+    pub fn release_milestone_payment(
         e: Env, 
         release_signer: Address, 
-        trustless_work_address: Address
+        trustless_work_address: Address,
+        milestone_index: i128
     ) -> Result<(), ContractError> {
-        EscrowManager::distribute_escrow_earnings(
+        EscrowManager::release_milestone_payment(
             e, 
             release_signer, 
-            trustless_work_address
+            trustless_work_address,
+            milestone_index
         )
     }
 
@@ -119,17 +121,21 @@ impl EngagementContract {
     // Disputes /////
     ////////////////////////
 
-    pub fn resolving_disputes(
+    pub fn resolving_milestone_disputes(
         e: Env,
         dispute_resolver: Address,
+        milestone_index: u32,
         client_funds: i128,
-        service_provider_funds: i128
+        service_provider_funds: i128,
+        trustless_work_address: Address
     ) -> Result<(), ContractError> {
-        DisputeManager::resolving_disputes(
+        DisputeManager::resolving_milestone_disputes(
             e,
             dispute_resolver,
+            milestone_index,
             client_funds,
-            service_provider_funds
+            service_provider_funds,
+            trustless_work_address
         )
     }
     

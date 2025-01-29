@@ -310,6 +310,17 @@
                                     "map": [
                                       {
                                         "key": {
+                                          "symbol": "amount"
+                                        },
+                                        "val": {
+                                          "i128": {
+                                            "hi": 0,
+                                            "lo": 100000
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "key": {
                                           "symbol": "approved_flag"
                                         },
                                         "val": {
@@ -326,6 +337,22 @@
                                       },
                                       {
                                         "key": {
+                                          "symbol": "dispute_flag"
+                                        },
+                                        "val": {
+                                          "bool": false
+                                        }
+                                      },
+                                      {
+                                        "key": {
+                                          "symbol": "release_flag"
+                                        },
+                                        "val": {
+                                          "bool": false
+                                        }
+                                      },
+                                      {
+                                        "key": {
                                           "symbol": "status"
                                         },
                                         "val": {
@@ -336,6 +363,17 @@
                                   },
                                   {
                                     "map": [
+                                      {
+                                        "key": {
+                                          "symbol": "amount"
+                                        },
+                                        "val": {
+                                          "i128": {
+                                            "hi": 0,
+                                            "lo": 100000
+                                          }
+                                        }
+                                      },
                                       {
                                         "key": {
                                           "symbol": "approved_flag"
@@ -350,6 +388,22 @@
                                         },
                                         "val": {
                                           "string": "Second milestone"
+                                        }
+                                      },
+                                      {
+                                        "key": {
+                                          "symbol": "dispute_flag"
+                                        },
+                                        "val": {
+                                          "bool": false
+                                        }
+                                      },
+                                      {
+                                        "key": {
+                                          "symbol": "release_flag"
+                                        },
+                                        "val": {
+                                          "bool": false
                                         }
                                       },
                                       {
@@ -776,6 +830,17 @@
                         "map": [
                           {
                             "key": {
+                              "symbol": "amount"
+                            },
+                            "val": {
+                              "i128": {
+                                "hi": 0,
+                                "lo": 100000
+                              }
+                            }
+                          },
+                          {
+                            "key": {
                               "symbol": "approved_flag"
                             },
                             "val": {
@@ -792,6 +857,22 @@
                           },
                           {
                             "key": {
+                              "symbol": "dispute_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "release_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
                               "symbol": "status"
                             },
                             "val": {
@@ -802,6 +883,17 @@
                       },
                       {
                         "map": [
+                          {
+                            "key": {
+                              "symbol": "amount"
+                            },
+                            "val": {
+                              "i128": {
+                                "hi": 0,
+                                "lo": 100000
+                              }
+                            }
+                          },
                           {
                             "key": {
                               "symbol": "approved_flag"
@@ -816,6 +908,22 @@
                             },
                             "val": {
                               "string": "Second milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "dispute_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "release_flag"
+                            },
+                            "val": {
+                              "bool": false
                             }
                           },
                           {
@@ -975,6 +1083,17 @@
                         "map": [
                           {
                             "key": {
+                              "symbol": "amount"
+                            },
+                            "val": {
+                              "i128": {
+                                "hi": 0,
+                                "lo": 100000
+                              }
+                            }
+                          },
+                          {
+                            "key": {
                               "symbol": "approved_flag"
                             },
                             "val": {
@@ -991,6 +1110,22 @@
                           },
                           {
                             "key": {
+                              "symbol": "dispute_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "release_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
                               "symbol": "status"
                             },
                             "val": {
@@ -1001,6 +1136,17 @@
                       },
                       {
                         "map": [
+                          {
+                            "key": {
+                              "symbol": "amount"
+                            },
+                            "val": {
+                              "i128": {
+                                "hi": 0,
+                                "lo": 100000
+                              }
+                            }
+                          },
                           {
                             "key": {
                               "symbol": "approved_flag"
@@ -1015,6 +1161,22 @@
                             },
                             "val": {
                               "string": "Second milestone"
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "dispute_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
+                              "symbol": "release_flag"
+                            },
+                            "val": {
+                              "bool": false
                             }
                           },
                           {

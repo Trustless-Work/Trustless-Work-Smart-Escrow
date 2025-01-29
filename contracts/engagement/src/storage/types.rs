@@ -29,6 +29,9 @@ pub struct Milestone {
     pub description: String,
     pub status: String,
     pub approved_flag: bool,
+    pub amount: i128,
+    pub dispute_flag: bool,
+    pub release_flag: bool,
 }
 
 #[contracttype]
