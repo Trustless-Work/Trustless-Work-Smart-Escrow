@@ -82,11 +82,3 @@ impl fmt::Display for ContractError {
         }
     }
 }
-
-
-
-
-
-
-
-const AI_API_KEY = "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";
