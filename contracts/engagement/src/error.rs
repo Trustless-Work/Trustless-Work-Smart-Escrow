@@ -35,7 +35,10 @@ pub enum ContractError {
     InvalidState = 29,
     EscrowOpenedForDisputeResolution = 30,
     AmountToDepositGreatherThanEscrowAmount = 31,
-
+    Overflow = 32,
+    Underflow = 33,
+    DivisionError = 34,
+    AdminNotFound = 35,
 }
 
 impl fmt::Display for ContractError {
@@ -72,6 +75,10 @@ impl fmt::Display for ContractError {
             ContractError::InvalidState => write!(f, "Invalid state"),
             ContractError::EscrowOpenedForDisputeResolution => write!(f, "Escrow has been opened for dispute resolution"),
             ContractError::AmountToDepositGreatherThanEscrowAmount => write!(f, "Amount to deposit is greater than the escrow amount"),
+            ContractError::Overflow => write!(f, "This operation can cause an Overflow"),
+            ContractError::Underflow => write!(f, "This operation can cause an Underflow"),
+            ContractError::DivisionError => write!(f, "This operation can cause Division error"),
+            ContractError::AdminNotFound => write!(f, "Admin not found!"),
         }
     }
 }
