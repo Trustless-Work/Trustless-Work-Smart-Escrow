@@ -3,6 +3,7 @@ use soroban_sdk::token::Client as TokenClient;
 
 use crate::storage::types::{Escrow, DataKey, AddressBalance};
 use crate::error::ContractError;
+
 use crate::events::escrows_by_engagement_id;
 
 pub struct EscrowManager;
@@ -111,9 +112,11 @@ impl EscrowManager{
         let platform_address = escrow.platform_address.clone();
     
         let total_amount = escrow.amount as i128;
-        let trustless_work_commission = ((total_amount * 30) / 10000) as i128; 
-        let platform_commission = (total_amount * platform_fee_percentage) / 10000 as i128;
-            
+        let trustless_work_commission = total_amount.checked_mul(30).ok_or(ContractError::Overflow)?.checked_div(10000)
+        .ok_or(ContractError::DivisionError)?; 
+        let platform_commission = total_amount.checked_mul(platform_fee_percentage).ok_or(ContractError::Overflow)?.checked_div(10000_i128)
+        .ok_or(ContractError::DivisionError)?;
+
         usdc_client.transfer(
             &contract_address, 
             &trustless_work_address, 
@@ -126,7 +129,7 @@ impl EscrowManager{
             &platform_commission
         );
     
-        let service_provider_amount = total_amount - trustless_work_commission - platform_commission;
+        let service_provider_amount = total_amount.checked_sub(trustless_work_commission).ok_or(ContractError::Underflow)?.checked_sub(platform_commission).ok_or(ContractError::Underflow)?;
     
         usdc_client.transfer(
             &contract_address, 
@@ -184,11 +187,11 @@ impl EscrowManager{
     
             let token_client = TokenClient::new(&e, &escrow.trustline);
             let balance = token_client.balance(&address);
-    
+
             balances.push_back(AddressBalance {
                 address: address.clone(),
                 balance,
-            });
+            })
         }
         
         Ok(balances)

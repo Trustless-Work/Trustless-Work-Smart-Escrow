@@ -1,5 +1,6 @@
 use crate::storage::types::{AllowanceDataKey, AllowanceValue, DataKey};
 use soroban_sdk::{Address, Env};
+use crate::error::ContractError;
 
 pub fn read_allowance(e: &Env, from: Address, spender: Address) -> AllowanceValue {
     let key = DataKey::Allowance(AllowanceDataKey { from, spender });
@@ -54,11 +55,12 @@ pub fn spend_allowance(e: &Env, from: Address, spender: Address, amount: i128) {
         panic!("insufficient allowance");
     }
     if amount > 0 {
+        let new_amount = allowance.amount.checked_sub(amount).ok_or(ContractError::Underflow).unwrap(); 
         write_allowance(
             e,
             from,
             spender,
-            allowance.amount - amount,
+            new_amount,
             allowance.expiration_ledger,
         );
     }
