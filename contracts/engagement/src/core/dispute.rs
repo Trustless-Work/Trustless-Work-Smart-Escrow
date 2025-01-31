@@ -41,10 +41,10 @@ impl DisputeManager {
             return Err(ContractError::InsufficientFundsForResolution);
         }
 
-        let trustless_work_commission = total_funds * (3 / 1000);
+        let trustless_work_commission = total_funds * 0.003 as i128;
         let platform_fee = escrow.platform_fee;
-        let client_deductions: i128 = client_funds - platform_fee - (3 / 1000 * client_funds);
-        let service_provider_deductions: i128 = service_provider_funds - platform_fee - (3 / 1000 * service_provider_funds);
+        let client_deductions: i128 = client_funds - platform_fee - trustless_work_commission;
+        let service_provider_deductions: i128 = service_provider_funds - platform_fee - trustless_work_commission;
         
         if client_funds < client_deductions {
             return Err(ContractError::InsufficientClientFundsForCommissions);

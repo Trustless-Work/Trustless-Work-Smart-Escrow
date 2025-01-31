@@ -716,10 +716,10 @@ fn test_dispute_resolution_process() {
         &trustless_work_address
     );
 
-    let trustless_commission = (amount  * (3/1000)) as i128;
+    let trustless_commission = amount  * 0.003 as i128;
     let expected_platform_fee = platform_fee;
-    let client_deductions: i128 = client_amount - platform_fee - (3 / 1000 * client_amount);
-    let service_provider_deductions: i128 = provider_amount - platform_fee - (3 / 1000 * provider_amount);
+    let client_deductions: i128 = client_amount - platform_fee - trustless_commission;
+    let service_provider_deductions: i128 = provider_amount - platform_fee - trustless_commission;
 
     // Calculate expected final amounts after commission deduction
     let expected_client_amount = client_amount - client_deductions;
