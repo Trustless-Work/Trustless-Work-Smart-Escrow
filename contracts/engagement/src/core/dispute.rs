@@ -63,21 +63,32 @@ impl DisputeManager {
         Ok(())
     }
 
-    pub fn change_dispute_flag(
-        e: Env, 
+    pub fn change_milestone_dispute_flag(
+        e: Env,
+        milestone_index: i128, 
     ) -> Result<(), ContractError> {
-    
         let escrow_result = EscrowManager::get_escrow(e.clone());
         let mut escrow = match escrow_result {
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
     
-        if escrow.dispute_flag {
-            return Err(ContractError::EscrowAlreadyInDispute);
+        if milestone_index < 0 {
+            return Err(ContractError::MilestoneIndexOutOfRange);
         }
     
-        escrow.dispute_flag = true;
+        if milestone_index >= escrow.milestones.len() as i128 {
+            return Err(ContractError::MilestoneNotFound);
+        }
+    
+        if escrow.milestones.get(milestone_index as u32).unwrap().dispute_flag {
+            return Err(ContractError::MilestoneAlreadyInDispute);
+        }
+
+        let mut milestone = escrow.milestones.get(milestone_index as u32).unwrap().clone();
+        milestone.dispute_flag = true;
+        escrow.milestones.set(milestone_index as u32, milestone);
+    
         e.storage().instance().set(&DataKey::Escrow, &escrow);
     
         escrows_by_engagement_id(&e, escrow.engagement_id.clone(), escrow);

@@ -133,9 +133,13 @@ impl EngagementContract {
         )
     }
     
-    pub fn change_dispute_flag(
-        e: Env, 
+    pub fn change_milestone_dispute_flag(
+        e: Env,
+        milestone_index: i128,
     ) -> Result<(), ContractError> {
-        DisputeManager::change_dispute_flag(e)
+        DisputeManager::change_milestone_dispute_flag(
+            e,
+            milestone_index
+        )
     }
 }
