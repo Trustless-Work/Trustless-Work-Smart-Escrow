@@ -36,6 +36,8 @@ pub enum ContractError {
     EscrowOpenedForDisputeResolution = 30,
     AmountToDepositGreatherThanEscrowAmount = 31,
     MilestoneNotInDispute = 32,
+    OnlyClientCanOpenDispute = 33,
+    MilestoneAlreadyInDispute = 34,
 
 }
 
@@ -74,6 +76,8 @@ impl fmt::Display for ContractError {
             ContractError::EscrowOpenedForDisputeResolution => write!(f, "Escrow has been opened for dispute resolution"),
             ContractError::AmountToDepositGreatherThanEscrowAmount => write!(f, "Amount to deposit is greater than the escrow amount"),
             ContractError::MilestoneNotInDispute => write!(f, "Milestone not in dispute"),
+            ContractError::OnlyClientCanOpenDispute => write!(f, "Only the client can open a dispute for a milestone"),
+            ContractError::MilestoneAlreadyInDispute => write!(f, "Milestone is already in dispute"),
         }
     }
 }

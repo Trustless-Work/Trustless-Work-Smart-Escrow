@@ -1,7 +1,7 @@
-use soroban_sdk::{ Address, Env, String };
+use soroban_sdk::{ Address, Env, String, Vec };
 use soroban_sdk::token::Client as TokenClient;
 
-use crate::storage::types::{DataKey, Milestone};
+use crate::storage::types::{DataKey, Milestone, Escrow};
 use crate::error::ContractError;
 use crate::events::escrows_by_engagement_id;
 use crate::core::escrow::EscrowManager;
@@ -92,23 +92,57 @@ impl DisputeManager {
         Ok(())
     }
 
-    pub fn change_dispute_flag(e: Env) -> Result<(), ContractError> {
+    pub fn change_milestone_dispute_flag(
+        e: Env,
+        milestone_index: i128,
+        client: Address,
+    ) -> Result<(), ContractError> {
         let escrow_result = EscrowManager::get_escrow(e.clone());
-        let mut escrow = match escrow_result {
+        let existing_escrow = match escrow_result {
             Ok(esc) => esc,
-            Err(err) => {
-                return Err(err);
-            }
+            Err(err) => return Err(err),
         };
 
-        if escrow.dispute_flag {
-            return Err(ContractError::EscrowAlreadyInDispute);
+        if client != existing_escrow.client {
+            return Err(ContractError::OnlyClientCanOpenDispute);
+        }
+        client.require_auth();
+
+        if existing_escrow.milestones.is_empty() {
+            return Err(ContractError::NoMileStoneDefined);
         }
 
-        escrow.dispute_flag = true;
-        e.storage().instance().set(&DataKey::Escrow, &escrow);
+        if milestone_index < 0 || milestone_index >= existing_escrow.milestones.len() as i128 {
+            return Err(ContractError::InvalidMileStoneIndex);
+        }
 
-        escrows_by_engagement_id(&e, escrow.engagement_id.clone(), escrow);
+        let milestone = existing_escrow.milestones.get(milestone_index as u32)
+            .ok_or(ContractError::InvalidMileStoneIndex)?;
+        
+        if milestone.dispute_flag {
+            return Err(ContractError::MilestoneAlreadyInDispute);
+        }
+
+        let mut updated_milestones = Vec::new(&e);
+        for (index, milestone) in existing_escrow.milestones.iter().enumerate() {
+            let mut new_milestone = milestone.clone();
+            if index as i128 == milestone_index {
+                new_milestone.dispute_flag = true;
+            }
+            updated_milestones.push_back(new_milestone);
+        }
+
+        let updated_escrow = Escrow {
+            milestones: updated_milestones,
+            ..existing_escrow
+        };
+
+        e.storage().instance().set(
+            &DataKey::Escrow,
+            &updated_escrow,
+        );
+
+        escrows_by_engagement_id(&e, updated_escrow.engagement_id.clone(), updated_escrow);
 
         Ok(())
     }

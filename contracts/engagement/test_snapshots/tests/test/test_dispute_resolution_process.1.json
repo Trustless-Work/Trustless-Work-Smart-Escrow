@@ -60,7 +60,31 @@
       ]
     ],
     [],
-    [],
+    [
+      [
+        "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
+        {
+          "function": {
+            "contract_fn": {
+              "contract_address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5",
+              "function_name": "change_milestone_dispute_flag",
+              "args": [
+                {
+                  "i128": {
+                    "hi": 0,
+                    "lo": 0
+                  }
+                },
+                {
+                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
+                }
+              ]
+            }
+          },
+          "sub_invocations": []
+        }
+      ]
+    ],
     [],
     [
       [
@@ -116,6 +140,39 @@
     "min_temp_entry_ttl": 16,
     "max_entry_ttl": 6312000,
     "ledger_entries": [
+      [
+        {
+          "contract_data": {
+            "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
+            "key": {
+              "ledger_key_nonce": {
+                "nonce": 1033654523790656264
+              }
+            },
+            "durability": "temporary"
+          }
+        },
+        [
+          {
+            "last_modified_ledger_seq": 0,
+            "data": {
+              "contract_data": {
+                "ext": "v0",
+                "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
+                "key": {
+                  "ledger_key_nonce": {
+                    "nonce": 1033654523790656264
+                  }
+                },
+                "durability": "temporary",
+                "val": "void"
+              }
+            },
+            "ext": "v0"
+          },
+          6311999
+        ]
+      ],
       [
         {
           "contract_data": {
@@ -188,7 +245,7 @@
             "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
             "key": {
               "ledger_key_nonce": {
-                "nonce": 1033654523790656264
+                "nonce": 4837995959683129791
               }
             },
             "durability": "temporary"
@@ -203,7 +260,7 @@
                 "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDR4",
                 "key": {
                   "ledger_key_nonce": {
-                    "nonce": 1033654523790656264
+                    "nonce": 4837995959683129791
                   }
                 },
                 "durability": "temporary",
@@ -280,7 +337,7 @@
                                 "symbol": "dispute_flag"
                               },
                               "val": {
-                                "bool": true
+                                "bool": false
                               }
                             },
                             {
@@ -339,7 +396,7 @@
                                           "symbol": "dispute_flag"
                                         },
                                         "val": {
-                                          "bool": false
+                                          "bool": true
                                         }
                                       },
                                       {
@@ -1502,10 +1559,22 @@
                 "bytes": "0000000000000000000000000000000000000000000000000000000000000008"
               },
               {
-                "symbol": "change_dispute_flag"
+                "symbol": "change_milestone_dispute_flag"
               }
             ],
-            "data": "void"
+            "data": {
+              "vec": [
+                {
+                  "i128": {
+                    "hi": 0,
+                    "lo": 0
+                  }
+                },
+                {
+                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
+                }
+              ]
+            }
           }
         }
       },
@@ -1562,7 +1631,7 @@
                         "symbol": "dispute_flag"
                       },
                       "val": {
-                        "bool": true
+                        "bool": false
                       }
                     },
                     {
@@ -1621,7 +1690,7 @@
                                   "symbol": "dispute_flag"
                                 },
                                 "val": {
-                                  "bool": false
+                                  "bool": true
                                 }
                               },
                               {
@@ -1717,7 +1786,7 @@
                 "symbol": "fn_return"
               },
               {
-                "symbol": "change_dispute_flag"
+                "symbol": "change_milestone_dispute_flag"
               }
             ],
             "data": "void"
@@ -1799,7 +1868,7 @@
                     "symbol": "dispute_flag"
                   },
                   "val": {
-                    "bool": true
+                    "bool": false
                   }
                 },
                 {
@@ -1858,7 +1927,7 @@
                               "symbol": "dispute_flag"
                             },
                             "val": {
-                              "bool": false
+                              "bool": true
                             }
                           },
                           {
@@ -2395,7 +2464,7 @@
                         "symbol": "dispute_flag"
                       },
                       "val": {
-                        "bool": true
+                        "bool": false
                       }
                     },
                     {
@@ -2454,7 +2523,7 @@
                                   "symbol": "dispute_flag"
                                 },
                                 "val": {
-                                  "bool": false
+                                  "bool": true
                                 }
                               },
                               {
@@ -2892,7 +2961,7 @@
                     "symbol": "dispute_flag"
                   },
                   "val": {
-                    "bool": true
+                    "bool": false
                   }
                 },
                 {
@@ -2951,7 +3020,7 @@
                               "symbol": "dispute_flag"
                             },
                             "val": {
-                              "bool": false
+                              "bool": true
                             }
                           },
                           {

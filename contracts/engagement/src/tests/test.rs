@@ -608,73 +608,6 @@ fn test_release_milestone_payment_milestones_incomplete() {
     assert!(result.is_err(), "Should fail when milestones are not completed");
 }
 
-#[test]
-fn test_dispute_flag_management() {
-    let env = Env::default();
-    env.mock_all_auths();
-
-    let client_address = Address::generate(&env);
-    let admin = Address::generate(&env);
-    let service_provider_address = Address::generate(&env);
-    let platform_address = Address::generate(&env);
-    let release_signer_address = Address::generate(&env);
-    let dispute_resolver_address = Address::generate(&env);
-
-    let amount: i128 = 100_000_000;
-    let platform_fee = 30;
-
-    let milestones = vec![&env, Milestone {
-        description: String::from_str(&env, "First milestone"),
-        status: String::from_str(&env, "Pending"),
-        approved_flag: false,
-        amount: 100_000,
-        dispute_flag: false,
-        release_flag: false,
-    }];
-
-    let engagement_contract_address = env.register_contract(None, EngagementContract);
-    let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
-    let usdc_token = create_usdc_token(&env, &admin);
-
-    let engagement_id = String::from_str(&env, "test_dispute");
-    let escrow_properties: Escrow = Escrow {
-        engagement_id: engagement_id.clone(),
-        title: String::from_str(&env, "Test Escrow"),
-        description: String::from_str(&env, "Test Escrow Description"),
-        client: client_address.clone(),
-        service_provider: service_provider_address.clone(),
-        platform_address: platform_address.clone(),
-        amount: amount,
-        platform_fee: platform_fee,
-        milestones: milestones.clone(),
-        release_signer: release_signer_address.clone(),
-        dispute_resolver: dispute_resolver_address.clone(),
-        dispute_flag: false,
-        trustline: usdc_token.address.clone(),
-    };
-
-    engagement_client.initialize_escrow(&escrow_properties);
-
-    // Save initial state for later comparison
-    let initial_escrow = engagement_client.get_escrow();
-    assert_eq!(initial_escrow.dispute_flag, false);
-
-    // Test 1: Change dispute approved_flag successfully
-    engagement_client.change_dispute_flag();
-
-    // Verify dispute approved_flag changed but nothing else did
-    let disputed_escrow = engagement_client.get_escrow();
-    assert_eq!(disputed_escrow.dispute_flag, true);
-    assert_eq!(disputed_escrow.client, initial_escrow.client);
-    assert_eq!(disputed_escrow.service_provider, initial_escrow.service_provider);
-    assert_eq!(disputed_escrow.amount, initial_escrow.amount);
-    assert_eq!(disputed_escrow.platform_fee, initial_escrow.platform_fee);
-    assert_eq!(disputed_escrow.milestones, initial_escrow.milestones);
-
-    // Test 2: Try to change approved_flag when already in dispute
-    let result = engagement_client.try_change_dispute_flag();
-    assert!(result.is_err());
-}
 
 #[test]
 fn test_dispute_resolution_process() {
@@ -702,7 +635,7 @@ fn test_dispute_resolution_process() {
         status: String::from_str(&env, "in_progress"),
         approved_flag: false,
         amount: amount,
-        dispute_flag: true,
+        dispute_flag: false, 
         release_flag: false,
     };
 
@@ -735,12 +668,13 @@ fn test_dispute_resolution_process() {
     let escrow_balance = usdc_token.balance(&engagement_contract_address);
     assert_eq!(escrow_balance, amount as i128);
 
-    // Change dispute approved_flag
-    engagement_client.change_dispute_flag();
+    // Change milestone dispute flag
+    engagement_client.change_milestone_dispute_flag(&(0 as i128), &client_address);
 
-    // Verify approved_flag changed
+    // Verify milestone dispute flag changed
     let disputed_escrow = engagement_client.get_escrow();
-    assert_eq!(disputed_escrow.dispute_flag, true);
+    let disputed_milestone = disputed_escrow.milestones.get(0).unwrap();
+    assert_eq!(disputed_milestone.dispute_flag, true);
 
     // Resolve dispute
     let client_amount: i128 = 40_000_000;
@@ -770,7 +704,6 @@ fn test_dispute_resolution_process() {
     let final_escrow = engagement_client.get_escrow();
     let resolved_milestone = final_escrow.milestones.get(0).unwrap();
     assert_eq!(resolved_milestone.status, String::from_str(&env, "resolved"));
-
 }
 
 #[test]
@@ -1022,24 +955,102 @@ fn test_fund_escrow_dispute_flag_error() {
         engagement_id: engagement_id.clone(),
         title: String::from_str(&env, "Test Escrow"),
         description: String::from_str(&env, "Test Escrow Description"),
-        client: client_address,
-        service_provider: service_provider_address,
+        client: client_address.clone(),
+        service_provider: service_provider_address.clone(), 
         platform_address: platform_address,
         amount: amount,
         platform_fee: platform_fee,
         milestones: milestones,
         release_signer: release_signer_address.clone(),
-        dispute_resolver: dispute_resolver_address,
+        dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
-        trustline: usdc_token.address,
+        trustline: usdc_token.address.clone(),
     };
 
     engagement_client.initialize_escrow(&escrow_properties);
-    engagement_client.change_dispute_flag();
+    engagement_client.change_milestone_dispute_flag(&(0 as i128), &client_address);
 
     let amount_to_deposit: i128 = 80_000;
 
     let result = engagement_client.try_fund_escrow(&release_signer_address, &amount_to_deposit);
 
     assert!(result.is_err(), "Should fail when the dispute approved_flag is true");
+}
+
+#[test]
+fn test_change_milestone_dispute_flag() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let client_address = Address::generate(&env);
+    let admin = Address::generate(&env);
+    let service_provider_address = Address::generate(&env);
+    let platform_address = Address::generate(&env);
+    let release_signer_address = Address::generate(&env);
+    let dispute_resolver_address = Address::generate(&env);
+
+    let amount: i128 = 100_000_000;
+    let platform_fee = 30;
+
+    let milestones = vec![
+        &env,
+        Milestone {
+            description: String::from_str(&env, "First milestone"),
+            status: String::from_str(&env, "Pending"),
+            approved_flag: false,
+            amount: 50_000_000,
+            dispute_flag: false,
+            release_flag: false,
+        },
+        Milestone {
+            description: String::from_str(&env, "Second milestone"),
+            status: String::from_str(&env, "Pending"),
+            approved_flag: false,
+            amount: 50_000_000,
+            dispute_flag: false,
+            release_flag: false,
+        }
+    ];
+
+    let engagement_contract_address = env.register_contract(None, EngagementContract);
+    let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
+    let usdc_token = create_usdc_token(&env, &admin);
+
+    let engagement_id = String::from_str(&env, "test_milestone_dispute");
+    let escrow_properties: Escrow = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Test Escrow"),
+        description: String::from_str(&env, "Test Escrow Description"),
+        client: client_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address.clone(),
+        amount: amount,
+        platform_fee: platform_fee,
+        milestones: milestones.clone(),
+        release_signer: release_signer_address.clone(),
+        dispute_resolver: dispute_resolver_address.clone(),
+        dispute_flag: false,
+        trustline: usdc_token.address.clone(),
+    };
+
+    engagement_client.initialize_escrow(&escrow_properties);
+
+    engagement_client.change_milestone_dispute_flag(&(0 as i128), &client_address);
+    
+    let escrow = engagement_client.get_escrow();
+    let milestone = escrow.milestones.get(0).unwrap();
+    assert!(milestone.dispute_flag, "First milestone dispute flag should be true");
+    
+    let milestone2 = escrow.milestones.get(1).unwrap();
+    assert!(!milestone2.dispute_flag, "Second milestone dispute flag should remain false");
+
+    let result = engagement_client.try_change_milestone_dispute_flag(&(5 as i128), &client_address);
+    assert!(result.is_err(), "Should fail with invalid milestone index");
+
+    let unauthorized = Address::generate(&env);
+    let result = engagement_client.try_change_milestone_dispute_flag(&(0 as i128), &unauthorized);
+    assert!(result.is_err(), "Should fail with unauthorized client");
+
+    let result = engagement_client.try_change_milestone_dispute_flag(&(0 as i128), &client_address);
+    assert!(result.is_err(), "Should fail when milestone is already in dispute");
 }
