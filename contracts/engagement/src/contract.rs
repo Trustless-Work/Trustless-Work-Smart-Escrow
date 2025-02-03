@@ -123,13 +123,15 @@ impl EngagementContract {
         e: Env,
         dispute_resolver: Address,
         client_funds: i128,
-        service_provider_funds: i128
+        service_provider_funds: i128,
+        trustless_work_address: Address
     ) -> Result<(), ContractError> {
         DisputeManager::resolving_disputes(
             e,
             dispute_resolver,
             client_funds,
-            service_provider_funds
+            service_provider_funds,
+            trustless_work_address
         )
     }
     

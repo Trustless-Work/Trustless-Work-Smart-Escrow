@@ -14,7 +14,8 @@ impl DisputeManager {
         e: Env,
         dispute_resolver: Address,
         client_funds: i128,
-        service_provider_funds: i128
+        service_provider_funds: i128,
+        trustless_work_address: Address
     ) -> Result<(), ContractError> {
         dispute_resolver.require_auth();
     
@@ -39,22 +40,51 @@ impl DisputeManager {
         if total_funds > escrow_balance {
             return Err(ContractError::InsufficientFundsForResolution);
         }
+
+        let trustless_work_commission = total_funds * 0.003 as i128;
+        let platform_fee = escrow.platform_fee;
+        let client_deductions: i128 = client_funds - platform_fee - trustless_work_commission;
+        let service_provider_deductions: i128 = service_provider_funds - platform_fee - trustless_work_commission;
+        
+        if client_funds < client_deductions {
+            return Err(ContractError::InsufficientClientFundsForCommissions);
+        }
+
+        if service_provider_funds < service_provider_deductions {
+            return Err(ContractError::InsufficientServiceProviderFundsForCommissions);
+        }
+        
+        let adjusted_client_funds = client_funds - client_deductions;
+        let adjusted_service_provider_funds = service_provider_funds - service_provider_deductions;
+
+        usdc_client.transfer(
+            &e.current_contract_address(),
+            &trustless_work_address,
+            &trustless_work_commission
+        );
+
+        usdc_client.transfer(
+            &e.current_contract_address(),
+            &escrow.platform_address,
+            &platform_fee
+        );
     
-        if client_funds > 0 {
+        if adjusted_client_funds > 0 {
             usdc_client.transfer(
                 &e.current_contract_address(),
                 &escrow.client,
-                &(client_funds as i128)
+                &adjusted_client_funds
             );
         }
 
-        if service_provider_funds > 0 {
+        if adjusted_service_provider_funds > 0 {
             usdc_client.transfer(
                 &e.current_contract_address(),
                 &escrow.service_provider,
-                &(service_provider_funds as i128)
+                &adjusted_service_provider_funds
             );
         }
+    
     
         e.storage().instance().set(&DataKey::Escrow, &escrow);
     
