@@ -72,9 +72,10 @@ impl EngagementContract {
 
     pub fn change_escrow_properties(
         e: Env,
+        plataform_address: Address,
         escrow_properties: Escrow
-    ) -> Result<(), ContractError> {
-        EscrowManager::change_escrow_properties(e, escrow_properties)
+    ) -> Result<Escrow, ContractError> {
+        EscrowManager::change_escrow_properties(e, plataform_address, escrow_properties)
     }
 
     pub fn get_escrow(e: Env) -> Result<Escrow, ContractError> {

@@ -196,7 +196,7 @@ fn test_change_escrow_properties() {
         description: String::from_str(&env, "Updated Escrow Description"),
         client: new_client_address.clone(),
         service_provider: new_service_provider.clone(),
-        platform_address: unauthorized_address,
+        platform_address: unauthorized_address.clone(),
         amount: new_amount,
         platform_fee: new_platform_fee,
         milestones: new_milestones.clone(),
@@ -206,7 +206,7 @@ fn test_change_escrow_properties() {
         trustline: usdc_token.address.clone(),
     };
 
-    let result = engagement_client.try_change_escrow_properties(&escrow_properties_v2);
+    let result = engagement_client.try_change_escrow_properties(&unauthorized_address, &escrow_properties_v2);
     assert!(result.is_err());
     // Update escrow with authorized platform_address
     env.mock_all_auths();
@@ -227,7 +227,7 @@ fn test_change_escrow_properties() {
         trustline: usdc_token.address,
     };
 
-    engagement_client.change_escrow_properties(&escrow_properties_v3);
+    engagement_client.change_escrow_properties(&platform_address,&escrow_properties_v3);
 
     // Verify updated escrow properties
     let updated_escrow = engagement_client.get_escrow();
@@ -364,7 +364,7 @@ fn test_change_milestone_status_and_approved_flag() {
         description: String::from_str(&env, "Test Escrow Description"),
         client: client_address.clone(),
         service_provider: service_provider_address.clone(),
-        platform_address: platform_address,
+        platform_address: platform_address.clone(),
         amount: amount,
         platform_fee: platform_fee,
         milestones: vec![&env],
@@ -374,7 +374,7 @@ fn test_change_milestone_status_and_approved_flag() {
         trustline: usdc_token.address,
     };
 
-    engagement_client.change_escrow_properties(&escrow_properties_v2);
+    engagement_client.change_escrow_properties(&platform_address, &escrow_properties_v2);
     // Test for `change_status` on escrow with no milestones
     let result = engagement_client.try_change_milestone_status(
         &(0 as i128),

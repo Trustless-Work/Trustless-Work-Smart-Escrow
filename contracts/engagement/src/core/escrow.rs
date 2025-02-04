@@ -3,7 +3,6 @@ use soroban_sdk::token::Client as TokenClient;
 
 use crate::storage::types::{Escrow, DataKey, AddressBalance, Milestone};
 use crate::error::ContractError;
-use crate::events::escrows_by_engagement_id;
 
 pub struct EscrowManager;
 
@@ -158,30 +157,27 @@ impl EscrowManager{
 
     pub fn change_escrow_properties(
         e: Env,
+        plataform_address: Address,
         escrow_properties: Escrow
-    ) -> Result<(), ContractError> {
+    ) -> Result<Escrow, ContractError> {
         let escrow_result = Self::get_escrow(e.clone());
         let existing_escrow = match escrow_result {
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
 
-        if escrow_properties.platform_address != existing_escrow.platform_address {
+        if plataform_address != existing_escrow.platform_address {
             return Err(ContractError::OnlyPlatformAddressExecuteThisFunction);
         }
         
-        escrow_properties.platform_address.require_auth();
+        plataform_address.require_auth();
 
         e.storage().instance().set(
             &DataKey::Escrow,
             &escrow_properties
         );
 
-        let engagement_id_copy = escrow_properties.engagement_id.clone();
-
-        escrows_by_engagement_id(&e, engagement_id_copy, escrow_properties);
-
-        Ok(())
+        Ok(escrow_properties)
     }
 
     pub fn get_multiple_escrow_balances(
@@ -191,7 +187,7 @@ impl EscrowManager{
         let mut balances: Vec<AddressBalance> = Vec::new(&e);
         
         for address in addresses.iter() {
-            let escrow_result = EscrowManager::get_escrow_for_address(e.clone(), &address);
+            let escrow_result = Self::get_escrow_by_contract_id(e.clone(), &address);
             let escrow = match escrow_result {
                 Ok(esc) => esc,
                 Err(err) => return Err(err),
@@ -199,21 +195,21 @@ impl EscrowManager{
     
             let token_client = TokenClient::new(&e, &escrow.trustline);
             let balance = token_client.balance(&address);
-    
+
             balances.push_back(AddressBalance {
                 address: address.clone(),
                 balance,
-            });
+            })
         }
         
         Ok(balances)
     }
     
-    pub fn get_escrow_for_address(e: Env, contract_address: &Address) -> Result<Escrow, ContractError> {
+    pub fn get_escrow_by_contract_id(e: Env, contract_id: &Address) -> Result<Escrow, ContractError> {
         let args: Vec<Val> = Vec::new(&e);
 
         let result = e.invoke_contract::<Escrow>(
-            contract_address,
+            contract_id,
             &Symbol::new(&e, "get_escrow"),
             args.try_into().unwrap()
         );
