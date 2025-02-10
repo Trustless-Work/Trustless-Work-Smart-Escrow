@@ -196,14 +196,6 @@
                             },
                             {
                               "key": {
-                                "symbol": "dispute_flag"
-                              },
-                              "val": {
-                                "bool": false
-                              }
-                            },
-                            {
-                              "key": {
                                 "symbol": "dispute_resolver"
                               },
                               "val": {
@@ -708,14 +700,6 @@
                 },
                 {
                   "key": {
-                    "symbol": "dispute_flag"
-                  },
-                  "val": {
-                    "bool": false
-                  }
-                },
-                {
-                  "key": {
                     "symbol": "dispute_resolver"
                   },
                   "val": {
@@ -949,14 +933,6 @@
                   },
                   "val": {
                     "string": "Test Escrow Description"
-                  }
-                },
-                {
-                  "key": {
-                    "symbol": "dispute_flag"
-                  },
-                  "val": {
-                    "bool": false
                   }
                 },
                 {
