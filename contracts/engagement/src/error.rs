@@ -38,7 +38,7 @@ pub enum ContractError {
     MilestoneNotInDispute = 32,
     OnlyClientCanOpenDispute = 33,
     MilestoneAlreadyInDispute = 34,
-
+    CantReleaseAMilestoneInDispute = 35,
 }
 
 impl fmt::Display for ContractError {
@@ -78,6 +78,7 @@ impl fmt::Display for ContractError {
             ContractError::MilestoneNotInDispute => write!(f, "Milestone not in dispute"),
             ContractError::OnlyClientCanOpenDispute => write!(f, "Only the client can open a dispute for a milestone"),
             ContractError::MilestoneAlreadyInDispute => write!(f, "Milestone is already in dispute"),
+            ContractError::CantReleaseAMilestoneInDispute => write!(f, "You cannot launch a milestone in dispute"),
         }
     }
 }

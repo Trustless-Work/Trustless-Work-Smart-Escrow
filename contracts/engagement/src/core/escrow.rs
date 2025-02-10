@@ -38,10 +38,6 @@ impl EscrowManager{
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
-
-        if escrow.dispute_flag {
-            return Err(ContractError::EscrowOpenedForDisputeResolution);
-        }
     
         let usdc_client = TokenClient::new(&e, &escrow.trustline);
 
@@ -100,8 +96,8 @@ impl EscrowManager{
             return Err(ContractError::EscrowNotCompleted);
         }
 
-        if escrow.dispute_flag {
-            return Err(ContractError::InvalidState);
+        if milestone.dispute_flag {
+            return Err(ContractError::CantReleaseAMilestoneInDispute);
         }
 
         let usdc_client = TokenClient::new(&e, &escrow.trustline);

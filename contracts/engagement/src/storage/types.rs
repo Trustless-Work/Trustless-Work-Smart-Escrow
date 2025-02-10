@@ -18,7 +18,6 @@ pub struct Escrow {
     pub milestones: Vec<Milestone>,
     pub release_signer: Address,
     pub dispute_resolver: Address,
-    pub dispute_flag: bool,
     pub trustline: Address,
 }
 
