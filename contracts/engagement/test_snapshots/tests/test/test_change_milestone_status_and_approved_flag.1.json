@@ -16,10 +16,7 @@
               "function_name": "change_milestone_status",
               "args": [
                 {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 0
-                  }
+                  "u32": 0
                 },
                 {
                   "string": "completed"
@@ -42,13 +39,10 @@
           "function": {
             "contract_fn": {
               "contract_address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM",
-              "function_name": "change_milestone_flag",
+              "function_name": "change_milestone_approved_flag",
               "args": [
                 {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 0
-                  }
+                  "u32": 0
                 },
                 {
                   "bool": true
@@ -1145,10 +1139,7 @@
             "data": {
               "vec": [
                 {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 0
-                  }
+                  "u32": 0
                 },
                 {
                   "string": "completed"
@@ -1717,16 +1708,13 @@
                 "bytes": "0000000000000000000000000000000000000000000000000000000000000007"
               },
               {
-                "symbol": "change_milestone_flag"
+                "symbol": "change_milestone_approved_flag"
               }
             ],
             "data": {
               "vec": [
                 {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 0
-                  }
+                  "u32": 0
                 },
                 {
                   "bool": true
@@ -2002,7 +1990,7 @@
                 "symbol": "fn_return"
               },
               {
-                "symbol": "change_milestone_flag"
+                "symbol": "change_milestone_approved_flag"
               }
             ],
             "data": "void"
@@ -2301,10 +2289,7 @@
             "data": {
               "vec": [
                 {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 10
-                  }
+                  "u32": 10
                 },
                 {
                   "string": "completed"
@@ -2397,10 +2382,7 @@
                 {
                   "vec": [
                     {
-                      "i128": {
-                        "hi": 0,
-                        "lo": 10
-                      }
+                      "u32": 10
                     },
                     {
                       "string": "completed"
@@ -2432,16 +2414,13 @@
                 "bytes": "0000000000000000000000000000000000000000000000000000000000000007"
               },
               {
-                "symbol": "change_milestone_flag"
+                "symbol": "change_milestone_approved_flag"
               }
             ],
             "data": {
               "vec": [
                 {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 10
-                  }
+                  "u32": 10
                 },
                 {
                   "bool": true
@@ -2468,7 +2447,7 @@
                 "symbol": "fn_return"
               },
               {
-                "symbol": "change_milestone_flag"
+                "symbol": "change_milestone_approved_flag"
               }
             ],
             "data": {
@@ -2529,15 +2508,12 @@
                   "string": "contract try_call failed"
                 },
                 {
-                  "symbol": "change_milestone_flag"
+                  "symbol": "change_milestone_approved_flag"
                 },
                 {
                   "vec": [
                     {
-                      "i128": {
-                        "hi": 0,
-                        "lo": 10
-                      }
+                      "u32": 10
                     },
                     {
                       "bool": true
@@ -2575,10 +2551,7 @@
             "data": {
               "vec": [
                 {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 0
-                  }
+                  "u32": 0
                 },
                 {
                   "string": "completed"
@@ -2671,10 +2644,7 @@
                 {
                   "vec": [
                     {
-                      "i128": {
-                        "hi": 0,
-                        "lo": 0
-                      }
+                      "u32": 0
                     },
                     {
                       "string": "completed"
@@ -2706,16 +2676,13 @@
                 "bytes": "0000000000000000000000000000000000000000000000000000000000000007"
               },
               {
-                "symbol": "change_milestone_flag"
+                "symbol": "change_milestone_approved_flag"
               }
             ],
             "data": {
               "vec": [
                 {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 0
-                  }
+                  "u32": 0
                 },
                 {
                   "bool": true
@@ -2742,7 +2709,7 @@
                 "symbol": "fn_return"
               },
               {
-                "symbol": "change_milestone_flag"
+                "symbol": "change_milestone_approved_flag"
               }
             ],
             "data": {
@@ -2803,15 +2770,12 @@
                   "string": "contract try_call failed"
                 },
                 {
-                  "symbol": "change_milestone_flag"
+                  "symbol": "change_milestone_approved_flag"
                 },
                 {
                   "vec": [
                     {
-                      "i128": {
-                        "hi": 0,
-                        "lo": 0
-                      }
+                      "u32": 0
                     },
                     {
                       "bool": true
@@ -3127,10 +3091,7 @@
             "data": {
               "vec": [
                 {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 0
-                  }
+                  "u32": 0
                 },
                 {
                   "string": "completed"
@@ -3223,10 +3184,7 @@
                 {
                   "vec": [
                     {
-                      "i128": {
-                        "hi": 0,
-                        "lo": 0
-                      }
+                      "u32": 0
                     },
                     {
                       "string": "completed"
@@ -3258,16 +3216,13 @@
                 "bytes": "0000000000000000000000000000000000000000000000000000000000000007"
               },
               {
-                "symbol": "change_milestone_flag"
+                "symbol": "change_milestone_approved_flag"
               }
             ],
             "data": {
               "vec": [
                 {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 0
-                  }
+                  "u32": 0
                 },
                 {
                   "bool": true
@@ -3294,7 +3249,7 @@
                 "symbol": "fn_return"
               },
               {
-                "symbol": "change_milestone_flag"
+                "symbol": "change_milestone_approved_flag"
               }
             ],
             "data": {
@@ -3355,15 +3310,12 @@
                   "string": "contract try_call failed"
                 },
                 {
-                  "symbol": "change_milestone_flag"
+                  "symbol": "change_milestone_approved_flag"
                 },
                 {
                   "vec": [
                     {
-                      "i128": {
-                        "hi": 0,
-                        "lo": 0
-                      }
+                      "u32": 0
                     },
                     {
                       "bool": true

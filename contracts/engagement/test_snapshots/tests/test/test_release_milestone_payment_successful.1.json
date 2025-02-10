@@ -73,10 +73,7 @@
                   "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
                 },
                 {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 0
-                  }
+                  "u32": 0
                 }
               ]
             }
@@ -1612,10 +1609,7 @@
                   "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOLZM"
                 },
                 {
-                  "i128": {
-                    "hi": 0,
-                    "lo": 0
-                  }
+                  "u32": 0
                 }
               ]
             }

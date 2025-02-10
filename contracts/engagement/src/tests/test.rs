@@ -302,7 +302,7 @@ fn test_change_milestone_status_and_approved_flag() {
     // Change milestone status (valid case)
     let new_status = String::from_str(&env, "completed");
     engagement_client.change_milestone_status(
-        &(0 as i128), // Milestone index
+        &(0 as u32), // Milestone index
         &new_status,
         &service_provider_address
     );
@@ -312,14 +312,14 @@ fn test_change_milestone_status_and_approved_flag() {
     assert_eq!(updated_escrow.milestones.get(0).unwrap().status, new_status);
 
     // Change milestone approved_flag (valid case)
-    engagement_client.change_milestone_flag(&(0 as i128), &true, &client_address);
+    engagement_client.change_milestone_approved_flag(&(0), &true, &client_address);
 
     // Verify milestone approved_flag change
     let final_escrow = engagement_client.get_escrow();
     assert!(final_escrow.milestones.get(0).unwrap().approved_flag);
 
     // Invalid index test
-    let invalid_index = 10 as i128;
+    let invalid_index = 10;
     let new_status = String::from_str(&env, "completed");
 
     // Test for `change_status` with invalid index
@@ -331,7 +331,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert!(result.is_err());
 
     // Test for `change_approved_flag` with invalid index
-    let result = engagement_client.try_change_milestone_flag(
+    let result = engagement_client.try_change_milestone_approved_flag(
         &invalid_index,
         &true,
         &client_address
@@ -343,15 +343,15 @@ fn test_change_milestone_status_and_approved_flag() {
 
     // Test for `change_status` by invalid service provider
     let result = engagement_client.try_change_milestone_status(
-        &(0 as i128),
+        &(0),
         &new_status,
         &unauthorized_address
     );
     assert!(result.is_err());
 
     // Test for `change_approved_flag` by invalid client
-    let result = engagement_client.try_change_milestone_flag(
-        &(0 as i128),
+    let result = engagement_client.try_change_milestone_approved_flag(
+        &(0),
         &true,
         &unauthorized_address
     );
@@ -377,14 +377,14 @@ fn test_change_milestone_status_and_approved_flag() {
     engagement_client.change_escrow_properties(&platform_address, &escrow_properties_v2);
     // Test for `change_status` on escrow with no milestones
     let result = engagement_client.try_change_milestone_status(
-        &(0 as i128),
+        &(0),
         &new_status,
         &service_provider_address
     );
     assert!(result.is_err());
 
     // Test for `change_approved_flag` on escrow with no milestones
-    let result = engagement_client.try_change_milestone_flag(&(0 as i128), &true, &client_address);
+    let result = engagement_client.try_change_milestone_approved_flag(&(0 ), &true, &client_address);
     assert!(result.is_err());
 }
 
@@ -457,7 +457,7 @@ fn test_release_milestone_payment_successful() {
     engagement_client.release_milestone_payment(
         &release_signer_address,
         &trustless_work_address,
-        &(0 as i128)
+        &(0)
     );
 
     let total_amount = milestones.get(0).unwrap().amount as i128;
@@ -537,7 +537,7 @@ fn test_release_milestone_payment_no_milestones() {
     let result = engagement_client.try_release_milestone_payment(
         &release_signer_address,
         &platform_address,
-        &(0 as i128)
+        &(0)
     );
     assert!(
         result.is_err(),
@@ -599,7 +599,7 @@ fn test_release_milestone_payment_milestones_incomplete() {
     let result = engagement_client.try_release_milestone_payment(
         &release_signer_address,
         &platform_address,
-        &(0 as i128)
+        &(0)
     );
     assert!(
         result.is_err(),
@@ -669,7 +669,7 @@ fn test_dispute_resolution_process() {
     assert_eq!(escrow_balance, amount as i128);
 
     // Change milestone dispute flag
-    engagement_client.change_milestone_dispute_flag(&(0 as i128), &client_address);
+    engagement_client.change_milestone_dispute_flag(&(0 as i128));
 
     // Verify milestone dispute flag changed
     let disputed_escrow = engagement_client.get_escrow();
@@ -968,7 +968,7 @@ fn test_fund_escrow_dispute_flag_error() {
     };
 
     engagement_client.initialize_escrow(&escrow_properties);
-    engagement_client.change_milestone_dispute_flag(&(0 as i128), &client_address);
+    engagement_client.change_milestone_dispute_flag(&(0 as i128));
 
     let amount_to_deposit: i128 = 80_000;
 
@@ -1035,7 +1035,7 @@ fn test_change_milestone_dispute_flag() {
 
     engagement_client.initialize_escrow(&escrow_properties);
 
-    engagement_client.change_milestone_dispute_flag(&(0 as i128), &client_address);
+    engagement_client.change_milestone_dispute_flag(&(0 as i128));
     
     let escrow = engagement_client.get_escrow();
     let milestone = escrow.milestones.get(0).unwrap();
@@ -1044,13 +1044,9 @@ fn test_change_milestone_dispute_flag() {
     let milestone2 = escrow.milestones.get(1).unwrap();
     assert!(!milestone2.dispute_flag, "Second milestone dispute flag should remain false");
 
-    let result = engagement_client.try_change_milestone_dispute_flag(&(5 as i128), &client_address);
+    let result = engagement_client.try_change_milestone_dispute_flag(&(5 as i128));
     assert!(result.is_err(), "Should fail with invalid milestone index");
 
-    let unauthorized = Address::generate(&env);
-    let result = engagement_client.try_change_milestone_dispute_flag(&(0 as i128), &unauthorized);
-    assert!(result.is_err(), "Should fail with unauthorized client");
-
-    let result = engagement_client.try_change_milestone_dispute_flag(&(0 as i128), &client_address);
+    let result = engagement_client.try_change_milestone_dispute_flag(&(0 as i128));
     assert!(result.is_err(), "Should fail when milestone is already in dispute");
 }
