@@ -23,7 +23,6 @@ fn test_initialize_excrow() {
     let client_address = Address::generate(&env);
     let admin = Address::generate(&env);
     let platform_address = Address::generate(&env);
-    let amount: i128 = 100_000_000;
     let service_provider_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
@@ -61,7 +60,6 @@ fn test_initialize_excrow() {
         client: client_address,
         service_provider: service_provider_address,
         platform_address: platform_address,
-        amount: amount,
         platform_fee: platform_fee,
         milestones: milestones,
         release_signer: release_signer_address,
@@ -77,7 +75,6 @@ fn test_initialize_excrow() {
     assert_eq!(escrow.client, escrow_properties.client);
     assert_eq!(escrow.service_provider, escrow_properties.service_provider);
     assert_eq!(escrow.platform_address, escrow_properties.platform_address);
-    assert_eq!(escrow.amount, amount);
     assert_eq!(escrow.platform_fee, platform_fee);
     assert_eq!(escrow.milestones, escrow_properties.milestones);
     assert_eq!(escrow.release_signer, escrow_properties.release_signer);
@@ -99,7 +96,6 @@ fn test_change_escrow_properties() {
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
 
-    let amount: i128 = 100_000_000;
     let platform_fee = (0.3 * ((10i128).pow(18) as f64)) as i128;
 
     let initial_milestones = vec![
@@ -135,7 +131,6 @@ fn test_change_escrow_properties() {
         client: client_address,
         service_provider: service_provider_address,
         platform_address: platform_address.clone(),
-        amount: amount,
         platform_fee: platform_fee,
         milestones: initial_milestones,
         release_signer: release_signer_address,
@@ -154,7 +149,6 @@ fn test_change_escrow_properties() {
     let new_service_provider = Address::generate(&env);
     let new_release_signer = Address::generate(&env);
     let new_dispute_resolver = Address::generate(&env);
-    let new_amount: i128 = 200_000_000;
     let new_platform_fee = (0.5 * ((10i128).pow(18) as f64)) as i128;
 
     let new_milestones = vec![
@@ -196,7 +190,6 @@ fn test_change_escrow_properties() {
         client: new_client_address.clone(),
         service_provider: new_service_provider.clone(),
         platform_address: unauthorized_address.clone(),
-        amount: new_amount,
         platform_fee: new_platform_fee,
         milestones: new_milestones.clone(),
         release_signer: new_release_signer.clone(),
@@ -216,7 +209,6 @@ fn test_change_escrow_properties() {
         client: new_client_address.clone(),
         service_provider: new_service_provider.clone(),
         platform_address: platform_address.clone(),
-        amount: new_amount,
         platform_fee: new_platform_fee,
         milestones: new_milestones.clone(),
         release_signer: new_release_signer.clone(),
@@ -232,7 +224,6 @@ fn test_change_escrow_properties() {
     assert_eq!(updated_escrow.client, escrow_properties_v3.client);
     assert_eq!(updated_escrow.service_provider, escrow_properties_v3.service_provider);
     assert_eq!(updated_escrow.platform_address, escrow_properties_v3.platform_address);
-    assert_eq!(updated_escrow.amount, new_amount);
     assert_eq!(updated_escrow.platform_fee, new_platform_fee);
     assert_eq!(updated_escrow.milestones, escrow_properties_v3.milestones);
     assert_eq!(updated_escrow.release_signer, escrow_properties_v3.release_signer);
@@ -250,7 +241,6 @@ fn test_change_milestone_status_and_approved_flag() {
     let platform_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
-    let amount: i128 = 100_000_000;
     let platform_fee = (0.3 * ((10i128).pow(18) as f64)) as i128;
 
     let initial_milestones = vec![
@@ -285,7 +275,6 @@ fn test_change_milestone_status_and_approved_flag() {
         client: client_address.clone(),
         service_provider: service_provider_address.clone(),
         platform_address: platform_address.clone(),
-        amount: amount,
         platform_fee: platform_fee,
         milestones: initial_milestones.clone(),
         release_signer: release_signer_address.clone(),
@@ -361,7 +350,6 @@ fn test_change_milestone_status_and_approved_flag() {
         client: client_address.clone(),
         service_provider: service_provider_address.clone(),
         platform_address: platform_address.clone(),
-        amount: amount,
         platform_fee: platform_fee,
         milestones: vec![&env],
         release_signer: release_signer_address,
@@ -434,7 +422,6 @@ fn test_release_milestone_payment_successful() {
         client: client_address.clone(),
         service_provider: service_provider_address.clone(),
         platform_address: platform_address.clone(),
-        amount: amount,
         platform_fee: platform_fee,
         milestones: milestones.clone(),
         release_signer: release_signer_address.clone(),
@@ -506,7 +493,6 @@ fn test_release_milestone_payment_no_milestones() {
     let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
 
     let engagement_id_no_milestones = String::from_str(&env, "test_no_milestones");
-    let amount: i128 = 100_000_000;
     let platform_fee = 30;
 
     let escrow_properties: Escrow = Escrow {
@@ -516,7 +502,6 @@ fn test_release_milestone_payment_no_milestones() {
         client: client_address.clone(),
         service_provider: service_provider_address.clone(),
         platform_address: platform_address.clone(),
-        amount: amount,
         platform_fee: platform_fee,
         milestones: vec![&env],
         release_signer: release_signer_address.clone(),
@@ -567,7 +552,6 @@ fn test_release_milestone_payment_milestones_incomplete() {
         release_flag: false,
     }];
 
-    let amount: i128 = 100_000_000;
     let platform_fee = 30;
 
     let escrow_properties: Escrow = Escrow {
@@ -577,7 +561,6 @@ fn test_release_milestone_payment_milestones_incomplete() {
         client: client_address.clone(),
         service_provider: service_provider_address.clone(),
         platform_address: platform_address.clone(),
-        amount: amount,
         platform_fee: platform_fee,
         milestones: milestones_incomplete.clone(),
         release_signer: release_signer_address.clone(),
@@ -642,7 +625,6 @@ fn test_dispute_resolution_process() {
         client: client_address.clone(),
         service_provider: service_provider_address.clone(),
         platform_address: platform_address.clone(),
-        amount: amount,
         platform_fee: platform_fee,
         milestones: milestones,
         release_signer: release_signer_address.clone(),
@@ -742,7 +724,6 @@ fn test_fund_escrow_successful_deposit() {
         client: client_address.clone(),
         service_provider: service_provider_address.clone(),
         platform_address: platform_address.clone(),
-        amount: amount,
         platform_fee: platform_fee,
         milestones: milestones.clone(),
         release_signer: release_signer_address.clone(),
@@ -766,72 +747,6 @@ fn test_fund_escrow_successful_deposit() {
         expected_result_amount,
         "Escrow balance is incorrect"
     );
-}
-
-#[test]
-fn test_fund_escrow_fully_funded_error() {
-    let env = Env::default();
-    env.mock_all_auths();
-
-    let admin = Address::generate(&env);
-    let client_address = Address::generate(&env);
-    let platform_address = Address::generate(&env);
-    let amount: i128 = 100_000;
-    let service_provider_address = Address::generate(&env);
-    let release_signer_address = Address::generate(&env);
-    let dispute_resolver_address = Address::generate(&env);
-    let platform_fee = 30;
-    let milestones = vec![
-        &env,
-        Milestone {
-            description: String::from_str(&env, "First milestone"),
-            status: String::from_str(&env, "Pending"),
-            approved_flag: false,
-            amount: 100_000,
-            dispute_flag: false,
-            release_flag: false,
-        },
-        Milestone {
-            description: String::from_str(&env, "Second milestone"),
-            status: String::from_str(&env, "Pending"),
-            approved_flag: false,
-            amount: 100_000,
-            dispute_flag: false,
-            release_flag: false,
-        }
-    ];
-
-    let engagement_contract_address = env.register_contract(None, EngagementContract);
-    let engagement_client = EngagementContractClient::new(&env, &engagement_contract_address);
-    let usdc_token = create_usdc_token(&env, &admin);
-
-    let engagement_id = String::from_str(&env, "12345");
-    let escrow_properties: Escrow = Escrow {
-        engagement_id: engagement_id.clone(),
-        title: String::from_str(&env, "Test Escrow"),
-        description: String::from_str(&env, "Test Escrow Description"),
-        client: client_address.clone(),
-        service_provider: service_provider_address.clone(),
-        platform_address: platform_address.clone(),
-        amount: amount,
-        platform_fee: platform_fee,
-        milestones: milestones.clone(),
-        release_signer: release_signer_address.clone(),
-        dispute_resolver: dispute_resolver_address.clone(),
-        trustline: usdc_token.address.clone(),
-    };
-
-    engagement_client.initialize_escrow(&escrow_properties);
-
-    let funded_amount: i128 = 100_000_000;
-    usdc_token.mint(&engagement_contract_address, &(funded_amount as i128));
-    usdc_token.mint(&release_signer_address, &(amount as i128));
-
-    let amount_to_deposit: i128 = 100_000;
-
-    let result = engagement_client.try_fund_escrow(&release_signer_address, &amount_to_deposit);
-
-    assert!(result.is_err(), "Should fail when the escrow is fully funded");
 }
 
 #[test]
@@ -879,7 +794,6 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
         client: client_address.clone(),
         service_provider: service_provider_address.clone(),
         platform_address: platform_address.clone(),
-        amount: amount,
         platform_fee: platform_fee,
         milestones: milestones.clone(),
         release_signer: release_signer_address.clone(),
@@ -909,7 +823,6 @@ fn test_fund_escrow_dispute_flag_error() {
     let admin = Address::generate(&env);
     let client_address = Address::generate(&env);
     let platform_address = Address::generate(&env);
-    let amount: i128 = 100_000_000;
     let service_provider_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
@@ -946,7 +859,6 @@ fn test_fund_escrow_dispute_flag_error() {
         client: client_address.clone(),
         service_provider: service_provider_address.clone(), 
         platform_address: platform_address,
-        amount: amount,
         platform_fee: platform_fee,
         milestones: milestones,
         release_signer: release_signer_address.clone(),
@@ -976,7 +888,6 @@ fn test_change_milestone_dispute_flag() {
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
 
-    let amount: i128 = 100_000_000;
     let platform_fee = 30;
 
     let milestones = vec![
@@ -1011,7 +922,6 @@ fn test_change_milestone_dispute_flag() {
         client: client_address.clone(),
         service_provider: service_provider_address.clone(),
         platform_address: platform_address.clone(),
-        amount: amount,
         platform_fee: platform_fee,
         milestones: milestones.clone(),
         release_signer: release_signer_address.clone(),
