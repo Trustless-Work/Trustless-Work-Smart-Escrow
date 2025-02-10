@@ -95,18 +95,12 @@ impl DisputeManager {
     pub fn change_milestone_dispute_flag(
         e: Env,
         milestone_index: i128,
-        client: Address,
     ) -> Result<(), ContractError> {
         let escrow_result = EscrowManager::get_escrow(e.clone());
         let existing_escrow = match escrow_result {
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
-
-        if client != existing_escrow.client {
-            return Err(ContractError::OnlyClientCanOpenDispute);
-        }
-        client.require_auth();
 
         if existing_escrow.milestones.is_empty() {
             return Err(ContractError::NoMileStoneDefined);
