@@ -4,8 +4,6 @@ use soroban_sdk::token::Client as TokenClient;
 use crate::storage::types::{Escrow, DataKey, AddressBalance};
 use crate::error::ContractError;
 
-use crate::events::escrows_by_engagement_id;
-
 pub struct EscrowManager;
 
 impl EscrowManager{
