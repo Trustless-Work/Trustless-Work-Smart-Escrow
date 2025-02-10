@@ -13,7 +13,6 @@ pub struct Escrow {
     pub client: Address,
     pub service_provider: Address,
     pub platform_address: Address,
-    pub amount: i128,
     pub platform_fee: i128,
     pub milestones: Vec<Milestone>,
     pub release_signer: Address,

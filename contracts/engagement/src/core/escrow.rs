@@ -16,10 +16,6 @@ impl EscrowManager{
         if e.storage().instance().has(&DataKey::Escrow) {
             return Err(ContractError::EscrowAlreadyInitialized);
         }
-
-        if escrow_properties.amount == 0 {
-            return Err(ContractError::AmountCannotBeZero);
-        }
         
         e.storage().instance().set(&DataKey::Escrow, &escrow_properties);
 
@@ -44,14 +40,6 @@ impl EscrowManager{
         let signer_balance = usdc_client.balance(&signer);
 
         let contract_address = e.current_contract_address();
-        
-        if usdc_client.balance(&contract_address) as i128 > escrow.amount {
-            return Err(ContractError::EscrowFullyFunded);
-        }
-
-        if amount_to_deposit as i128 > escrow.amount {
-            return Err(ContractError::AmountToDepositGreatherThanEscrowAmount);
-        }
 
         if signer_balance < amount_to_deposit {
             return Err(ContractError::SignerInsufficientFunds);
