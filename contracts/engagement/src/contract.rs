@@ -60,7 +60,7 @@ impl EngagementContract {
         e: Env, 
         release_signer: Address, 
         trustless_work_address: Address,
-        milestone_index: i128
+        milestone_index: u32
     ) -> Result<(), ContractError> {
         EscrowManager::release_milestone_payment(
             e, 
@@ -92,7 +92,7 @@ impl EngagementContract {
 
     pub fn change_milestone_status(
         e: Env,
-        milestone_index: i128,
+        milestone_index: u32,
         new_status: String,
         service_provider: Address,
     ) -> Result<(), ContractError> {
@@ -104,13 +104,13 @@ impl EngagementContract {
         )
     }
     
-    pub fn change_milestone_flag(
+    pub fn change_milestone_approved_flag(
         e: Env,
-        milestone_index: i128,
+        milestone_index: u32,
         new_flag: bool,
         client: Address,
     ) -> Result<(), ContractError> {
-        MilestoneManager::change_milestone_flag(
+        MilestoneManager::change_milestone_approved_flag(
             e,
             milestone_index,
             new_flag,
@@ -143,12 +143,10 @@ impl EngagementContract {
     pub fn change_milestone_dispute_flag(
         e: Env,
         milestone_index: i128,
-        client: Address,
     ) -> Result<(), ContractError> {
         DisputeManager::change_milestone_dispute_flag(
             e,
             milestone_index,
-            client
         )
     }
 }

@@ -9,7 +9,7 @@ pub struct MilestoneManager;
 impl MilestoneManager {
     pub fn change_milestone_status(
         e: Env,
-        milestone_index: i128,
+        milestone_index: u32,
         new_status: String,
         service_provider: Address,
     ) -> Result<(), ContractError> {
@@ -28,14 +28,14 @@ impl MilestoneManager {
             return Err(ContractError::NoMileStoneDefined);
         }
     
-        if milestone_index < 0 || milestone_index >= existing_escrow.milestones.len() as i128 {
+        if milestone_index >= existing_escrow.milestones.len() {
             return Err(ContractError::InvalidMileStoneIndex);
         }
 
         let mut updated_milestones = Vec::<Milestone>::new(&e);
         for (index, milestone) in existing_escrow.milestones.iter().enumerate() {
             let mut new_milestone = milestone.clone();
-            if index as i128 == milestone_index {
+            if index as u32 == milestone_index {
                 new_milestone.status = new_status.clone();
             }
             updated_milestones.push_back(new_milestone);
@@ -56,9 +56,9 @@ impl MilestoneManager {
         Ok(())
     }
     
-    pub fn change_milestone_flag(
+    pub fn change_milestone_approved_flag(
         e: Env,
-        milestone_index: i128,
+        milestone_index: u32,
         new_flag: bool,
         client: Address,
     ) -> Result<(), ContractError> {
@@ -78,14 +78,14 @@ impl MilestoneManager {
             return Err(ContractError::NoMileStoneDefined);
         }
 
-        if milestone_index < 0 || milestone_index >= existing_escrow.milestones.len() as i128 {
+        if milestone_index >= existing_escrow.milestones.len() {
             return Err(ContractError::InvalidMileStoneIndex);
         }
     
         let mut updated_milestones = Vec::<Milestone>::new(&e);
         for (index, milestone) in existing_escrow.milestones.iter().enumerate() {
             let mut new_milestone = milestone.clone();
-            if index as i128 == milestone_index {
+            if index as u32 == milestone_index {
                 new_milestone.approved_flag = new_flag;
             }
             updated_milestones.push_back(new_milestone);

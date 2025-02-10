@@ -72,7 +72,7 @@ impl EscrowManager{
         e: Env, 
         release_signer: Address, 
         trustless_work_address: Address,
-        milestone_index: i128
+        milestone_index: u32
     ) -> Result<(), ContractError> {
         release_signer.require_auth();
         
@@ -90,11 +90,11 @@ impl EscrowManager{
             return Err(ContractError::NoMileStoneDefined);
         }
     
-        if milestone_index < 0 || milestone_index >= escrow.milestones.len() as i128 {
+        if milestone_index >= escrow.milestones.len() {
             return Err(ContractError::InvalidMileStoneIndex);
         }
 
-        let milestone = escrow.milestones.get(milestone_index as u32).unwrap();
+        let milestone = escrow.milestones.get(milestone_index).unwrap();
 
         if !milestone.approved_flag {
             return Err(ContractError::EscrowNotCompleted);
@@ -142,7 +142,7 @@ impl EscrowManager{
         let mut updated_milestones = Vec::<Milestone>::new(&e);
         for (index, milestone) in escrow.milestones.iter().enumerate() {
             let mut new_milestone = milestone.clone();
-            if index as i128 == milestone_index {
+            if index as u32 == milestone_index {
                 new_milestone.release_flag = true;
             }
             updated_milestones.push_back(new_milestone);
