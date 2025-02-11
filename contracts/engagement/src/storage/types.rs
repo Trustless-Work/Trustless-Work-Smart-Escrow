@@ -29,6 +29,7 @@ pub struct Milestone {
     pub amount: i128,
     pub dispute_flag: bool,
     pub release_flag: bool,
+    pub resolved_flag: bool,
 }
 
 #[contracttype]

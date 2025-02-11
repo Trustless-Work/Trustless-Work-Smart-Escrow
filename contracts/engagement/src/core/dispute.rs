@@ -80,6 +80,7 @@ impl DisputeManager {
             milestone_index,
             Milestone {
                 status: String::from_str(&e, "resolved"),
+                resolved_flag: true,
                 ..milestone.clone()
             }
         );
