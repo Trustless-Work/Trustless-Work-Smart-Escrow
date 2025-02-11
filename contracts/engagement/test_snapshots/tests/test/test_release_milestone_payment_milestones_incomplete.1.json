@@ -131,7 +131,7 @@
                           "map": [
                             {
                               "key": {
-                                "symbol": "client"
+                                "symbol": "approver"
                               },
                               "val": {
                                 "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
@@ -250,6 +250,14 @@
                               },
                               "val": {
                                 "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                              }
+                            },
+                            {
+                              "key": {
+                                "symbol": "resolved_flag"
+                              },
+                              "val": {
+                                "bool": false
                               }
                             },
                             {
@@ -395,7 +403,7 @@
               "map": [
                 {
                   "key": {
-                    "symbol": "client"
+                    "symbol": "approver"
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
@@ -514,6 +522,14 @@
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "resolved_flag"
+                  },
+                  "val": {
+                    "bool": false
                   }
                 },
                 {
@@ -566,7 +582,7 @@
               "map": [
                 {
                   "key": {
-                    "symbol": "client"
+                    "symbol": "approver"
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
@@ -685,6 +701,14 @@
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "resolved_flag"
+                  },
+                  "val": {
+                    "bool": false
                   }
                 },
                 {
