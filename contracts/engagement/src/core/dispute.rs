@@ -20,7 +20,7 @@ impl DisputeManager {
         dispute_resolver.require_auth();
     
         let escrow_result = EscrowManager::get_escrow(e.clone());
-        let escrow = match escrow_result {
+        let mut escrow = match escrow_result {
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
@@ -85,7 +85,7 @@ impl DisputeManager {
             );
         }
     
-    
+        escrow.resolved_flag = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
     
         escrows_by_engagement_id(&e, escrow.engagement_id.clone(), escrow);
