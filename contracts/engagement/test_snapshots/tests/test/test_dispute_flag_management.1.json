@@ -67,7 +67,7 @@
                             },
                             {
                               "key": {
-                                "symbol": "client"
+                                "symbol": "approver"
                               },
                               "val": {
                                 "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
@@ -175,6 +175,14 @@
                               },
                               "val": {
                                 "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                              }
+                            },
+                            {
+                              "key": {
+                                "symbol": "resolved_flag"
+                              },
+                              "val": {
+                                "bool": false
                               }
                             },
                             {
@@ -409,7 +417,7 @@
                 },
                 {
                   "key": {
-                    "symbol": "client"
+                    "symbol": "approver"
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
@@ -517,6 +525,14 @@
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "resolved_flag"
+                  },
+                  "val": {
+                    "bool": false
                   }
                 },
                 {
@@ -580,7 +596,7 @@
                 },
                 {
                   "key": {
-                    "symbol": "client"
+                    "symbol": "approver"
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
@@ -688,6 +704,14 @@
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "resolved_flag"
+                  },
+                  "val": {
+                    "bool": false
                   }
                 },
                 {
@@ -775,7 +799,7 @@
                 },
                 {
                   "key": {
-                    "symbol": "client"
+                    "symbol": "approver"
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
@@ -883,6 +907,14 @@
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "resolved_flag"
+                  },
+                  "val": {
+                    "bool": false
                   }
                 },
                 {
@@ -972,7 +1004,7 @@
                     },
                     {
                       "key": {
-                        "symbol": "client"
+                        "symbol": "approver"
                       },
                       "val": {
                         "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
@@ -1084,6 +1116,14 @@
                     },
                     {
                       "key": {
+                        "symbol": "resolved_flag"
+                      },
+                      "val": {
+                        "bool": false
+                      }
+                    },
+                    {
+                      "key": {
                         "symbol": "service_provider"
                       },
                       "val": {
@@ -1190,7 +1230,7 @@
                 },
                 {
                   "key": {
-                    "symbol": "client"
+                    "symbol": "approver"
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
@@ -1298,6 +1338,14 @@
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "resolved_flag"
+                  },
+                  "val": {
+                    "bool": false
                   }
                 },
                 {
