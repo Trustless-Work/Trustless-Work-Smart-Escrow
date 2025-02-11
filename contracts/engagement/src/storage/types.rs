@@ -10,7 +10,7 @@ pub struct Escrow {
     pub engagement_id: String,
     pub title: String,
     pub description: String,
-    pub client: Address,
+    pub approver: Address,
     pub service_provider: Address,
     pub platform_address: Address,
     pub platform_fee: i128,

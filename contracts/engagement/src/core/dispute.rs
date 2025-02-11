@@ -14,7 +14,7 @@ impl DisputeManager {
         e: Env,
         dispute_resolver: Address,
         milestone_index: u32,
-        client_funds: i128,
+        approver_funds: i128,
         service_provider_funds: i128,
         trustless_work_address: Address
     ) -> Result<(), ContractError> {
@@ -44,7 +44,7 @@ impl DisputeManager {
             return Err(ContractError::MilestoneNotInDispute);
         }
 
-        let total_funds = client_funds + service_provider_funds;
+        let total_funds = approver_funds + service_provider_funds;
         if total_funds != milestone.amount {
             return Err(ContractError::InsufficientFundsForResolution);
         }
@@ -53,25 +53,25 @@ impl DisputeManager {
         let platform_fee = (total_funds * escrow.platform_fee) / 10000;
         let total_fees = trustless_work_fee + platform_fee;
 
-        let net_client_funds = client_funds - (client_funds * total_fees) / total_funds;
+        let net_approver_funds = approver_funds - (approver_funds * total_fees) / total_funds;
         let net_provider_funds =
             service_provider_funds - (service_provider_funds * total_fees) / total_funds;
 
-        let usdc_client = TokenClient::new(&e, &escrow.trustline);
+        let usdc_approver = TokenClient::new(&e, &escrow.trustline);
         let contract_address = e.current_contract_address();
 
         if trustless_work_fee > 0 {
-            usdc_client.transfer(&contract_address, &trustless_work_address, &trustless_work_fee);
+            usdc_approver.transfer(&contract_address, &trustless_work_address, &trustless_work_fee);
         }
         if platform_fee > 0 {
-            usdc_client.transfer(&contract_address, &escrow.platform_address, &platform_fee);
+            usdc_approver.transfer(&contract_address, &escrow.platform_address, &platform_fee);
         }
 
-        if net_client_funds > 0 {
-            usdc_client.transfer(&contract_address, &escrow.client, &net_client_funds);
+        if net_approver_funds > 0 {
+            usdc_approver.transfer(&contract_address, &escrow.approver, &net_approver_funds);
         }
         if net_provider_funds > 0 {
-            usdc_client.transfer(&contract_address, &escrow.service_provider, &net_provider_funds);
+            usdc_approver.transfer(&contract_address, &escrow.service_provider, &net_provider_funds);
         }
 
         let mut updated_milestones = escrow.milestones.clone();

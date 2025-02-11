@@ -60,7 +60,7 @@ impl MilestoneManager {
         e: Env,
         milestone_index: u32,
         new_flag: bool,
-        client: Address,
+        approver: Address,
     ) -> Result<(), ContractError> {
         let escrow_result = EscrowManager::get_escrow(e.clone());
         let existing_escrow = match escrow_result {
@@ -68,11 +68,11 @@ impl MilestoneManager {
             Err(err) => return Err(err),
         };
     
-        if client != existing_escrow.client {
-            return Err(ContractError::OnlyClientChangeMilstoneFlag);
+        if approver != existing_escrow.approver {
+            return Err(ContractError::OnlyApproverChangeMilstoneFlag);
         }
 
-        client.require_auth();
+        approver.require_auth();
     
         if existing_escrow.milestones.is_empty() {
             return Err(ContractError::NoMileStoneDefined);
