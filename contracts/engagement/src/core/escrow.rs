@@ -82,7 +82,7 @@ impl EscrowManager{
         };
         
         if release_signer != escrow.release_signer {
-            return Err(ContractError::OnlyReleaseSignerCanClaimEarnings);
+            return Err(ContractError::OnlyReleaseSignerCanDistributeEarnings);
         }
     
         if escrow.milestones.is_empty() {
@@ -94,7 +94,7 @@ impl EscrowManager{
         }
     
         if escrow.dispute_flag {
-            return Err(ContractError::InvalidState);
+            return Err(ContractError::EscrowOpenedForDisputeResolution);
         }
     
         let usdc_approver = TokenClient::new(&e, &escrow.trustline);
@@ -103,7 +103,7 @@ impl EscrowManager{
         // Check the actual balance of the contract for this escrow
         let contract_balance = usdc_approver.balance(&contract_address);
         if contract_balance < escrow.amount as i128 {
-            return Err(ContractError::EscrowBalanceNotSufficienteToSendEarnings);
+            return Err(ContractError::EscrowBalanceNotEnoughToSendEarnings);
         }
     
         let platform_fee_percentage = escrow.platform_fee as i128;
