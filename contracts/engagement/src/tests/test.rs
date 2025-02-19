@@ -710,7 +710,6 @@ fn test_dispute_resolution_process() {
 
     // Change dispute approved_flag
     engagement_approver.change_dispute_flag( );
-    // log!(&env, "ESCROW BALANCE!!!!!", escrow_balance);
 
     // Verify approved_flag changed
     let disputed_escrow = engagement_approver.get_escrow();
@@ -719,6 +718,7 @@ fn test_dispute_resolution_process() {
     // Resolve dispute
     let approver_amount: i128 = 40_000_000;
     let provider_amount: i128 = 60_000_000;
+    let total_amount = approver_amount + provider_amount;
 
     engagement_approver.resolving_disputes(
         &dispute_resolver_address,
@@ -727,19 +727,17 @@ fn test_dispute_resolution_process() {
         &trustless_work_address
     );
 
-    let trustless_commission = amount  * 0.003 as i128;
-    let expected_platform_fee = platform_fee;
-    let approver_deductions: i128 = approver_amount - platform_fee - trustless_commission;
-    let service_provider_deductions: i128 = provider_amount - platform_fee - trustless_commission;
+    let expected_tw_fee = (total_amount * 30) / 10000; // 0.3%
+    let expected_platform_fee = (total_amount * platform_fee) / 10000;
+    let expected_approver = approver_amount - (approver_amount * (expected_tw_fee + expected_platform_fee)) / total_amount;
+    let expected_provider = provider_amount - (provider_amount * (expected_tw_fee + expected_platform_fee)) / total_amount;
 
-    // Calculate expected final amounts after commission deduction
-    let expected_approver_amount = approver_amount - approver_deductions;
-    let expected_service_provider_amount = provider_amount - service_provider_deductions;
 
     //Verify token balances
-    assert_eq!(usdc_token.balance(&approver_address), expected_approver_amount as i128);
-    assert_eq!(usdc_token.balance(&service_provider_address), expected_service_provider_amount as i128);
-    assert_eq!(usdc_token.balance(&trustless_work_address), trustless_commission);
+    assert_eq!(usdc_token.balance(&engagement_contract_address), 0);
+    assert_eq!(usdc_token.balance(&approver_address), expected_approver);
+    assert_eq!(usdc_token.balance(&service_provider_address), expected_provider);
+    assert_eq!(usdc_token.balance(&trustless_work_address), expected_tw_fee);
     assert_eq!(usdc_token.balance(&platform_address), expected_platform_fee);
 }
 
