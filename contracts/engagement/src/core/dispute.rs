@@ -41,26 +41,25 @@ impl DisputeManager {
             return Err(ContractError::InsufficientFundsForResolution);
         }
 
-        let trustless_work_commission = total_funds * 0.003 as i128;
-        let platform_fee = escrow.platform_fee;
-        let approver_deductions: i128 = approver_funds - platform_fee - trustless_work_commission;
-        let service_provider_deductions: i128 = service_provider_funds - platform_fee - trustless_work_commission;
+        let trustless_work_fee = (total_funds * 30) / 10000;
+        let platform_fee = (total_funds * escrow.platform_fee) / 10000;
+        let total_fees = trustless_work_fee + platform_fee;
+
+        let net_approver_funds = approver_funds - (approver_funds * total_fees) / total_funds;
+        let net_provider_funds = service_provider_funds - (service_provider_funds * total_fees) / total_funds;
         
-        if approver_funds < approver_deductions {
+        if approver_funds < net_approver_funds {
             return Err(ContractError::InsufficientApproverFundsForCommissions);
         }
 
-        if service_provider_funds < service_provider_deductions {
+        if service_provider_funds < net_provider_funds {
             return Err(ContractError::InsufficientServiceProviderFundsForCommissions);
         }
-        
-        let adjusted_approver_funds = approver_funds - approver_deductions;
-        let adjusted_service_provider_funds = service_provider_funds - service_provider_deductions;
 
         usdc_approver.transfer(
             &e.current_contract_address(),
             &trustless_work_address,
-            &trustless_work_commission
+            &trustless_work_fee
         );
 
         usdc_approver.transfer(
@@ -69,19 +68,19 @@ impl DisputeManager {
             &platform_fee
         );
     
-        if adjusted_approver_funds > 0 {
+        if net_approver_funds > 0 {
             usdc_approver.transfer(
                 &e.current_contract_address(),
                 &escrow.approver,
-                &adjusted_approver_funds
+                &net_approver_funds
             );
         }
 
-        if adjusted_service_provider_funds > 0 {
+        if net_provider_funds > 0 {
             usdc_approver.transfer(
                 &e.current_contract_address(),
                 &escrow.service_provider,
-                &adjusted_service_provider_funds
+                &net_provider_funds
             );
         }
     
