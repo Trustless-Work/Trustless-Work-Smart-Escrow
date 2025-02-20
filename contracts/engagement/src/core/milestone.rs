@@ -1,4 +1,4 @@
-use soroban_sdk::{Address, Env, String, Vec};
+use soroban_sdk::{Address, Env, String,symbol_short, Vec};
 use crate::storage::types::{DataKey, Escrow, Milestone};
 use crate::error::ContractError;
 use crate::events::escrows_by_engagement_id;
@@ -18,6 +18,8 @@ impl MilestoneManager {
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
+
+        let engagement_id = existing_escrow.engagement_id.clone();
     
         if service_provider != existing_escrow.service_provider {
             return Err(ContractError::OnlyServiceProviderChangeMilstoneStatus);
@@ -52,6 +54,13 @@ impl MilestoneManager {
         );
     
         escrows_by_engagement_id(&e, updated_escrow.engagement_id.clone(), updated_escrow);
+
+        // Emit `milestone_status_changed` event after milestone status update
+        let old_status = existing_escrow.milestones.get(milestone_index as u32).unwrap().status;
+        e.events().publish(
+            (symbol_short!("milestone"), symbol_short!("status")), // Topics
+            (engagement_id, old_status, new_status) // Payload: ID, Index, Old Status, New Status
+        );
     
         Ok(())
     }
@@ -102,7 +111,6 @@ impl MilestoneManager {
         );
     
         escrows_by_engagement_id(&e, updated_escrow.engagement_id.clone(), updated_escrow);
-    
         Ok(())
     }
 

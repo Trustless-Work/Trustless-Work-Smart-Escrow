@@ -1,4 +1,4 @@
-use soroban_sdk::{Address, Env, Symbol, Val, Vec};
+use soroban_sdk::{Address, Env, Symbol, symbol_short, Val, Vec};
 use soroban_sdk::token::Client as TokenClient;
 
 use crate::storage::types::{Escrow, DataKey, AddressBalance};
@@ -62,6 +62,14 @@ impl EscrowManager{
         }
 
         usdc_approver.transfer(&signer, &contract_address, &amount_to_deposit);
+
+    // Emit `escrow_funded` event after successful deposit
+    e.events().publish(
+        (symbol_short!("escrow"), symbol_short!("funded")), // Topics
+        (escrow.engagement_id.clone(), amount_to_deposit) // Payload: ID, Amounts
+    );
+
+    e.storage().instance().set(&DataKey::Escrow, &escrow);
     
         e.storage().instance().set(&DataKey::Escrow, &escrow);
     
