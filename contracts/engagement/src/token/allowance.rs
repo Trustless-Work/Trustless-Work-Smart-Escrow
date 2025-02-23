@@ -1,6 +1,6 @@
+use crate::error::ContractError;
 use crate::storage::types::{AllowanceDataKey, AllowanceValue, DataKey};
 use soroban_sdk::{Address, Env};
-use crate::error::ContractError;
 
 pub fn read_allowance(e: &Env, from: Address, spender: Address) -> AllowanceValue {
     let key = DataKey::Allowance(AllowanceDataKey { from, spender });
@@ -41,11 +41,14 @@ pub fn write_allowance(
     e.storage().persistent().set(&key.clone(), &allowance);
 
     if amount > 0 {
-        let live_for = expiration_ledger
-            .checked_sub(e.ledger().sequence())
-            .unwrap();
+        let live_for = match expiration_ledger.checked_sub(e.ledger().sequence()) {
+            Some(diff) => diff,
+            None => panic!("Unexpected error: expiration_ledger is less than ledger sequence"),
+        };
 
-        e.storage().persistent().extend_ttl(&key, live_for, live_for)
+        e.storage()
+            .persistent()
+            .extend_ttl(&key, live_for, live_for)
     }
 }
 
@@ -55,13 +58,10 @@ pub fn spend_allowance(e: &Env, from: Address, spender: Address, amount: i128) {
         panic!("insufficient allowance");
     }
     if amount > 0 {
-        let new_amount = allowance.amount.checked_sub(amount).ok_or(ContractError::Underflow).unwrap(); 
-        write_allowance(
-            e,
-            from,
-            spender,
-            new_amount,
-            allowance.expiration_ledger,
-        );
+        if let Some(new_amount) = allowance.amount.checked_sub(amount) {
+            write_allowance(e, from, spender, amount, allowance.expiration_ledger);
+        } else {
+            panic!("Underflow: subtraction failed in spend_allowance");
+        }
     }
 }

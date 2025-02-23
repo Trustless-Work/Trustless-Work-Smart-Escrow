@@ -1,11 +1,11 @@
-use soroban_sdk::{contract, contractimpl, Address, Env, String};
 use soroban_sdk::token::{self, Interface as _};
+use soroban_sdk::{contract, contractimpl, Address, Env, String};
 use soroban_token_sdk::metadata::TokenMetadata;
 
-use crate::core::admin::{has_administrator, write_administrator, read_administrator};
-use crate::token::allowance::{read_allowance, write_allowance, spend_allowance};
-use crate::token::balance::{receive_balance, read_balance, spend_balance};
+use crate::core::admin::{has_administrator, read_administrator, write_administrator};
 use crate::storage::types::{INSTANCE_BUMP_AMOUNT, INSTANCE_LIFETIME_THRESHOLD};
+use crate::token::allowance::{read_allowance, spend_allowance, write_allowance};
+use crate::token::balance::{read_balance, receive_balance, spend_balance};
 use crate::token::metadata::write_metadata;
 use soroban_token_sdk::TokenUtils;
 
@@ -28,19 +28,19 @@ impl Token {
         if decimal > 18 {
             panic!("Decimal must not be greater than 18");
         }
-    
+
         let metadata = TokenMetadata {
             decimal,
             name: name.clone(),
             symbol: symbol.clone(),
         };
-    
+
         write_metadata(&e, metadata);
     }
 
     pub fn mint(e: Env, to: Address, amount: i128) {
         check_nonnegative_amount(amount);
-        
+
         let admin = read_administrator(&e).expect("Administrator address not found");
         admin.require_auth();
 
@@ -75,7 +75,7 @@ impl token::Interface for Token {
         TokenUtils::new(&e)
             .events()
             .approve(from, spender, amount, expiration_ledger);
-    }    
+    }
 
     fn balance(e: Env, id: Address) -> i128 {
         e.storage()
@@ -145,10 +145,16 @@ impl token::Interface for Token {
     }
 
     fn name(e: Env) -> String {
-        e.storage().instance().get(&"name").unwrap()
+        match e.storage().instance().get(&"name") {
+            Some(name) => name,
+            None => panic!("The 'name' key was not found in storage"),
+        }
     }
 
     fn symbol(e: Env) -> String {
-        e.storage().instance().get(&"symbol").unwrap()
+        match e.storage().instance().get(&"symbol") {
+            Some(symbol) => symbol,
+            None => panic!("The 'symbol' key was not found in storage"),
+        }
     }
 }

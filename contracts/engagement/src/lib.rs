@@ -1,11 +1,11 @@
 #![no_std]
 
-mod core;
-mod storage;
-mod token;
-mod events;
-mod error;
 mod contract;
+mod core;
+mod error;
+mod events;
+mod storage;
 mod tests;
+mod token;
 
 pub use crate::contract::EngagementContractClient;
