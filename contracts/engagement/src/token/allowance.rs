@@ -1,4 +1,3 @@
-use crate::error::ContractError;
 use crate::storage::types::{AllowanceDataKey, AllowanceValue, DataKey};
 use soroban_sdk::{Address, Env};
 
@@ -58,7 +57,7 @@ pub fn spend_allowance(e: &Env, from: Address, spender: Address, amount: i128) {
         panic!("insufficient allowance");
     }
     if amount > 0 {
-        if let Some(new_amount) = allowance.amount.checked_sub(amount) {
+        if let Some(_new_amount) = allowance.amount.checked_sub(amount) {
             write_allowance(e, from, spender, amount, allowance.expiration_ledger);
         } else {
             panic!("Underflow: subtraction failed in spend_allowance");

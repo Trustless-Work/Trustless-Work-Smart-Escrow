@@ -24,7 +24,10 @@ impl Token {
         if has_administrator(&e) {
             panic!("already initialized");
         }
-        write_administrator(&e, &admin);
+
+        write_administrator(&e, &admin)
+        .expect("Failed to write administrator");
+    
         if decimal > 18 {
             panic!("Decimal must not be greater than 18");
         }

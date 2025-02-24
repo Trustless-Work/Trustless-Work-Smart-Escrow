@@ -2,8 +2,6 @@
 use crate::storage::types::DataKey;
 use soroban_sdk::{Address, Env};
 
-use crate::error::ContractError;
-
 const BALANCE_BUMP_AMOUNT: u32 = 1000;
 const BALANCE_LIFETIME_THRESHOLD: u32 = 10;
 
