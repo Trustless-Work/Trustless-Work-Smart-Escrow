@@ -2,10 +2,10 @@
 
 extern crate std;
 
-use crate::storage::types::{Escrow, Milestone};
-use crate::token::token::{Token, TokenClient};
 use crate::contract::EngagementContract;
 use crate::contract::EngagementContractClient;
+use crate::storage::types::{Escrow, Milestone};
+use crate::token::token::{Token, TokenClient};
 use soroban_sdk::{testutils::Address as _, vec, Address, Env, IntoVal, String};
 
 fn create_usdc_token<'a>(e: &Env, admin: &Address) -> TokenClient<'a> {
@@ -190,7 +190,8 @@ fn test_change_escrow_properties() {
         trustline: usdc_token.address.clone(),
     };
 
-    let result = engagement_approver.try_change_escrow_properties(&unauthorized_address, &escrow_properties_v2);
+    let result = engagement_approver
+        .try_change_escrow_properties(&unauthorized_address, &escrow_properties_v2);
     assert!(result.is_err());
     // Update escrow with authorized platform_address
     env.mock_all_auths();
@@ -219,13 +220,25 @@ fn test_change_escrow_properties() {
     let updated_escrow = engagement_approver.get_escrow();
     assert_eq!(updated_escrow.engagement_id, engagement_id);
     assert_eq!(updated_escrow.approver, escrow_properties_v3.approver);
-    assert_eq!(updated_escrow.service_provider, escrow_properties_v3.service_provider);
-    assert_eq!(updated_escrow.platform_address, escrow_properties_v3.platform_address);
+    assert_eq!(
+        updated_escrow.service_provider,
+        escrow_properties_v3.service_provider
+    );
+    assert_eq!(
+        updated_escrow.platform_address,
+        escrow_properties_v3.platform_address
+    );
     assert_eq!(updated_escrow.amount, new_amount);
     assert_eq!(updated_escrow.platform_fee, new_platform_fee);
     assert_eq!(updated_escrow.milestones, escrow_properties_v3.milestones);
-    assert_eq!(updated_escrow.release_signer, escrow_properties_v3.release_signer);
-    assert_eq!(updated_escrow.dispute_resolver, escrow_properties_v3.dispute_resolver);
+    assert_eq!(
+        updated_escrow.release_signer,
+        escrow_properties_v3.release_signer
+    );
+    assert_eq!(
+        updated_escrow.dispute_resolver,
+        escrow_properties_v3.dispute_resolver
+    );
 }
 
 #[test]
@@ -294,7 +307,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert_eq!(updated_escrow.milestones.get(0).unwrap().status, new_status);
 
     // Change milestone approved_flag (valid case)
-    engagement_approver.change_milestone_flag( &(0 as i128), &true, &approver_address);
+    engagement_approver.change_milestone_flag(&(0 as i128), &true, &approver_address);
 
     // Verify milestone approved_flag change
     let final_escrow = engagement_approver.get_escrow();
@@ -313,11 +326,8 @@ fn test_change_milestone_status_and_approved_flag() {
     assert!(result.is_err());
 
     // Test for `change_approved_flag` with invalid index
-    let result = engagement_approver.try_change_milestone_flag(
-        &invalid_index,
-        &true,
-        &approver_address,
-    );
+    let result =
+        engagement_approver.try_change_milestone_flag(&invalid_index, &true, &approver_address);
     assert!(result.is_err());
 
     // Test only authorized party can perform the function
@@ -332,11 +342,8 @@ fn test_change_milestone_status_and_approved_flag() {
     assert!(result.is_err());
 
     // Test for `change_approved_flag` by invalid approver
-    let result = engagement_approver.try_change_milestone_flag(
-        &(0 as i128),
-        &true,
-        &unauthorized_address,
-    );
+    let result =
+        engagement_approver.try_change_milestone_flag(&(0 as i128), &true, &unauthorized_address);
     assert!(result.is_err());
 
     //Escrow Test with no milestone
@@ -368,11 +375,8 @@ fn test_change_milestone_status_and_approved_flag() {
     assert!(result.is_err());
 
     // Test for `change_approved_flag` on escrow with no milestones
-    let result = engagement_approver.try_change_milestone_flag(
-        &(0 as i128),
-        &true,
-        &approver_address,
-    );
+    let result =
+        engagement_approver.try_change_milestone_flag(&(0 as i128), &true, &approver_address);
     assert!(result.is_err());
 }
 
@@ -435,11 +439,9 @@ fn test_distribute_escrow_earnings_successful_flow() {
     engagement_approver.initialize_escrow(&escrow_properties);
 
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
-    
-    engagement_approver.distribute_escrow_earnings(
-        &release_signer_address,
-        &trustless_work_address,
-    );
+
+    engagement_approver
+        .distribute_escrow_earnings(&release_signer_address, &trustless_work_address);
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
@@ -516,10 +518,8 @@ fn test_distribute_escrow_earnings_no_milestones() {
     engagement_approver.initialize_escrow(&escrow_properties);
 
     // Try to claim earnings with no milestones (should fail)
-    let result = engagement_approver.try_distribute_escrow_earnings(
-        &release_signer_address,
-        &platform_address, 
-    );
+    let result = engagement_approver
+        .try_distribute_escrow_earnings(&release_signer_address, &platform_address);
     assert!(
         result.is_err(),
         "Should fail when no milestones are defined"
@@ -578,16 +578,13 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
     engagement_approver.initialize_escrow(&escrow_properties);
 
     // Try to claim earnings with incomplete milestones (should fail)
-    let result = engagement_approver.try_distribute_escrow_earnings(
-        &release_signer_address,
-        &platform_address,
-    );
+    let result = engagement_approver
+        .try_distribute_escrow_earnings(&release_signer_address, &platform_address);
     assert!(
         result.is_err(),
         "Should fail when milestones are not completed"
     );
 }
-
 
 #[test]
 fn test_dispute_flag_management() {
@@ -610,7 +607,7 @@ fn test_dispute_flag_management() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             approved_flag: false,
-        }
+        },
     ];
 
     let engagement_contract_address = env.register_contract(None, EngagementContract);
@@ -649,7 +646,10 @@ fn test_dispute_flag_management() {
     let disputed_escrow = engagement_approver.get_escrow();
     assert_eq!(disputed_escrow.dispute_flag, true);
     assert_eq!(disputed_escrow.approver, initial_escrow.approver);
-    assert_eq!(disputed_escrow.service_provider, initial_escrow.service_provider);
+    assert_eq!(
+        disputed_escrow.service_provider,
+        initial_escrow.service_provider
+    );
     assert_eq!(disputed_escrow.amount, initial_escrow.amount);
     assert_eq!(disputed_escrow.platform_fee, initial_escrow.platform_fee);
     assert_eq!(disputed_escrow.milestones, initial_escrow.milestones);
@@ -658,7 +658,6 @@ fn test_dispute_flag_management() {
     let result = engagement_approver.try_change_dispute_flag();
     assert!(result.is_err());
 }
-
 
 #[test]
 fn test_dispute_resolution_process() {
@@ -709,7 +708,7 @@ fn test_dispute_resolution_process() {
     assert_eq!(escrow_balance, amount as i128);
 
     // Change dispute approved_flag
-    engagement_approver.change_dispute_flag( );
+    engagement_approver.change_dispute_flag();
 
     // Verify approved_flag changed
     let disputed_escrow = engagement_approver.get_escrow();
@@ -724,19 +723,23 @@ fn test_dispute_resolution_process() {
         &dispute_resolver_address,
         &approver_amount,
         &provider_amount,
-        &trustless_work_address
+        &trustless_work_address,
     );
 
     let expected_tw_fee = (total_amount * 30) / 10000; // 0.3%
     let expected_platform_fee = (total_amount * platform_fee) / 10000;
-    let expected_approver = approver_amount - (approver_amount * (expected_tw_fee + expected_platform_fee)) / total_amount;
-    let expected_provider = provider_amount - (provider_amount * (expected_tw_fee + expected_platform_fee)) / total_amount;
-
+    let expected_approver = approver_amount
+        - (approver_amount * (expected_tw_fee + expected_platform_fee)) / total_amount;
+    let expected_provider = provider_amount
+        - (provider_amount * (expected_tw_fee + expected_platform_fee)) / total_amount;
 
     //Verify token balances
     assert_eq!(usdc_token.balance(&engagement_contract_address), 0);
     assert_eq!(usdc_token.balance(&approver_address), expected_approver);
-    assert_eq!(usdc_token.balance(&service_provider_address), expected_provider);
+    assert_eq!(
+        usdc_token.balance(&service_provider_address),
+        expected_provider
+    );
     assert_eq!(usdc_token.balance(&trustless_work_address), expected_tw_fee);
     assert_eq!(usdc_token.balance(&platform_address), expected_platform_fee);
 }
@@ -798,10 +801,7 @@ fn test_fund_escrow_successful_deposit() {
 
     let amount_to_deposit: i128 = 100_000;
 
-    engagement_approver.fund_escrow(
-        &release_signer_address, 
-        &amount_to_deposit
-    );
+    engagement_approver.fund_escrow(&release_signer_address, &amount_to_deposit);
 
     let expected_result_amount: i128 = 100_100_000;
 
@@ -864,16 +864,13 @@ fn test_fund_escrow_fully_funded_error() {
 
     engagement_approver.initialize_escrow(&escrow_properties);
 
-    let funded_amount: i128 = 100_000_000; 
+    let funded_amount: i128 = 100_000_000;
     usdc_token.mint(&engagement_contract_address, &(funded_amount as i128));
     usdc_token.mint(&release_signer_address, &(amount as i128));
 
     let amount_to_deposit: i128 = 100_000;
 
-    let result = engagement_approver.try_fund_escrow(
-        &release_signer_address, 
-        &amount_to_deposit
-    );
+    let result = engagement_approver.try_fund_escrow(&release_signer_address, &amount_to_deposit);
 
     assert!(
         result.is_err(),
@@ -935,22 +932,18 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
 
     usdc_token.mint(&engagement_contract_address, &(amount as i128));
 
-    let signer_funds: i128 = 100_000; 
+    let signer_funds: i128 = 100_000;
     usdc_token.mint(&release_signer_address, &(signer_funds as i128));
 
     let amount_to_deposit: i128 = 180_000;
 
-    let result = engagement_approver.try_fund_escrow(
-        &release_signer_address, 
-        &amount_to_deposit
-    );
+    let result = engagement_approver.try_fund_escrow(&release_signer_address, &amount_to_deposit);
 
     assert!(
         result.is_err(),
         "Should fail when the signer has insufficient funds"
     );
 }
-
 
 #[test]
 fn test_fund_escrow_dispute_flag_error() {
@@ -1007,10 +1000,7 @@ fn test_fund_escrow_dispute_flag_error() {
 
     let amount_to_deposit: i128 = 80_000;
 
-    let result = engagement_approver.try_fund_escrow(
-        &release_signer_address, 
-        &amount_to_deposit
-    );
+    let result = engagement_approver.try_fund_escrow(&release_signer_address, &amount_to_deposit);
 
     assert!(
         result.is_err(),
