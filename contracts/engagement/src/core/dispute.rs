@@ -44,18 +44,43 @@ impl DisputeManager {
             return Err(ContractError::MilestoneNotInDispute);
         }
 
-        let total_funds = approver_funds + service_provider_funds;
+        let total_funds = approver_funds
+            .checked_add(service_provider_funds)
+            .ok_or(ContractError::Overflow)?;
         if total_funds != milestone.amount {
             return Err(ContractError::InsufficientFundsForResolution);
         }
 
-        let trustless_work_fee = (total_funds * 30) / 10000; // 0.3%
-        let platform_fee = (total_funds * escrow.platform_fee) / 10000;
-        let total_fees = trustless_work_fee + platform_fee;
+        let trustless_work_fee = total_funds
+            .checked_mul(30)
+            .ok_or(ContractError::Overflow)?
+            .checked_div(10000)
+            .ok_or(ContractError::DivisionError)?; // 0.3%
+        let platform_fee = total_funds
+            .checked_mul(escrow.platform_fee)
+            .ok_or(ContractError::Overflow)?
+            .checked_div(10000)
+            .ok_or(ContractError::DivisionError)?;
+        let total_fees = trustless_work_fee
+            .checked_add(platform_fee)
+            .ok_or(ContractError::Overflow)?;
 
-        let net_approver_funds = approver_funds - (approver_funds * total_fees) / total_funds;
-        let net_provider_funds =
-            service_provider_funds - (service_provider_funds * total_fees) / total_funds;
+        let approver_fee = approver_funds
+            .checked_mul(total_fees)
+            .ok_or(ContractError::Overflow)?
+            .checked_div(total_funds)
+            .ok_or(ContractError::DivisionError)?;
+        let net_approver_funds = approver_funds
+            .checked_sub(approver_fee)
+            .ok_or(ContractError::Underflow)?;
+        let fees_portion = service_provider_funds
+            .checked_mul(total_fees)
+            .ok_or(ContractError::Overflow)?
+            .checked_div(total_funds)
+            .ok_or(ContractError::DivisionError)?;
+        let net_provider_funds = service_provider_funds
+            .checked_sub(fees_portion)
+            .ok_or(ContractError::Underflow)?;
 
         let usdc_approver = TokenClient::new(&e, &escrow.trustline);
         let contract_address = e.current_contract_address();
