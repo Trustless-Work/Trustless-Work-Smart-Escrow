@@ -40,11 +40,14 @@ pub fn write_allowance(
     e.storage().persistent().set(&key.clone(), &allowance);
 
     if amount > 0 {
-        let live_for = expiration_ledger
-            .checked_sub(e.ledger().sequence())
-            .unwrap();
+        let live_for = match expiration_ledger.checked_sub(e.ledger().sequence()) {
+            Some(diff) => diff,
+            None => panic!("Unexpected error: expiration_ledger is less than ledger sequence"),
+        };
 
-        e.storage().persistent().extend_ttl(&key, live_for, live_for)
+        e.storage()
+            .persistent()
+            .extend_ttl(&key, live_for, live_for)
     }
 }
 
@@ -54,12 +57,10 @@ pub fn spend_allowance(e: &Env, from: Address, spender: Address, amount: i128) {
         panic!("insufficient allowance");
     }
     if amount > 0 {
-        write_allowance(
-            e,
-            from,
-            spender,
-            allowance.amount - amount,
-            allowance.expiration_ledger,
-        );
+        if let Some(_new_amount) = allowance.amount.checked_sub(amount) {
+            write_allowance(e, from, spender, amount, allowance.expiration_ledger);
+        } else {
+            panic!("Underflow: subtraction failed in spend_allowance");
+        }
     }
 }

@@ -27,7 +27,11 @@ pub fn write_balance(e: &Env, addr: Address, amount: i128) {
 
 pub fn receive_balance(e: &Env, addr: Address, amount: i128) {
     let balance = read_balance(e, addr.clone());
-    write_balance(e, addr, balance + amount);
+    let total_balance = match balance.checked_add(amount) {
+        Some(sum) => sum,
+        None => panic!("Overflow when adding {} to balance {}", amount, balance),
+    };
+    write_balance(e, addr, total_balance);
 }
 
 pub fn spend_balance(e: &Env, addr: Address, amount: i128) {
@@ -35,5 +39,12 @@ pub fn spend_balance(e: &Env, addr: Address, amount: i128) {
     if balance < amount {
         panic!("insufficient balance");
     }
-    write_balance(e, addr, balance - amount);
+    let total_balance = match balance.checked_sub(amount) {
+        Some(diff) => diff,
+        None => panic!(
+            "Underflow when subtracting {} from balance {}",
+            amount, balance
+        ),
+    };
+    write_balance(e, addr, total_balance);
 }
