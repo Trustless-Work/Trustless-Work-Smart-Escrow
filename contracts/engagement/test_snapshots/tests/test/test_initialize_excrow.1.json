@@ -137,6 +137,14 @@
                                       },
                                       {
                                         "key": {
+                                          "symbol": "resolved_flag"
+                                        },
+                                        "val": {
+                                          "bool": false
+                                        }
+                                      },
+                                      {
+                                        "key": {
                                           "symbol": "status"
                                         },
                                         "val": {
@@ -192,6 +200,14 @@
                                       },
                                       {
                                         "key": {
+                                          "symbol": "resolved_flag"
+                                        },
+                                        "val": {
+                                          "bool": false
+                                        }
+                                      },
+                                      {
+                                        "key": {
                                           "symbol": "status"
                                         },
                                         "val": {
@@ -228,14 +244,6 @@
                               },
                               "val": {
                                 "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
-                              }
-                            },
-                            {
-                              "key": {
-                                "symbol": "resolved_flag"
-                              },
-                              "val": {
-                                "bool": false
                               }
                             },
                             {
@@ -542,6 +550,14 @@
                           },
                           {
                             "key": {
+                              "symbol": "resolved_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
                               "symbol": "status"
                             },
                             "val": {
@@ -597,6 +613,14 @@
                           },
                           {
                             "key": {
+                              "symbol": "resolved_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
                               "symbol": "status"
                             },
                             "val": {
@@ -637,14 +661,6 @@
                 },
                 {
                   "key": {
-                    "symbol": "resolved_flag"
-                  },
-                  "val": {
-                    "bool": false
-                  }
-                },
-                {
-                  "key": {
                     "symbol": "service_provider"
                   },
                   "val": {
@@ -669,6 +685,24 @@
                 }
               ]
             }
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000007",
+        "type_": "contract",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "init_esc"
+              }
+            ],
+            "data": "void"
           }
         }
       },
@@ -776,6 +810,14 @@
                           },
                           {
                             "key": {
+                              "symbol": "resolved_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
                               "symbol": "status"
                             },
                             "val": {
@@ -831,6 +873,14 @@
                           },
                           {
                             "key": {
+                              "symbol": "resolved_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
                               "symbol": "status"
                             },
                             "val": {
@@ -867,14 +917,6 @@
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
-                  }
-                },
-                {
-                  "key": {
-                    "symbol": "resolved_flag"
-                  },
-                  "val": {
-                    "bool": false
                   }
                 },
                 {
@@ -1034,6 +1076,14 @@
                           },
                           {
                             "key": {
+                              "symbol": "resolved_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
                               "symbol": "status"
                             },
                             "val": {
@@ -1089,6 +1139,14 @@
                           },
                           {
                             "key": {
+                              "symbol": "resolved_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
                               "symbol": "status"
                             },
                             "val": {
@@ -1125,14 +1183,6 @@
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
-                  }
-                },
-                {
-                  "key": {
-                    "symbol": "resolved_flag"
-                  },
-                  "val": {
-                    "bool": false
                   }
                 },
                 {
@@ -1271,6 +1321,14 @@
                           },
                           {
                             "key": {
+                              "symbol": "resolved_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
                               "symbol": "status"
                             },
                             "val": {
@@ -1326,6 +1384,14 @@
                           },
                           {
                             "key": {
+                              "symbol": "resolved_flag"
+                            },
+                            "val": {
+                              "bool": false
+                            }
+                          },
+                          {
+                            "key": {
                               "symbol": "status"
                             },
                             "val": {
@@ -1362,14 +1428,6 @@
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
-                  }
-                },
-                {
-                  "key": {
-                    "symbol": "resolved_flag"
-                  },
-                  "val": {
-                    "bool": false
                   }
                 },
                 {
@@ -1567,6 +1625,14 @@
                                   },
                                   {
                                     "key": {
+                                      "symbol": "resolved_flag"
+                                    },
+                                    "val": {
+                                      "bool": false
+                                    }
+                                  },
+                                  {
+                                    "key": {
                                       "symbol": "status"
                                     },
                                     "val": {
@@ -1622,6 +1688,14 @@
                                   },
                                   {
                                     "key": {
+                                      "symbol": "resolved_flag"
+                                    },
+                                    "val": {
+                                      "bool": false
+                                    }
+                                  },
+                                  {
+                                    "key": {
                                       "symbol": "status"
                                     },
                                     "val": {
@@ -1658,14 +1732,6 @@
                           },
                           "val": {
                             "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
-                          }
-                        },
-                        {
-                          "key": {
-                            "symbol": "resolved_flag"
-                          },
-                          "val": {
-                            "bool": false
                           }
                         },
                         {
