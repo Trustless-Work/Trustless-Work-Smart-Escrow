@@ -39,6 +39,10 @@ pub enum ContractError {
     OnlyApproverCanOpenDispute = 33,
     MilestoneAlreadyInDispute = 34,
     CantReleaseAMilestoneInDispute = 35,
+    Overflow = 36,
+    DivisionError = 37,
+    Underflow = 38,
+    AdminNotFound = 39,
 }
 
 impl fmt::Display for ContractError {
@@ -79,6 +83,10 @@ impl fmt::Display for ContractError {
             ContractError::OnlyApproverCanOpenDispute => write!(f, "Only the approver can open a dispute for a milestone"),
             ContractError::MilestoneAlreadyInDispute => write!(f, "Milestone is already in dispute"),
             ContractError::CantReleaseAMilestoneInDispute => write!(f, "You cannot launch a milestone in dispute"),
+            ContractError::Overflow => write!(f, "This operation can cause an Overflow"),
+            ContractError::DivisionError => write!(f, "This operation can cause Division error"),
+            ContractError::Underflow => write!(f, "This operation can cause an Underflow"),
+            ContractError::AdminNotFound => write!(f, "Admin not found!"),
         }
     }
 }
