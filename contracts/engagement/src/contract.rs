@@ -1,5 +1,5 @@
 use soroban_sdk::{
-    contract, contractimpl, Address, BytesN, Env, String, Symbol, Val, Vec
+    contract, contractimpl, symbol_short, Address, BytesN, Env, String, Symbol, Val, Vec
 };
 
 use crate::storage::types::{AddressBalance, Escrow};
@@ -41,7 +41,11 @@ impl EngagementContract {
         e: Env,
         escrow_properties: Escrow
     ) -> Result<Escrow, ContractError> {
-        EscrowManager::initialize_escrow(e, escrow_properties)
+        let initialized_escrow =
+            EscrowManager::initialize_escrow(e.clone(), escrow_properties.clone())?;
+        e.events().publish((symbol_short!("init_esc"),), ());
+
+        Ok(initialized_escrow)
     }
     
     pub fn fund_escrow(
@@ -49,11 +53,12 @@ impl EngagementContract {
         signer: Address, 
         amount_to_deposit: i128
     ) -> Result<(), ContractError> {
-        EscrowManager::fund_escrow(
-            e, 
-            signer, 
-            amount_to_deposit
-        )
+        let updated_funded_escrow =
+            EscrowManager::fund_escrow(e.clone(), signer.clone(), amount_to_deposit.clone())?;
+        e.events()
+            .publish((symbol_short!("fund_esc"),), (signer, amount_to_deposit));
+
+        Ok(updated_funded_escrow)
     }
 
     pub fn release_milestone_payment(
@@ -62,12 +67,19 @@ impl EngagementContract {
         trustless_work_address: Address,
         milestone_index: u32
     ) -> Result<(), ContractError> {
-        EscrowManager::release_milestone_payment(
-            e, 
-            release_signer, 
-            trustless_work_address,
+        let updated_release_escrow_earnings = EscrowManager::release_milestone_payment(
+            e.clone(), 
+            release_signer.clone(), 
+            trustless_work_address.clone(),
             milestone_index
-        )
+        )?;
+
+        e.events().publish(
+            (symbol_short!("dis_esc"),),
+            (release_signer, trustless_work_address),
+        );
+
+        Ok(updated_release_escrow_earnings)
     }
 
     pub fn change_escrow_properties(
@@ -75,7 +87,17 @@ impl EngagementContract {
         plataform_address: Address,
         escrow_properties: Escrow
     ) -> Result<Escrow, ContractError> {
-        EscrowManager::change_escrow_properties(e, plataform_address, escrow_properties)
+        let updated_escrow = EscrowManager::change_escrow_properties(
+            e.clone(),
+            plataform_address.clone(),
+            escrow_properties.clone(),
+        )?;
+        e.events().publish(
+            (symbol_short!("chg_esc"),),
+            (plataform_address, escrow_properties),
+        );
+
+        Ok(updated_escrow)
     }
 
     pub fn get_escrow(e: Env) -> Result<Escrow, ContractError> {
