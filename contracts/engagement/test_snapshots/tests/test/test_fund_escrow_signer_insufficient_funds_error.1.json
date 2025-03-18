@@ -349,6 +349,17 @@
                               "val": {
                                 "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
                               }
+                            },
+                            {
+                              "key": {
+                                "symbol": "trustline_decimals"
+                              },
+                              "val": {
+                                "i128": {
+                                  "hi": 0,
+                                  "lo": 10000000
+                                }
+                              }
                             }
                           ]
                         }
@@ -823,6 +834,17 @@
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
                   }
+                },
+                {
+                  "key": {
+                    "symbol": "trustline_decimals"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 10000000
+                    }
+                  }
                 }
               ]
             }
@@ -1047,6 +1069,17 @@
                   },
                   "val": {
                     "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5"
+                  }
+                },
+                {
+                  "key": {
+                    "symbol": "trustline_decimals"
+                  },
+                  "val": {
+                    "i128": {
+                      "hi": 0,
+                      "lo": 10000000
+                    }
                   }
                 }
               ]
