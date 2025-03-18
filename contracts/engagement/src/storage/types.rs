@@ -22,6 +22,7 @@ pub struct Escrow {
     pub release_flag: bool,
     pub resolved_flag: bool,
     pub trustline: Address,
+    pub trustline_decimals: i128,
 }
 
 #[contracttype]
@@ -51,6 +52,7 @@ pub struct AllowanceDataKey {
 pub struct AddressBalance {
     pub address: Address,
     pub balance: i128,
+    pub trustline_decimals: i128,
 }
 
 #[derive(Clone)]
