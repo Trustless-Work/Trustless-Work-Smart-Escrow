@@ -50,10 +50,6 @@ impl EscrowManager {
             return Err(ContractError::EscrowFullyFunded);
         }
 
-        if amount_to_deposit as i128 > escrow.amount {
-            return Err(ContractError::AmountToDepositGreatherThanEscrowAmount);
-        }
-
         if signer_balance < amount_to_deposit {
             return Err(ContractError::SignerInsufficientFunds);
         }
@@ -192,6 +188,7 @@ impl EscrowManager {
             balances.push_back(AddressBalance {
                 address: address.clone(),
                 balance,
+                trustline_decimals: escrow.trustline_decimals,
             })
         }
 
