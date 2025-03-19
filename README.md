@@ -240,4 +240,4 @@ Where:
 
 ## **Thanks to all the contributors who have made this project possible!**
 
-[![Contributors](https://contrib.rocks/image?repo=Tico4Chain-Coders/Trustless-Work-Smart-Escrow)](https://github.com/Tico4Chain-Coders/Trustless-Work-Smart-Escrow/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=Trustless-Work/Trustless-Work-Smart-Escrow)](https://github.com/Trustless-Work/Trustless-Work-Smart-Escrow/graphs/contributors)
