@@ -11,3 +11,14 @@ pub fn escrows_by_engagement_id(e: &Env, engagement_id: String, escrow: Escrow) 
     let event_payload = vec![e, engagement_id_val, escrow_val];
     e.events().publish(topics, event_payload);
 }
+
+// Function to emit dispute resolution events
+pub fn resolved(e: &Env, engagement_id: &String, escrow: &Escrow) {
+    let topics = (symbol_short!("res_disp"),);
+
+    let engagement_id_val: Val = engagement_id.clone().into_val(e);
+    let escrow_val: Val = escrow.clone().into_val(e);
+
+    let event_payload = vec![e, engagement_id_val, escrow_val];
+    e.events().publish(topics, event_payload);
+}

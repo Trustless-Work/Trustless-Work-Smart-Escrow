@@ -3,8 +3,8 @@ use soroban_sdk::{Address, Env};
 
 use crate::core::escrow::EscrowManager;
 use crate::error::ContractError;
-use crate::events::escrows_by_engagement_id;
-use crate::storage::types::DataKey;
+use crate::events::{self, escrows_by_engagement_id};
+use crate::storage::types::{DataKey, Escrow};
 
 pub struct DisputeManager;
 
@@ -102,14 +102,21 @@ impl DisputeManager {
         }
 
         if net_provider_funds > 0 {
+            let receiver = if escrow.receiver == escrow.service_provider {
+                escrow.service_provider.clone()
+            } else {
+                escrow.receiver.clone()
+            };
+            
             usdc_approver.transfer(
                 &e.current_contract_address(),
-                &escrow.service_provider,
+                &receiver,
                 &net_provider_funds,
             );
         }
 
         escrow.resolved_flag = true;
+        escrow.dispute_flag = false;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         escrows_by_engagement_id(&e, escrow.engagement_id.clone(), escrow);
@@ -124,15 +131,32 @@ impl DisputeManager {
             Err(err) => return Err(err),
         };
 
-        if escrow.dispute_flag {
-            return Err(ContractError::EscrowAlreadyInDispute);
-        }
-
-        escrow.dispute_flag = true;
+        // Toggles the dispute flag (true -> false or false -> true)
+        escrow.dispute_flag = !escrow.dispute_flag;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         escrows_by_engagement_id(&e, escrow.engagement_id.clone(), escrow);
 
         Ok(())
+    }
+
+    pub fn resolve_dispute(e: &Env, escrow: &mut Escrow) {
+        // Ensure only the dispute resolver can resolve the dispute
+        let caller = e.current_contract_address();
+        if caller != escrow.dispute_resolver {
+            panic!("Only the dispute resolver can resolve the dispute");
+        }
+
+        // Check if there is an active dispute
+        if !escrow.dispute_flag {
+            panic!("No active dispute to resolve");
+        }
+
+        // Resolver should set all relevant flags
+        escrow.dispute_flag = false;
+        escrow.resolved_flag = true;
+
+        // Emit event for dispute resolution
+        events::resolved(e, &escrow.engagement_id, escrow);
     }
 }

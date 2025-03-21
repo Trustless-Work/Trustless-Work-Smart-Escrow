@@ -23,6 +23,8 @@ pub struct Escrow {
     pub resolved_flag: bool,
     pub trustline: Address,
     pub trustline_decimals: i128,
+    pub receiver: Address,
+    pub receiver_memo: String,
 }
 
 #[contracttype]
