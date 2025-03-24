@@ -41,6 +41,8 @@ pub enum ContractError {
     AdminNotFound = 35,
     InsufficientApproverFundsForCommissions = 36,
     InsufficientServiceProviderFundsForCommissions = 37,
+    FailedToFetchPrice = 38,
+    EscrowAlreadyReleased = 39,
 }
 
 impl fmt::Display for ContractError {
@@ -125,6 +127,8 @@ impl fmt::Display for ContractError {
             ContractError::Underflow => write!(f, "This operation can cause an Underflow"),
             ContractError::DivisionError => write!(f, "This operation can cause Division error"),
             ContractError::AdminNotFound => write!(f, "Admin not found!"),
+            ContractError::FailedToFetchPrice => write!(f, "Failed to fetch price"),
+            ContractError::EscrowAlreadyReleased => write!(f, "Escrow fund released already"),
         }
     }
 }

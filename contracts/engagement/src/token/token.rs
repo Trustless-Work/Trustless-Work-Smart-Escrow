@@ -25,9 +25,8 @@ impl Token {
             panic!("already initialized");
         }
 
-        write_administrator(&e, &admin)
-        .expect("Failed to write administrator");
-    
+        write_administrator(&e, &admin).expect("Failed to write administrator");
+
         if decimal > 18 {
             panic!("Decimal must not be greater than 18");
         }

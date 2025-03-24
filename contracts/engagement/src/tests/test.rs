@@ -4,9 +4,13 @@ extern crate std;
 
 use crate::contract::EngagementContract;
 use crate::contract::EngagementContractClient;
+use crate::core::PriceOracle;
 use crate::storage::types::{Escrow, Milestone};
 use crate::token::token::{Token, TokenClient};
-use soroban_sdk::{testutils::Address as _, vec, Address, Env, IntoVal, String};
+use soroban_sdk::TryIntoVal;
+use soroban_sdk::{
+    symbol_short, testutils::Address as _, vec, Address, Env, IntoVal, String, Val, Vec,
+};
 
 fn create_usdc_token<'a>(e: &Env, admin: &Address) -> TokenClient<'a> {
     let token = TokenClient::new(e, &e.register_contract(None, Token {}));
@@ -63,7 +67,8 @@ fn test_initialize_excrow() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address,
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 200_000_000,
     };
 
     let initialized_escrow = engagement_approver.initialize_escrow(&escrow_properties);
@@ -78,6 +83,7 @@ fn test_initialize_excrow() {
     assert_eq!(escrow.milestones, escrow_properties.milestones);
     assert_eq!(escrow.release_signer, escrow_properties.release_signer);
     assert_eq!(escrow.dispute_resolver, escrow_properties.dispute_resolver);
+    assert_eq!(escrow.target_price, escrow_properties.target_price);
 
     let result = engagement_approver.try_initialize_escrow(&escrow_properties);
     assert!(result.is_err());
@@ -134,7 +140,8 @@ fn test_change_escrow_properties() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 20_000_000,
     };
 
     let initialized_escrow = engagement_approver.initialize_escrow(&escrow_properties);
@@ -190,7 +197,8 @@ fn test_change_escrow_properties() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 200_000_000,
     };
 
     let result = engagement_approver
@@ -215,7 +223,8 @@ fn test_change_escrow_properties() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address,
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 200_000_000,
     };
 
     engagement_approver.change_escrow_properties(&platform_address, &escrow_properties_v3);
@@ -242,6 +251,10 @@ fn test_change_escrow_properties() {
     assert_eq!(
         updated_escrow.dispute_resolver,
         escrow_properties_v3.dispute_resolver
+    );
+    assert_eq!(
+        updated_escrow.target_price,
+        escrow_properties_v3.target_price
     );
 }
 
@@ -294,7 +307,8 @@ fn test_change_milestone_status_and_approved_flag() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 200_000_000,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -368,7 +382,8 @@ fn test_change_milestone_status_and_approved_flag() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address,
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 20_000_000,
     };
 
     engagement_approver.change_escrow_properties(&platform_address, &escrow_properties_v2);
@@ -440,7 +455,8 @@ fn test_distribute_escrow_earnings_successful_flow() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 20_000_000,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -520,7 +536,8 @@ fn test_distribute_escrow_earnings_no_milestones() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 20_000_000,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -581,7 +598,8 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 20_000_000,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -640,7 +658,8 @@ fn test_dispute_flag_management() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 20_000_000,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -706,7 +725,8 @@ fn test_dispute_resolution_process() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 20_000_000,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -803,7 +823,8 @@ fn test_fund_escrow_successful_deposit() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 20_000_000,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -872,7 +893,8 @@ fn test_fund_escrow_fully_funded_error() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 20_000_000,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -939,7 +961,8 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 20_000_000,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -1007,7 +1030,8 @@ fn test_fund_escrow_dispute_flag_error() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address,
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        target_price: 20_000_000,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);

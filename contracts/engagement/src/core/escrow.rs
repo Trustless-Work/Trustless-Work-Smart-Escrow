@@ -1,6 +1,7 @@
 use soroban_sdk::token::Client as TokenClient;
 use soroban_sdk::{Address, Env, Symbol, Val, Vec};
 
+use crate::core::price_oracle::PriceOracle;
 use crate::error::ContractError;
 use crate::storage::types::{AddressBalance, DataKey, Escrow};
 
@@ -217,5 +218,40 @@ impl EscrowManager {
             .get::<_, Escrow>(&DataKey::Escrow)
             .ok_or(ContractError::EscrowNotFound);
         Ok(escrow?)
+    }
+
+    pub fn check_price_and_release_funds(e: Env) -> Result<(), ContractError> {
+        let escrow_result = Self::get_escrow(e.clone());
+        let mut escrow = match escrow_result {
+            Ok(esc) => esc,
+            Err(err) => return Err(err),
+        };
+
+        if escrow.release_flag {
+            return Err(ContractError::EscrowAlreadyReleased);
+        }
+
+        let (price_met, current_price) =
+            PriceOracle::checks_price_condition(e.clone(), escrow.target_price);
+
+        if price_met {
+            let usdc_approver = TokenClient::new(&e, &escrow.trustline);
+            let contract_address = e.current_contract_address();
+
+            // Ensure escrow has enough balance
+            let contract_balance = usdc_approver.balance(&contract_address);
+            if contract_balance < escrow.amount as i128 {
+                return Err(ContractError::EscrowBalanceNotEnoughToSendEarnings);
+            }
+
+            // Release funds
+            usdc_approver.transfer(&contract_address, &escrow.service_provider, &escrow.amount);
+
+            escrow.release_flag = true;
+
+            e.storage().instance().set(&DataKey::Escrow, &escrow);
+        }
+
+        Ok(())
     }
 }
