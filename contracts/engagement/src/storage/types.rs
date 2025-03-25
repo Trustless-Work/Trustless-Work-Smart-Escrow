@@ -23,6 +23,9 @@ pub struct Escrow {
     pub resolved_flag: bool,
     pub trustline: Address,
     pub trustline_decimals: i128,
+     pub oracle_id: Address,             // Oracle contract address
+    pub party_a: Address,               // First party (receives funds if condition is true)
+    pub party_b: Address,               // Second party (receives funds if condition is false)
 }
 
 #[contracttype]
