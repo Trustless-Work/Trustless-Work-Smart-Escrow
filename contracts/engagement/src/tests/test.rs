@@ -1146,3 +1146,42 @@ fn test_fund_escrow_dispute_flag_error() {
         "Should fail when the dispute approved_flag is true"
     );
 }
+
+
+struct MockOracleClient<'a> {
+    env: &'a Env,
+    address: Address,
+}
+
+impl<'a> MockOracleClient<'a> {
+    pub fn new(env: &'a Env, address: &Address) -> Self {
+        Self {
+            env,
+            address: address.clone(),
+        }
+    }
+
+    pub fn initialize(&self, result: &Option<bool>) {
+        self.env.invoke_contract::<()>(
+             &self.address,
+           &Symbol::new(self.env, "initialize"),
+            (result.clone(),).into_val(self.env),
+        );
+    }
+
+    pub fn get_result(&self) -> Option<bool> {
+        self.env.invoke_contract(
+            &self.address,
+            &Symbol::new(self.env, "get_result"),
+            ().into_val(self.env),
+        )
+    }
+
+    pub fn set_result(&self, result: &Option<bool>) {
+        self.env.invoke_contract::<()>(
+            &self.address,
+            &Symbol::new(self.env, "set_result"),
+            (result.clone(),).into_val(self.env),
+        );
+    }
+}
