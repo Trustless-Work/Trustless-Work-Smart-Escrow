@@ -7,5 +7,6 @@ mod events;
 mod storage;
 mod tests;
 mod token;
+mod mock_oracle;
 
 pub use crate::contract::EngagementContractClient;

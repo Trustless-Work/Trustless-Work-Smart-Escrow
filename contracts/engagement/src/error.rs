@@ -41,6 +41,9 @@ pub enum ContractError {
     AdminNotFound = 35,
     InsufficientApproverFundsForCommissions = 36,
     InsufficientServiceProviderFundsForCommissions = 37,
+    OracleResultNotAvailable = 38,
+    FundsAlreadyReleased = 39,
+    UnauthorizedOracle = 40, // Added new variant
 }
 
 impl fmt::Display for ContractError {
@@ -49,82 +52,76 @@ impl fmt::Display for ContractError {
             ContractError::EscrowNotFunded => write!(f, "Escrow not funded"),
             ContractError::AmountCannotBeZero => write!(f, "Amount cannot be zero"),
             ContractError::EscrowAlreadyInitialized => write!(f, "Escrow already initialized"),
-            ContractError::OnlySignerCanFundEscrow => {
-                write!(f, "Only the signer can fund the escrow")
-            }
+            ContractError::OnlySignerCanFundEscrow => write!(f, "Only the signer can fund the escrow"),
             ContractError::EscrowAlreadyFunded => write!(f, "Escrow already funded"),
             ContractError::EscrowFullyFunded => write!(f, "This escrow is already fully funded"),
-            ContractError::SignerInsufficientFunds => {
-                write!(f, "The signer does not have sufficient funds")
-            }
-            ContractError::NotEnoughAllowance => {
-                write!(f, "Not enough allowance to fund this escrow")
-            }
+            ContractError::SignerInsufficientFunds => write!(f, "The signer does not have sufficient funds"),
+            ContractError::NotEnoughAllowance => write!(f, "Not enough allowance to fund this escrow"),
             ContractError::EscrowAlreadyCompleted => write!(f, "Escrow already completed"),
             ContractError::SignerInsufficientFundsToComplete => write!(
                 f,
                 "The signer does not have sufficient funds to complete this escrow"
             ),
-            ContractError::OnlySignerCanRequestRefund => {
-                write!(f, "Only the signer can request a refund")
-            }
+            ContractError::OnlySignerCanRequestRefund => write!(f, "Only the signer can request a refund"),
             ContractError::NoFundsToRefund => write!(f, "No funds available to refund"),
-            ContractError::ContractHasInsufficientBalance => {
-                write!(f, "The contract has no balance to repay")
-            }
+            ContractError::ContractHasInsufficientBalance => write!(f, "The contract has no balance to repay"),
             ContractError::EscrowNotFound => write!(f, "Escrow not found"),
             ContractError::OnlyReleaseSignerCanDistributeEarnings => write!(
                 f,
                 "Only the release signer can distribute the escrow earnings"
             ),
-            ContractError::EscrowNotCompleted => {
-                write!(f, "The escrow must be completed to distribute earnings")
-            }
+            ContractError::EscrowNotCompleted => write!(f, "The escrow must be completed to distribute earnings"),
             ContractError::EscrowBalanceNotEnoughToSendEarnings => write!(
                 f,
                 "The escrow balance must be equal to the amount of earnings defined for the escrow"
             ),
-            ContractError::ContractInsufficientFunds => {
-                write!(f, "The contract does not have sufficient funds")
-            }
+            ContractError::ContractInsufficientFunds => write!(f, "The contract does not have sufficient funds"),
             ContractError::OnlyPlatformAddressExecuteThisFunction => write!(
                 f,
                 "Only the platform address should be able to execute this function"
             ),
             ContractError::EscrowNotInitialized => write!(f, "Escrow not initialized"),
-            ContractError::OnlyServiceProviderChangeMilstoneStatus => {
-                write!(f, "Only the service provider can change milestone status")
-            }
+            ContractError::OnlyServiceProviderChangeMilstoneStatus => write!(
+                f,
+                "Only the service provider can change milestone status"
+            ),
             ContractError::NoMileStoneDefined => write!(f, "Escrow initialized without milestone"),
             ContractError::InvalidMileStoneIndex => write!(f, "Invalid milestone index"),
-            ContractError::OnlyApproverChangeMilstoneFlag => {
-                write!(f, "Only the approver can change milestone flag")
-            }
-            ContractError::OnlyDisputeResolverCanExecuteThisFunction => {
-                write!(f, "Only the dispute resolver can execute this function")
-            }
+            ContractError::OnlyApproverChangeMilstoneFlag => write!(f, "Only the approver can change milestone flag"),
+            ContractError::OnlyDisputeResolverCanExecuteThisFunction => write!(
+                f,
+                "Only the dispute resolver can execute this function"
+            ),
             ContractError::EscrowAlreadyInDispute => write!(f, "Escrow already in dispute"),
             ContractError::EscrowNotInDispute => write!(f, "Escrow not in dispute"),
-            ContractError::InsufficientFundsForResolution => {
-                write!(f, "Insufficient funds for resolution")
-            }
+            ContractError::InsufficientFundsForResolution => write!(f, "Insufficient funds for resolution"),
             ContractError::InvalidState => write!(f, "Invalid state"),
-            ContractError::EscrowOpenedForDisputeResolution => {
-                write!(f, "Escrow has been opened for dispute resolution")
-            }
-            ContractError::AmountToDepositGreatherThanEscrowAmount => {
-                write!(f, "Amount to deposit is greater than the escrow amount")
-            }
-            ContractError::InsufficientApproverFundsForCommissions => {
-                write!(f, "Insufficient approver funds for commissions")
-            }
-            ContractError::InsufficientServiceProviderFundsForCommissions => {
-                write!(f, "Insufficient Service Provider funds for commissions")
-            }
+            ContractError::EscrowOpenedForDisputeResolution => write!(
+                f,
+                "Escrow has been opened for dispute resolution"
+            ),
+            ContractError::AmountToDepositGreatherThanEscrowAmount => write!(
+                f,
+                "Amount to deposit is greater than the escrow amount"
+            ),
+            ContractError::InsufficientApproverFundsForCommissions => write!(
+                f,
+                "Insufficient approver funds for commissions"
+            ),
+            ContractError::InsufficientServiceProviderFundsForCommissions => write!(
+                f,
+                "Insufficient Service Provider funds for commissions"
+            ),
             ContractError::Overflow => write!(f, "This operation can cause an Overflow"),
             ContractError::Underflow => write!(f, "This operation can cause an Underflow"),
             ContractError::DivisionError => write!(f, "This operation can cause Division error"),
             ContractError::AdminNotFound => write!(f, "Admin not found!"),
+            ContractError::OracleResultNotAvailable => write!(
+                f,
+                "Oracle result is not available for this operation"
+            ),
+            ContractError::FundsAlreadyReleased => write!(f, "Funds have already been released from the escrow"),
+            ContractError::UnauthorizedOracle => write!(f, "Only the authorized oracle can perform this action"), // Added new variant
         }
     }
 }
