@@ -1,12 +1,17 @@
 #![cfg(test)]
 
 extern crate std;
-
+use soroban_sdk::vec;
 use crate::contract::EngagementContract;
 use crate::contract::EngagementContractClient;
 use crate::storage::types::{Escrow, Milestone};
 use crate::token::token::{Token, TokenClient};
-use soroban_sdk::{testutils::Address as _, vec, Address, Env, IntoVal, String};
+use soroban_sdk::{testutils::Address as _, Address, Env, IntoVal, String, Symbol};
+use crate::mock_oracle::MockOracle;
+use soroban_sdk::{};
+
+
+
 
 fn create_usdc_token<'a>(e: &Env, admin: &Address) -> TokenClient<'a> {
     let token = TokenClient::new(e, &e.register_contract(None, Token {}));
@@ -47,6 +52,10 @@ fn test_initialize_excrow() {
 
     let engagement_id = String::from_str(&env, "41431");
 
+    let oracle_id = Address::generate(&env);
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -63,7 +72,10 @@ fn test_initialize_excrow() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address,
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     let initialized_escrow = engagement_approver.initialize_escrow(&escrow_properties);
@@ -117,6 +129,9 @@ fn test_change_escrow_properties() {
     let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "41431");
+    let oracle_id = Address::generate(&env);
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
 
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
@@ -134,7 +149,10 @@ fn test_change_escrow_properties() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     let initialized_escrow = engagement_approver.initialize_escrow(&escrow_properties);
@@ -174,6 +192,10 @@ fn test_change_escrow_properties() {
     let unauthorized_address = Address::generate(&env);
     env.mock_all_auths();
 
+     let oracle_id = Address::generate(&env);
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
     let escrow_properties_v2: Escrow = Escrow {
         engagement_id: initialized_escrow.engagement_id.clone(),
         title: String::from_str(&env, "Updated Escrow"),
@@ -190,7 +212,10 @@ fn test_change_escrow_properties() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     let result = engagement_approver
@@ -198,6 +223,10 @@ fn test_change_escrow_properties() {
     assert!(result.is_err());
     // Update escrow with authorized platform_address
     env.mock_all_auths();
+
+     let oracle_id = Address::generate(&env);
+     let party_a = Address::generate(&env);
+     let party_b = Address::generate(&env);
 
     let escrow_properties_v3: Escrow = Escrow {
         engagement_id: initialized_escrow.engagement_id.clone(),
@@ -215,7 +244,10 @@ fn test_change_escrow_properties() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address,
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     engagement_approver.change_escrow_properties(&platform_address, &escrow_properties_v3);
@@ -277,6 +309,10 @@ fn test_change_milestone_status_and_approved_flag() {
     let engagement_approver = EngagementContractClient::new(&env, &engagement_contract_address);
     let usdc_token = create_usdc_token(&env, &admin);
 
+    let oracle_id = Address::generate(&env);
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
     let engagement_id = String::from_str(&env, "test_engagement");
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
@@ -294,7 +330,10 @@ fn test_change_milestone_status_and_approved_flag() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -351,6 +390,10 @@ fn test_change_milestone_status_and_approved_flag() {
         engagement_approver.try_change_milestone_flag(&(0 as i128), &true, &unauthorized_address);
     assert!(result.is_err());
 
+    let oracle_id = Address::generate(&env);
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
     //Escrow Test with no milestone
     let escrow_properties_v2: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
@@ -368,7 +411,10 @@ fn test_change_milestone_status_and_approved_flag() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address,
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     engagement_approver.change_escrow_properties(&platform_address, &escrow_properties_v2);
@@ -391,20 +437,25 @@ fn test_distribute_escrow_earnings_successful_flow() {
     let env = Env::default();
     env.mock_all_auths();
 
+    // Generate common addresses for roles
     let admin = Address::generate(&env);
     let approver_address = Address::generate(&env);
     let service_provider_address = Address::generate(&env);
     let platform_address = Address::generate(&env);
-    let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
     let trustless_work_address = Address::generate(&env);
 
+    // Create a USDC token and mint tokens to the contract later.
     let usdc_token = create_usdc_token(&env, &admin);
-
     let amount: i128 = 100_000_000;
-    usdc_token.mint(&approver_address, &(amount as i128));
+    
+    // For distribution, we need the authorized oracle and release signer to be the same.
+    let oracle_and_release_signer = Address::generate(&env);
+    
+    // Mint some tokens to approver to simulate funding if needed (optional)
+    usdc_token.mint(&approver_address, &amount);
 
-    let platform_fee = 500;
+    let platform_fee = 500; // e.g., 5%
 
     let milestones = vec![
         &env,
@@ -424,6 +475,12 @@ fn test_distribute_escrow_earnings_successful_flow() {
     let engagement_approver = EngagementContractClient::new(&env, &engagement_contract_address);
 
     let engagement_id = String::from_str(&env, "test_escrow_1");
+
+    // Use the same address for both oracle_id and release_signer.
+    let oracle_id = oracle_and_release_signer.clone();
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -434,27 +491,31 @@ fn test_distribute_escrow_earnings_successful_flow() {
         amount: amount,
         platform_fee: platform_fee,
         milestones: milestones.clone(),
-        release_signer: release_signer_address.clone(),
+        release_signer: oracle_and_release_signer.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
         dispute_flag: false,
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id.clone(),
+        party_a: party_a,
+        party_b: party_b,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
 
-    usdc_token.mint(&engagement_contract_address, &(amount as i128));
+    // Mint the escrow funds into the contract balance.
+    usdc_token.mint(&engagement_contract_address, &amount);
 
+    // Call distribute_escrow_earnings using the same address for oracle and release signer.
     engagement_approver
-        .distribute_escrow_earnings(&release_signer_address, &trustless_work_address);
+        .distribute_escrow_earnings(&oracle_and_release_signer, &trustless_work_address);
 
-    let total_amount = amount as i128;
-    let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
-    let platform_commission = (total_amount * platform_fee as i128) / 10000 as i128;
-    let service_provider_amount =
-        (total_amount - (trustless_work_commission + platform_commission)) as i128;
+    let total_amount = amount;
+    let trustless_work_commission = (total_amount * 30) / 10000;
+    let platform_commission = (total_amount * (platform_fee as i128)) / 10000;
+    let service_provider_amount = total_amount - (trustless_work_commission + platform_commission);
 
     assert_eq!(
         usdc_token.balance(&trustless_work_address),
@@ -481,6 +542,7 @@ fn test_distribute_escrow_earnings_successful_flow() {
     );
 }
 
+
 //test claim escrow earnings in failure scenarios
 // Scenario 1: Escrow with no milestones:
 #[test]
@@ -504,6 +566,10 @@ fn test_distribute_escrow_earnings_no_milestones() {
     let amount: i128 = 100_000_000;
     let platform_fee = 30;
 
+    let oracle_id = Address::generate(&env);
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id_no_milestones.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -520,7 +586,10 @@ fn test_distribute_escrow_earnings_no_milestones() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -565,6 +634,10 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
     let amount: i128 = 100_000_000;
     let platform_fee = 30;
 
+    let oracle_id = Address::generate(&env);
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id_incomplete.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -581,7 +654,10 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -624,6 +700,11 @@ fn test_dispute_flag_management() {
     let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "test_dispute");
+
+    let oracle_id = Address::generate(&env);
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+    
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -640,7 +721,10 @@ fn test_dispute_flag_management() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -690,6 +774,11 @@ fn test_dispute_resolution_process() {
     let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "test_resolution");
+
+    let oracle_id = Address::generate(&env);
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -706,7 +795,10 @@ fn test_dispute_resolution_process() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -787,6 +879,11 @@ fn test_fund_escrow_successful_deposit() {
     let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "12345");
+
+    let oracle_id = Address::generate(&env);
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -803,7 +900,10 @@ fn test_fund_escrow_successful_deposit() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -856,6 +956,11 @@ fn test_fund_escrow_fully_funded_error() {
     let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "12345");
+
+    let oracle_id = Address::generate(&env);
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -872,7 +977,10 @@ fn test_fund_escrow_fully_funded_error() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -923,6 +1031,11 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
     let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "12345");
+
+    let oracle_id = Address::generate(&env);
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -939,7 +1052,10 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -991,6 +1107,11 @@ fn test_fund_escrow_dispute_flag_error() {
     let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "12321");
+
+    let oracle_id = Address::generate(&env);
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -1007,7 +1128,10 @@ fn test_fund_escrow_dispute_flag_error() {
         release_flag: false,
         resolved_flag: false,
         trustline: usdc_token.address,
-        trustline_decimals: 10_000_000
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_id,
+        party_a: party_a,
+        party_b: party_b,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
