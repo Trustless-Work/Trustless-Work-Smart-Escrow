@@ -1185,3 +1185,60 @@ impl<'a> MockOracleClient<'a> {
         );
     }
 }
+
+
+#[test]
+fn test_funds_locked_until_condition_met() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let admin = Address::generate(&env);
+    let approver_address = Address::generate(&env);
+    let service_provider_address = Address::generate(&env);
+    let platform_address = Address::generate(&env);
+    let oracle_address = env.register_contract(None, MockOracle);
+    let release_signer = oracle_address.clone();
+    let dispute_resolver_address = Address::generate(&env);
+    let amount: i128 = 100_000_000;
+    let platform_fee = 30;
+
+    let usdc_token = create_usdc_token(&env, &admin);
+    let engagement_contract_address = env.register_contract(None, EngagementContract);
+    let engagement_approver = EngagementContractClient::new(&env, &engagement_contract_address);
+
+    let oracle_client = MockOracleClient::new(&env, &oracle_address);
+    oracle_client.initialize(&None::<bool>); // No result set yet
+
+    let engagement_id = String::from_str(&env, "oracle_test_1");
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
+    let escrow_properties = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Oracle Test Escrow"),
+        description: String::from_str(&env, "Test oracle integration"),
+        approver: approver_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address.clone(),
+        amount,
+        platform_fee,
+        milestones: vec![&env], 
+        release_signer: release_signer.clone(),
+        dispute_resolver: dispute_resolver_address.clone(),
+        dispute_flag: false,
+        release_flag: false,
+        resolved_flag: false,
+        trustline: usdc_token.address.clone(),
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_address.clone(),
+        party_a,
+        party_b,
+    };
+
+    engagement_approver.initialize_escrow(&escrow_properties);
+    usdc_token.mint(&engagement_contract_address, &amount);
+
+    // Attempt to distribute funds before the oracle condition is met
+    let result = engagement_approver.try_distribute_escrow_earnings(&release_signer, &platform_address);
+    assert!(result.is_err(), "Funds should be locked until oracle condition is met");
+}
