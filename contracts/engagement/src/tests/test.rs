@@ -1317,3 +1317,84 @@ fn test_fund_release_on_verified_response() {
     assert_eq!(usdc_token.balance(&service_provider_address), service_provider_amount);
     assert_eq!(usdc_token.balance(&engagement_contract_address), 0);
 }
+
+
+#[test]
+fn test_only_authorized_oracle_triggers_release() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let admin = Address::generate(&env);
+    let approver_address = Address::generate(&env);
+    let service_provider_address = Address::generate(&env);
+    let platform_address = Address::generate(&env);
+    // For authorized oracle, use the same address for oracle_id and release_signer
+    let authorized_oracle = env.register_contract(None, MockOracle);
+    let dispute_resolver_address = Address::generate(&env);
+    let trustless_work_address = Address::generate(&env);
+    let amount: i128 = 100_000_000;
+    let platform_fee = 30;
+
+    let usdc_token = create_usdc_token(&env, &admin);
+    let engagement_contract_address = env.register_contract(None, EngagementContract);
+    let engagement_approver = EngagementContractClient::new(&env, &engagement_contract_address);
+
+    // Set up the authorized oracle with a verified condition
+    let authorized_oracle_client = MockOracleClient::new(&env, &authorized_oracle);
+    authorized_oracle_client.initialize(&Some(true));
+
+    let engagement_id = String::from_str(&env, "oracle_test_3");
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
+    let milestones = vec![
+        &env,
+        Milestone {
+            description: String::from_str(&env, "Test milestone"),
+            status: String::from_str(&env, "Completed"),
+            approved_flag: true,
+        },
+    ];
+
+    let escrow_properties = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Oracle Test Escrow"),
+        description: String::from_str(&env, "Test oracle integration"),
+        approver: approver_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address.clone(),
+        amount,
+        platform_fee,
+        milestones,
+        release_signer: authorized_oracle.clone(), // Using authorized oracle as release signer
+        dispute_resolver: dispute_resolver_address.clone(),
+        dispute_flag: false,
+        release_flag: false,
+        resolved_flag: false,
+        trustline: usdc_token.address.clone(),
+        trustline_decimals: 10_000_000,
+        oracle_id: authorized_oracle.clone(),
+        party_a,
+        party_b,
+    };
+
+    engagement_approver.initialize_escrow(&escrow_properties);
+    usdc_token.mint(&engagement_contract_address, &amount);
+
+    // Test with unauthorized oracle: update escrow's oracle_id to an unauthorized oracle
+    let unauthorized_oracle = env.register_contract(None, MockOracle);
+    let mut updated_escrow = escrow_properties.clone();
+    updated_escrow.oracle_id = unauthorized_oracle.clone();
+    engagement_approver.change_escrow_properties(&platform_address, &updated_escrow);
+
+    let result = engagement_approver.try_distribute_escrow_earnings(&authorized_oracle, &trustless_work_address);
+    assert!(result.is_err(), "Only authorized oracle should trigger release");
+
+    // Revert escrow oracle_id to authorized oracle and attempt distribution again
+    updated_escrow.oracle_id = authorized_oracle.clone();
+    engagement_approver.change_escrow_properties(&platform_address, &updated_escrow);
+    engagement_approver.distribute_escrow_earnings(&authorized_oracle, &trustless_work_address);
+
+    assert_eq!(usdc_token.balance(&engagement_contract_address), 0, "Funds should be released with authorized oracle");
+}
+
