@@ -1242,3 +1242,78 @@ fn test_funds_locked_until_condition_met() {
     let result = engagement_approver.try_distribute_escrow_earnings(&release_signer, &platform_address);
     assert!(result.is_err(), "Funds should be locked until oracle condition is met");
 }
+
+#[test]
+fn test_fund_release_on_verified_response() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let admin = Address::generate(&env);
+    let approver_address = Address::generate(&env);
+    let service_provider_address = Address::generate(&env);
+    let platform_address = Address::generate(&env);
+    // Use the oracle address for both oracle_id and release_signer
+    let oracle_address = env.register_contract(None, MockOracle);
+    let release_signer = oracle_address.clone();
+    let dispute_resolver_address = Address::generate(&env);
+    let trustless_work_address = Address::generate(&env);
+    let amount: i128 = 100_000_000;
+    let platform_fee = 30;
+
+    let usdc_token = create_usdc_token(&env, &admin);
+    let engagement_contract_address = env.register_contract(None, EngagementContract);
+    let engagement_approver = EngagementContractClient::new(&env, &engagement_contract_address);
+
+    let oracle_client = MockOracleClient::new(&env, &oracle_address);
+    oracle_client.initialize(&Some(true)); // Oracle condition met
+
+    let engagement_id = String::from_str(&env, "oracle_test_2");
+    let party_a = Address::generate(&env);
+    let party_b = Address::generate(&env);
+
+    let milestones = vec![
+        &env,
+        Milestone {
+            description: String::from_str(&env, "Test milestone"),
+            status: String::from_str(&env, "Completed"),
+            approved_flag: true,
+        },
+    ];
+
+    let escrow_properties = Escrow {
+        engagement_id: engagement_id.clone(),
+        title: String::from_str(&env, "Oracle Test Escrow"),
+        description: String::from_str(&env, "Test oracle integration"),
+        approver: approver_address.clone(),
+        service_provider: service_provider_address.clone(),
+        platform_address: platform_address.clone(),
+        amount,
+        platform_fee,
+        milestones,
+        release_signer: release_signer.clone(),
+        dispute_resolver: dispute_resolver_address.clone(),
+        dispute_flag: false,
+        release_flag: false,
+        resolved_flag: false,
+        trustline: usdc_token.address.clone(),
+        trustline_decimals: 10_000_000,
+        oracle_id: oracle_address.clone(),
+        party_a,
+        party_b,
+    };
+
+    engagement_approver.initialize_escrow(&escrow_properties);
+    usdc_token.mint(&engagement_contract_address, &amount);
+
+    engagement_approver.distribute_escrow_earnings(&release_signer, &trustless_work_address);
+
+    let total_amount = amount;
+    let trustless_work_commission = (total_amount * 30) / 10000;
+    let platform_commission = (total_amount * platform_fee) / 10000;
+    let service_provider_amount = total_amount - (trustless_work_commission + platform_commission);
+
+    assert_eq!(usdc_token.balance(&trustless_work_address), trustless_work_commission);
+    assert_eq!(usdc_token.balance(&platform_address), platform_commission);
+    assert_eq!(usdc_token.balance(&service_provider_address), service_provider_amount);
+    assert_eq!(usdc_token.balance(&engagement_contract_address), 0);
+}
