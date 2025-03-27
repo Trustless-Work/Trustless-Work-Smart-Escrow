@@ -852,7 +852,7 @@ fn test_dispute_flag_management() {
     // Change dispute flag
     engagement_approver.change_dispute_flag();
 
-    // Verify dispute_flag was changed
+    // Verify dispute_flag was changed to true
     let escrow_after_change = engagement_approver.get_escrow();
     assert!(escrow_after_change.dispute_flag);
 
@@ -866,12 +866,12 @@ fn test_dispute_flag_management() {
         .try_distribute_escrow_earnings(&release_signer_address, &platform_address);
     assert!(result.is_err());
 
-    // Change back the dispute flag
+    // Try to change dispute flag again (should remain true)
     engagement_approver.change_dispute_flag();
 
-    // Verify dispute_flag was changed back
+    // Verify dispute_flag remains true
     let escrow_after_second_change = engagement_approver.get_escrow();
-    assert!(!escrow_after_second_change.dispute_flag);
+    assert!(escrow_after_second_change.dispute_flag);
 }
 
 #[test]

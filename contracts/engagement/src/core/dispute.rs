@@ -131,32 +131,12 @@ impl DisputeManager {
             Err(err) => return Err(err),
         };
 
-        // Toggles the dispute flag (true -> false or false -> true)
-        escrow.dispute_flag = !escrow.dispute_flag;
+        // Toggles the dispute flag (pass -> only 'true')
+        escrow.dispute_flag = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         escrows_by_engagement_id(&e, escrow.engagement_id.clone(), escrow);
 
         Ok(())
-    }
-
-    pub fn resolve_dispute(e: &Env, escrow: &mut Escrow) {
-        // Ensure only the dispute resolver can resolve the dispute
-        let caller = e.current_contract_address();
-        if caller != escrow.dispute_resolver {
-            panic!("Only the dispute resolver can resolve the dispute");
-        }
-
-        // Check if there is an active dispute
-        if !escrow.dispute_flag {
-            panic!("No active dispute to resolve");
-        }
-
-        // Resolver should set all relevant flags
-        escrow.dispute_flag = false;
-        escrow.resolved_flag = true;
-
-        // Emit event for dispute resolution
-        events::resolved(e, &escrow.engagement_id, escrow);
     }
 }

@@ -273,7 +273,7 @@
                                 "symbol": "dispute_flag"
                               },
                               "val": {
-                                "bool": false
+                                "bool": true
                               }
                             },
                             {
@@ -2085,7 +2085,7 @@
                         "symbol": "dispute_flag"
                       },
                       "val": {
-                        "bool": false
+                        "bool": true
                       }
                     },
                     {
@@ -2338,7 +2338,7 @@
                     "symbol": "dispute_flag"
                   },
                   "val": {
-                    "bool": false
+                    "bool": true
                   }
                 },
                 {
