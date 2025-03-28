@@ -1,12 +1,14 @@
 #![cfg(test)]
 
-extern crate std;
-
+use soroban_sdk::{
+    testutils::Address as _,
+    vec, Address, Env, IntoVal, String,
+};
+use crate::error::ContractError;
 use crate::contract::EngagementContract;
 use crate::contract::EngagementContractClient;
 use crate::storage::types::{Escrow, Milestone};
 use crate::token::token::{Token, TokenClient};
-use soroban_sdk::{testutils::Address as _, vec, Address, Env, IntoVal, String};
 
 fn create_usdc_token<'a>(e: &Env, admin: &Address) -> TokenClient<'a> {
     let token = TokenClient::new(e, &e.register_contract(None, Token {}));
@@ -866,8 +868,8 @@ fn test_dispute_flag_management() {
         .try_distribute_escrow_earnings(&release_signer_address, &platform_address);
     assert!(result.is_err());
 
-    // Try to change dispute flag again (should remain true)
-    engagement_approver.change_dispute_flag();
+    // Try to change dispute flag again
+    engagement_approver.try_change_dispute_flag();
 
     // Verify dispute_flag remains true
     let escrow_after_second_change = engagement_approver.get_escrow();

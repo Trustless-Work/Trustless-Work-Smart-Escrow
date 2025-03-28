@@ -3,8 +3,8 @@ use soroban_sdk::{Address, Env};
 
 use crate::core::escrow::EscrowManager;
 use crate::error::ContractError;
-use crate::events::{self, escrows_by_engagement_id};
-use crate::storage::types::{DataKey, Escrow};
+use crate::events::escrows_by_engagement_id;
+use crate::storage::types::DataKey;
 
 pub struct DisputeManager;
 
@@ -131,6 +131,10 @@ impl DisputeManager {
             Err(err) => return Err(err),
         };
 
+        if escrow.dispute_flag {
+            return Err(ContractError::EscrowAlreadyInDispute);
+        }
+        
         // Toggles the dispute flag (pass -> only 'true')
         escrow.dispute_flag = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
