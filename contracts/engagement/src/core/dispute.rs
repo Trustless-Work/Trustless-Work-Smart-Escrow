@@ -9,6 +9,9 @@ use crate::storage::types::DataKey;
 pub struct DisputeManager;
 
 impl DisputeManager {
+    // TODO: `resolving_disputes` shares multiple responsibilities and contains repetitive code.
+    // lines 47:78 are plenty repetitive. These are fees and the recommendation is to create
+    // multiple structs that implement a trait and move the value from the method to its variable.
     pub fn resolving_disputes(
         e: Env,
         dispute_resolver: Address,
