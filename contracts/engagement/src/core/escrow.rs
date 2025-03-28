@@ -46,7 +46,9 @@ impl EscrowManager {
 
         let contract_address = e.current_contract_address();
 
-        if usdc_approver.balance(&contract_address) as i128 > escrow.amount {
+        let contract_balance = usdc_approver.balance(&contract_address);
+
+        if contract_balance >= escrow.amount {
             return Err(ContractError::EscrowFullyFunded);
         }
 
@@ -126,16 +128,24 @@ impl EscrowManager {
 
         usdc_approver.transfer(&contract_address, &platform_address, &platform_commission);
 
-        let service_provider_amount = total_amount
+        let receiver_amount = total_amount
             .checked_sub(trustless_work_commission)
             .ok_or(ContractError::Underflow)?
             .checked_sub(platform_commission)
             .ok_or(ContractError::Underflow)?;
 
+        // Use the receiver address instead of service_provider if it's set and valid
+        // We'll check if it's the same as service_provider to determine if it was explicitly set
+        let receiver = if escrow.receiver == escrow.service_provider {
+            escrow.service_provider.clone()
+        } else {
+            escrow.receiver.clone()
+        };
+
         usdc_approver.transfer(
             &contract_address,
-            &escrow.service_provider,
-            &service_provider_amount,
+            &receiver,
+            &receiver_amount,
         );
 
         escrow.release_flag = true;

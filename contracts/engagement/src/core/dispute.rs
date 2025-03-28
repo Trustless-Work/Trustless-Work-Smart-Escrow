@@ -102,14 +102,21 @@ impl DisputeManager {
         }
 
         if net_provider_funds > 0 {
+            let receiver = if escrow.receiver == escrow.service_provider {
+                escrow.service_provider.clone()
+            } else {
+                escrow.receiver.clone()
+            };
+            
             usdc_approver.transfer(
                 &e.current_contract_address(),
-                &escrow.service_provider,
+                &receiver,
                 &net_provider_funds,
             );
         }
 
         escrow.resolved_flag = true;
+        escrow.dispute_flag = false;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         escrows_by_engagement_id(&e, escrow.engagement_id.clone(), escrow);
@@ -127,7 +134,8 @@ impl DisputeManager {
         if escrow.dispute_flag {
             return Err(ContractError::EscrowAlreadyInDispute);
         }
-
+        
+        // Toggles the dispute flag (pass -> only 'true')
         escrow.dispute_flag = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
