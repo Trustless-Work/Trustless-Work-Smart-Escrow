@@ -3,3 +3,6 @@ target
 
 # Local Soroban settings
 .soroban
+
+# Ignore JetBrains IDE settings
+.idea/
