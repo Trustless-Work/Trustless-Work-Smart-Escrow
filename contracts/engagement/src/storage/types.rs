@@ -1,8 +1,9 @@
-use soroban_sdk::{contracttype, Address, String, Vec};
+use soroban_sdk::{contracttype, symbol_short, Address, String, Symbol, Vec};
 
 pub(crate) const DAY_IN_LEDGERS: u32 = 17280;
 pub(crate) const INSTANCE_BUMP_AMOUNT: u32 = 7 * DAY_IN_LEDGERS;
 pub(crate) const INSTANCE_LIFETIME_THRESHOLD: u32 = INSTANCE_BUMP_AMOUNT - DAY_IN_LEDGERS;
+pub(crate) const oracle_key: Symbol = symbol_short!("oracle");
 
 #[contracttype]
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -63,4 +64,18 @@ pub enum DataKey {
     Balance(Address),
     Allowance(AllowanceDataKey),
     Admin,
+}
+
+#[derive(Clone)]
+#[contracttype]
+pub enum Asset {
+    Stellar(Address),
+    Other(Symbol),
+}
+
+#[derive(Clone)]
+#[contracttype]
+pub struct PriceData {
+    price: i128,
+    timestamp: u64,
 }

@@ -2,7 +2,7 @@ use soroban_sdk::{
     contract, contractimpl, symbol_short, Address, BytesN, Env, String, Symbol, Val, Vec,
 };
 
-use crate::core::{DisputeManager, EscrowManager, MilestoneManager};
+use crate::core::{DisputeManager, EscrowManager, MilestoneManager, PriceOracle};
 use crate::error::ContractError;
 use crate::storage::types::{AddressBalance, Escrow};
 
@@ -109,6 +109,10 @@ impl EngagementContract {
         addresses: Vec<Address>,
     ) -> Result<Vec<AddressBalance>, ContractError> {
         EscrowManager::get_multiple_escrow_balances(e, addresses)
+    }
+
+    pub fn release_escrow_funds(e: Env) -> Result<(), ContractError> {
+        EscrowManager::release_funds(e)
     }
 
     ////////////////////////

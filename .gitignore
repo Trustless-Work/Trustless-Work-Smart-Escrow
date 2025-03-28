@@ -3,3 +3,5 @@ target
 
 # Local Soroban settings
 .soroban
+
+./contracts/reflector-contract-master

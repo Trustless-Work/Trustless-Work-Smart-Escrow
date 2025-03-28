@@ -2,6 +2,7 @@ use soroban_sdk::token::Client as TokenClient;
 use soroban_sdk::{Address, Env, Symbol, Val, Vec};
 
 use crate::core::price_oracle::PriceOracle;
+use crate::core::reflector_oracle::{Asset, Client as PriceOracleClient, PriceData};
 use crate::error::ContractError;
 use crate::storage::types::{AddressBalance, DataKey, Escrow};
 
@@ -220,7 +221,7 @@ impl EscrowManager {
         Ok(escrow?)
     }
 
-    pub fn check_price_and_release_funds(e: Env) -> Result<(), ContractError> {
+    pub fn release_funds(e: Env) -> Result<(), ContractError> {
         let escrow_result = Self::get_escrow(e.clone());
         let mut escrow = match escrow_result {
             Ok(esc) => esc,
@@ -231,25 +232,43 @@ impl EscrowManager {
             return Err(ContractError::EscrowAlreadyReleased);
         }
 
-        let (price_met, current_price) =
-            PriceOracle::checks_price_condition(e.clone(), escrow.target_price);
+        // default asset to  escrow.trustline address
+        let asset = Asset::Stellar(escrow.trustline.clone());
+
+        let price_met = PriceOracle::checks_price_condition(
+            e.clone(),
+            asset,
+            escrow.target_price,
+            escrow.amount,
+        );
 
         if price_met {
-            let usdc_approver = TokenClient::new(&e, &escrow.trustline);
+            let token_approver = TokenClient::new(&e, &escrow.trustline);
             let contract_address = e.current_contract_address();
+            let contract_balance = token_approver.balance(&contract_address);
 
-            // Ensure escrow has enough balance
-            let contract_balance = usdc_approver.balance(&contract_address);
             if contract_balance < escrow.amount as i128 {
                 return Err(ContractError::EscrowBalanceNotEnoughToSendEarnings);
             }
 
-            // Release funds
-            usdc_approver.transfer(&contract_address, &escrow.service_provider, &escrow.amount);
+            // Transfer funds
+            token_approver.transfer(&contract_address, &escrow.service_provider, &escrow.amount);
 
+            // Update escrow
             escrow.release_flag = true;
-
+            escrow.resolved_flag = true;
+            escrow.amount = 0;
+            
             e.storage().instance().set(&DataKey::Escrow, &escrow);
+
+            // Log_transfer_details
+            e.events().publish(
+                (
+                    Symbol::new(&e, "funds_released"),
+                    escrow.engagement_id.clone(),
+                ),
+                (escrow.service_provider.clone(), escrow.amount),
+            );
         }
 
         Ok(())
