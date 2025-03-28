@@ -15,6 +15,8 @@ mod events {
     pub mod handler;
     pub(crate) use handler::escrows_by_engagement_id;
 }
+
+/// This module is currently Work In Progress.
 mod storage {
     pub mod store;
     pub mod types;
