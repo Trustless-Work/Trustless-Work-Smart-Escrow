@@ -37,26 +37,10 @@ impl EngagementContract {
     ////////////////////////
 
     pub fn initialize_escrow(e: Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
-        let initialized_escrow = EscrowManager::initialize_escrow(
-            e.clone(),
-            escrow_properties.engagement_id,
-            escrow_properties.title,
-            escrow_properties.description,
-            escrow_properties.approver,
-            escrow_properties.service_provider,
-            escrow_properties.platform_address,
-            escrow_properties.amount,
-            escrow_properties.platform_fee,
-            escrow_properties.milestones,
-            escrow_properties.release_signer,
-            escrow_properties.dispute_resolver,
-            escrow_properties.trustline,
-            escrow_properties.trustline_decimals,
-            escrow_properties.oracle_id,
-            escrow_properties.party_a,
-            escrow_properties.party_b,
-        )?;
+        let initialized_escrow =
+            EscrowManager::initialize_escrow(e.clone(), escrow_properties.clone())?;
         e.events().publish((symbol_short!("init_esc"),), ());
+
         Ok(initialized_escrow)
     }
 
@@ -69,7 +53,15 @@ impl EngagementContract {
             EscrowManager::fund_escrow(e.clone(), signer.clone(), amount_to_deposit.clone())?;
         e.events()
             .publish((symbol_short!("fund_esc"),), (signer, amount_to_deposit));
+
         Ok(updated_funded_escrow)
+    }
+
+    
+    pub fn release_funds_based_on_oracle(e: Env, caller: Address) -> Result<(), ContractError> {
+        let res = EscrowManager::release_funds_based_on_oracle(e.clone(), caller)?;
+        e.events().publish((symbol_short!("rel_orcl"),), ());
+        Ok(res)
     }
 
     pub fn distribute_escrow_earnings(
@@ -86,15 +78,8 @@ impl EngagementContract {
             (symbol_short!("dis_esc"),),
             (release_signer, trustless_work_address),
         );
-        Ok(updated_distributed_escrow_earnings)
-    }
 
-    /// This function calls EscrowManager::release_funds_based_on_oracle,
-    /// which checks the off-chain oracle condition and releases funds accordingly.
-    pub fn release_funds_based_on_oracle(e: Env, caller: Address) -> Result<(), ContractError> {
-        let res = EscrowManager::release_funds_based_on_oracle(e.clone(), caller)?;
-        e.events().publish((symbol_short!("rel_orcl"),), ());
-        Ok(res)
+        Ok(updated_distributed_escrow_earnings)
     }
 
     pub fn change_escrow_properties(
@@ -110,7 +95,8 @@ impl EngagementContract {
         e.events().publish(
             (symbol_short!("chg_esc"),),
             (plataform_address, escrow_properties),
-        );
+        ); // emitted an event when storage is modified
+
         Ok(updated_escrow)
     }
 

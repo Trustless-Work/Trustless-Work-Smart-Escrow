@@ -1,11 +1,35 @@
 {
   "generators": {
-    "address": 11,
+    "address": 12,
     "nonce": 0
   },
   "auth": [
     [],
-    [],
+    [
+      [
+        "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
+        {
+          "function": {
+            "contract_fn": {
+              "contract_address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5",
+              "function_name": "mint",
+              "args": [
+                {
+                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                },
+                {
+                  "i128": {
+                    "hi": 0,
+                    "lo": 100000000
+                  }
+                }
+              ]
+            }
+          },
+          "sub_invocations": []
+        }
+      ]
+    ],
     [],
     [
       [
@@ -105,48 +129,7 @@
       [
         {
           "contract_data": {
-            "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
-            "key": "ledger_key_contract_instance",
-            "durability": "persistent"
-          }
-        },
-        [
-          {
-            "last_modified_ledger_seq": 0,
-            "data": {
-              "contract_data": {
-                "ext": "v0",
-                "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
-                "key": "ledger_key_contract_instance",
-                "durability": "persistent",
-                "val": {
-                  "contract_instance": {
-                    "executable": {
-                      "wasm": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-                    },
-                    "storage": [
-                      {
-                        "key": {
-                          "symbol": "result"
-                        },
-                        "val": {
-                          "bool": true
-                        }
-                      }
-                    ]
-                  }
-                }
-              }
-            },
-            "ext": "v0"
-          },
-          4095
-        ]
-      ],
-      [
-        {
-          "contract_data": {
-            "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
+            "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
             "key": {
               "ledger_key_nonce": {
                 "nonce": 5541220902715666415
@@ -161,7 +144,7 @@
             "data": {
               "contract_data": {
                 "ext": "v0",
-                "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
+                "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM",
                 "key": {
                   "ledger_key_nonce": {
                     "nonce": 5541220902715666415
@@ -174,6 +157,87 @@
             "ext": "v0"
           },
           6311999
+        ]
+      ],
+      [
+        {
+          "contract_data": {
+            "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
+            "key": {
+              "ledger_key_nonce": {
+                "nonce": 1033654523790656264
+              }
+            },
+            "durability": "temporary"
+          }
+        },
+        [
+          {
+            "last_modified_ledger_seq": 0,
+            "data": {
+              "contract_data": {
+                "ext": "v0",
+                "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM",
+                "key": {
+                  "ledger_key_nonce": {
+                    "nonce": 1033654523790656264
+                  }
+                },
+                "durability": "temporary",
+                "val": "void"
+              }
+            },
+            "ext": "v0"
+          },
+          6311999
+        ]
+      ],
+      [
+        {
+          "contract_data": {
+            "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5",
+            "key": {
+              "vec": [
+                {
+                  "symbol": "Balance"
+                },
+                {
+                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                }
+              ]
+            },
+            "durability": "persistent"
+          }
+        },
+        [
+          {
+            "last_modified_ledger_seq": 0,
+            "data": {
+              "contract_data": {
+                "ext": "v0",
+                "contract": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARQG5",
+                "key": {
+                  "vec": [
+                    {
+                      "symbol": "Balance"
+                    },
+                    {
+                      "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                    }
+                  ]
+                },
+                "durability": "persistent",
+                "val": {
+                  "i128": {
+                    "hi": 0,
+                    "lo": 100000000
+                  }
+                }
+              }
+            },
+            "ext": "v0"
+          },
+          4095
         ]
       ],
       [
@@ -214,7 +278,7 @@
                 "val": {
                   "i128": {
                     "hi": 0,
-                    "lo": 99400000
+                    "lo": 94700000
                   }
                 }
               }
@@ -262,7 +326,7 @@
                 "val": {
                   "i128": {
                     "hi": 0,
-                    "lo": 300000
+                    "lo": 5000000
                   }
                 }
               }
@@ -503,7 +567,7 @@
                                 "symbol": "description"
                               },
                               "val": {
-                                "string": "Test oracle integration"
+                                "string": "Test Escrow Description"
                               }
                             },
                             {
@@ -527,7 +591,7 @@
                                 "symbol": "engagement_id"
                               },
                               "val": {
-                                "string": "oracle_test_2"
+                                "string": "test_escrow_same_receiver"
                               }
                             },
                             {
@@ -551,7 +615,7 @@
                                           "symbol": "description"
                                         },
                                         "val": {
-                                          "string": "Test milestone"
+                                          "string": "First milestone"
                                         }
                                       },
                                       {
@@ -572,7 +636,7 @@
                                 "symbol": "oracle_id"
                               },
                               "val": {
-                                "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                                "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
                               }
                             },
                             {
@@ -580,7 +644,7 @@
                                 "symbol": "party_a"
                               },
                               "val": {
-                                "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
+                                "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXI7N"
                               }
                             },
                             {
@@ -588,7 +652,7 @@
                                 "symbol": "party_b"
                               },
                               "val": {
-                                "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXI7N"
+                                "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYRE5"
                               }
                             },
                             {
@@ -606,7 +670,7 @@
                               "val": {
                                 "i128": {
                                   "hi": 0,
-                                  "lo": 30
+                                  "lo": 500
                                 }
                               }
                             },
@@ -663,7 +727,7 @@
                                 "symbol": "title"
                               },
                               "val": {
-                                "string": "Oracle Test Escrow"
+                                "string": "Test Escrow"
                               }
                             },
                             {
@@ -794,14 +858,24 @@
                 "symbol": "fn_call"
               },
               {
-                "bytes": "0000000000000000000000000000000000000000000000000000000000000005"
+                "bytes": "0000000000000000000000000000000000000000000000000000000000000008"
               },
               {
-                "symbol": "initialize"
+                "symbol": "mint"
               }
             ],
             "data": {
-              "bool": true
+              "vec": [
+                {
+                  "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+                },
+                {
+                  "i128": {
+                    "hi": 0,
+                    "lo": 100000000
+                  }
+                }
+              ]
             }
           }
         }
@@ -811,7 +885,36 @@
     {
       "event": {
         "ext": "v0",
-        "contract_id": "0000000000000000000000000000000000000000000000000000000000000005",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000008",
+        "type_": "contract",
+        "body": {
+          "v0": {
+            "topics": [
+              {
+                "symbol": "mint"
+              },
+              {
+                "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD2KM"
+              },
+              {
+                "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFCT4"
+              }
+            ],
+            "data": {
+              "i128": {
+                "hi": 0,
+                "lo": 100000000
+              }
+            }
+          }
+        }
+      },
+      "failed_call": false
+    },
+    {
+      "event": {
+        "ext": "v0",
+        "contract_id": "0000000000000000000000000000000000000000000000000000000000000008",
         "type_": "diagnostic",
         "body": {
           "v0": {
@@ -820,7 +923,7 @@
                 "symbol": "fn_return"
               },
               {
-                "symbol": "initialize"
+                "symbol": "mint"
               }
             ],
             "data": "void"
@@ -873,7 +976,7 @@
                     "symbol": "description"
                   },
                   "val": {
-                    "string": "Test oracle integration"
+                    "string": "Test Escrow Description"
                   }
                 },
                 {
@@ -897,7 +1000,7 @@
                     "symbol": "engagement_id"
                   },
                   "val": {
-                    "string": "oracle_test_2"
+                    "string": "test_escrow_same_receiver"
                   }
                 },
                 {
@@ -921,7 +1024,7 @@
                               "symbol": "description"
                             },
                             "val": {
-                              "string": "Test milestone"
+                              "string": "First milestone"
                             }
                           },
                           {
@@ -942,7 +1045,7 @@
                     "symbol": "oracle_id"
                   },
                   "val": {
-                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
                   }
                 },
                 {
@@ -950,7 +1053,7 @@
                     "symbol": "party_a"
                   },
                   "val": {
-                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXI7N"
                   }
                 },
                 {
@@ -958,7 +1061,7 @@
                     "symbol": "party_b"
                   },
                   "val": {
-                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXI7N"
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYRE5"
                   }
                 },
                 {
@@ -976,7 +1079,7 @@
                   "val": {
                     "i128": {
                       "hi": 0,
-                      "lo": 30
+                      "lo": 500
                     }
                   }
                 },
@@ -1033,7 +1136,7 @@
                     "symbol": "title"
                   },
                   "val": {
-                    "string": "Oracle Test Escrow"
+                    "string": "Test Escrow"
                   }
                 },
                 {
@@ -1121,7 +1224,7 @@
                     "symbol": "description"
                   },
                   "val": {
-                    "string": "Test oracle integration"
+                    "string": "Test Escrow Description"
                   }
                 },
                 {
@@ -1145,7 +1248,7 @@
                     "symbol": "engagement_id"
                   },
                   "val": {
-                    "string": "oracle_test_2"
+                    "string": "test_escrow_same_receiver"
                   }
                 },
                 {
@@ -1169,7 +1272,7 @@
                               "symbol": "description"
                             },
                             "val": {
-                              "string": "Test milestone"
+                              "string": "First milestone"
                             }
                           },
                           {
@@ -1190,7 +1293,7 @@
                     "symbol": "oracle_id"
                   },
                   "val": {
-                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3IM"
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
                   }
                 },
                 {
@@ -1198,7 +1301,7 @@
                     "symbol": "party_a"
                   },
                   "val": {
-                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAVAX5"
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXI7N"
                   }
                 },
                 {
@@ -1206,7 +1309,7 @@
                     "symbol": "party_b"
                   },
                   "val": {
-                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXI7N"
+                    "address": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYRE5"
                   }
                 },
                 {
@@ -1224,7 +1327,7 @@
                   "val": {
                     "i128": {
                       "hi": 0,
-                      "lo": 30
+                      "lo": 500
                     }
                   }
                 },
@@ -1281,7 +1384,7 @@
                     "symbol": "title"
                   },
                   "val": {
-                    "string": "Oracle Test Escrow"
+                    "string": "Test Escrow"
                   }
                 },
                 {
@@ -1599,7 +1702,7 @@
                 {
                   "i128": {
                     "hi": 0,
-                    "lo": 300000
+                    "lo": 5000000
                   }
                 }
               ]
@@ -1630,7 +1733,7 @@
             "data": {
               "i128": {
                 "hi": 0,
-                "lo": 300000
+                "lo": 5000000
               }
             }
           }
@@ -1688,7 +1791,7 @@
                 {
                   "i128": {
                     "hi": 0,
-                    "lo": 99400000
+                    "lo": 94700000
                   }
                 }
               ]
@@ -1719,7 +1822,7 @@
             "data": {
               "i128": {
                 "hi": 0,
-                "lo": 99400000
+                "lo": 94700000
               }
             }
           }
@@ -1892,7 +1995,7 @@
             "data": {
               "i128": {
                 "hi": 0,
-                "lo": 300000
+                "lo": 5000000
               }
             }
           }
@@ -1944,7 +2047,7 @@
             "data": {
               "i128": {
                 "hi": 0,
-                "lo": 99400000
+                "lo": 94700000
               }
             }
           }
