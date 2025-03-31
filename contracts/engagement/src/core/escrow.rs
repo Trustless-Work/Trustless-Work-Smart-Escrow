@@ -134,8 +134,6 @@ impl EscrowManager {
             .checked_sub(platform_commission)
             .ok_or(ContractError::Underflow)?;
 
-        // Use the receiver address instead of service_provider if it's set and valid
-        // We'll check if it's the same as service_provider to determine if it was explicitly set
         let receiver = if escrow.receiver == escrow.service_provider {
             escrow.service_provider.clone()
         } else {

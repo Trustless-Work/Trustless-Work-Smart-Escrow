@@ -138,7 +138,6 @@ impl DisputeManager {
             return Err(ContractError::EscrowAlreadyInDispute);
         }
         
-        // Toggles the dispute flag (pass -> only 'true')
         escrow.dispute_flag = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
