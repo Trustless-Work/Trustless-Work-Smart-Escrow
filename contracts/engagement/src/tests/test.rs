@@ -4,7 +4,6 @@ use soroban_sdk::{
     testutils::Address as _,
     vec, Address, Env, IntoVal, String,
 };
-use crate::error::ContractError;
 use crate::contract::EngagementContract;
 use crate::contract::EngagementContractClient;
 use crate::storage::types::{Escrow, Milestone};
@@ -869,7 +868,7 @@ fn test_dispute_flag_management() {
     assert!(result.is_err());
 
     // Try to change dispute flag again
-    engagement_approver.try_change_dispute_flag();
+    let _ = engagement_approver.try_change_dispute_flag();
 
     // Verify dispute_flag remains true
     let escrow_after_second_change = engagement_approver.get_escrow();
