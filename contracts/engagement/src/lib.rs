@@ -1,11 +1,35 @@
 #![no_std]
 
 mod contract;
-mod core;
+mod core {
+    pub mod admin;
+    pub mod dispute;
+    pub mod escrow;
+    pub mod milestone;
+    pub use dispute::*;
+    pub use escrow::*;
+    pub use milestone::*;
+}
 mod error;
-mod events;
-mod storage;
-mod tests;
-mod token;
+mod events {
+    pub mod handler;
+    pub(crate) use handler::escrows_by_engagement_id;
+}
+
+/// This module is currently Work In Progress.
+mod storage {
+    pub mod store;
+    pub mod types;
+}
+mod tests {
+    #[cfg(test)]
+    mod test;
+}
+mod token {
+    pub mod allowance;
+    pub mod balance;
+    pub mod metadata;
+    pub mod token;
+}
 
 pub use crate::contract::EngagementContractClient;
