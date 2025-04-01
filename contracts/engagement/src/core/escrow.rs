@@ -3,6 +3,7 @@ use soroban_sdk::{Address, Env, Symbol, Val, Vec};
 
 use crate::error::ContractError;
 use crate::storage::types::{AddressBalance, DataKey, Escrow};
+use crate::traits::{BasicArithmetic, BasicMath, SafeArithmetic, SafeMath};
 
 pub struct EscrowManager;
 
@@ -43,9 +44,7 @@ impl EscrowManager {
         let usdc_approver = TokenClient::new(&e, &escrow.trustline);
 
         let signer_balance = usdc_approver.balance(&signer);
-
         let contract_address = e.current_contract_address();
-
         let contract_balance = usdc_approver.balance(&contract_address);
 
         if contract_balance >= escrow.amount {
@@ -98,8 +97,7 @@ impl EscrowManager {
 
         let usdc_approver = TokenClient::new(&e, &escrow.trustline);
         let contract_address = e.current_contract_address();
-
-        // Check the actual balance of the contract for this escrow
+        
         let contract_balance = usdc_approver.balance(&contract_address);
         if contract_balance < escrow.amount as i128 {
             return Err(ContractError::EscrowBalanceNotEnoughToSendEarnings);
@@ -109,16 +107,8 @@ impl EscrowManager {
         let platform_address = escrow.platform_address.clone();
 
         let total_amount = escrow.amount as i128;
-        let trustless_work_commission = total_amount
-            .checked_mul(30)
-            .ok_or(ContractError::Overflow)?
-            .checked_div(10000)
-            .ok_or(ContractError::DivisionError)?;
-        let platform_commission = total_amount
-            .checked_mul(platform_fee_percentage)
-            .ok_or(ContractError::Overflow)?
-            .checked_div(10000_i128)
-            .ok_or(ContractError::DivisionError)?;
+        let trustless_work_commission = SafeMath::safe_mul_div(total_amount, 30, 10000)?;
+        let platform_commission = SafeMath::safe_mul_div(total_amount, platform_fee_percentage, 10000)?;
 
         usdc_approver.transfer(
             &contract_address,
@@ -128,11 +118,8 @@ impl EscrowManager {
 
         usdc_approver.transfer(&contract_address, &platform_address, &platform_commission);
 
-        let receiver_amount = total_amount
-            .checked_sub(trustless_work_commission)
-            .ok_or(ContractError::Underflow)?
-            .checked_sub(platform_commission)
-            .ok_or(ContractError::Underflow)?;
+        let after_tw = BasicMath::safe_sub(total_amount, trustless_work_commission)?;
+        let receiver_amount = BasicMath::safe_sub(after_tw, platform_commission)?;
 
         let receiver = if escrow.receiver == escrow.service_provider {
             escrow.service_provider.clone()

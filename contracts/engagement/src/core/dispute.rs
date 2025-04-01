@@ -5,13 +5,11 @@ use crate::core::escrow::EscrowManager;
 use crate::error::ContractError;
 use crate::events::escrows_by_engagement_id;
 use crate::storage::types::DataKey;
+use crate::traits::{SafeMath, SafeArithmetic, BasicMath, BasicArithmetic};
 
 pub struct DisputeManager;
 
 impl DisputeManager {
-    // TODO: `resolving_disputes` shares multiple responsibilities and contains repetitive code.
-    // lines 47:78 are plenty repetitive. These are fees and the recommendation is to create
-    // multiple structs that implement a trait and move the value from the method to its variable.
     pub fn resolving_disputes(
         e: Env,
         dispute_resolver: Address,
@@ -38,43 +36,19 @@ impl DisputeManager {
         let usdc_approver = TokenClient::new(&e, &escrow.trustline);
         let escrow_balance = usdc_approver.balance(&e.current_contract_address());
 
-        let total_funds = approver_funds
-            .checked_add(service_provider_funds)
-            .ok_or(ContractError::Overflow)?;
+        let total_funds = BasicMath::safe_add(approver_funds, service_provider_funds)?;
         if total_funds > escrow_balance {
             return Err(ContractError::InsufficientFundsForResolution);
         }
 
-        let trustless_work_fee = total_funds
-            .checked_mul(30)
-            .ok_or(ContractError::Overflow)?
-            .checked_div(10000)
-            .ok_or(ContractError::DivisionError)?;
-        let platform_fee = total_funds
-            .checked_mul(escrow.platform_fee)
-            .ok_or(ContractError::Overflow)?
-            .checked_div(10000)
-            .ok_or(ContractError::DivisionError)?;
-        let total_fees = trustless_work_fee
-            .checked_add(platform_fee)
-            .ok_or(ContractError::Overflow)?;
+        let trustless_work_fee = SafeMath::safe_mul_div(total_funds, 30, 10000)?;
+        let platform_fee = SafeMath::safe_mul_div(total_funds, escrow.platform_fee, 10000)?;
+        let total_fees = BasicMath::safe_add(trustless_work_fee, platform_fee)?;
 
-        let approver_fee = approver_funds
-            .checked_mul(total_fees)
-            .ok_or(ContractError::Overflow)?
-            .checked_div(total_funds)
-            .ok_or(ContractError::DivisionError)?;
-        let net_approver_funds = approver_funds
-            .checked_sub(approver_fee)
-            .ok_or(ContractError::Underflow)?;
-        let fees_portion = service_provider_funds
-            .checked_mul(total_fees)
-            .ok_or(ContractError::Overflow)?
-            .checked_div(total_funds)
-            .ok_or(ContractError::DivisionError)?;
-        let net_provider_funds = service_provider_funds
-            .checked_sub(fees_portion)
-            .ok_or(ContractError::Underflow)?;
+        let approver_fee = SafeMath::safe_mul_div(approver_funds, total_fees, total_funds)?;
+        let net_approver_funds = BasicMath::safe_sub(approver_funds, approver_fee)?;
+        let fees_portion = SafeMath::safe_mul_div(service_provider_funds, total_fees, total_funds)?;
+        let net_provider_funds = BasicMath::safe_sub(service_provider_funds, fees_portion)?;
 
         if approver_funds < net_approver_funds {
             return Err(ContractError::InsufficientApproverFundsForCommissions);
