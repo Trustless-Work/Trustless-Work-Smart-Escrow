@@ -16,9 +16,15 @@ mod events {
     pub(crate) use handler::escrows_by_engagement_id;
 }
 
+mod traits {
+    pub mod safe_math;
+    pub mod basic_math;
+    pub use safe_math::{SafeArithmetic, SafeMath};
+    pub use basic_math::{BasicMath, BasicArithmetic};
+}
+
 /// This module is currently Work In Progress.
 mod storage {
-    pub mod store;
     pub mod types;
 }
 mod tests {
