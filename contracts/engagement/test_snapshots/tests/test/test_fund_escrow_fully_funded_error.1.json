@@ -462,7 +462,10 @@
                                 "symbol": "receiver_memo"
                               },
                               "val": {
-                                "string": ""
+                                "i128": {
+                                  "hi": 0,
+                                  "lo": 0
+                                }
                               }
                             },
                             {
@@ -847,7 +850,10 @@
                     "symbol": "receiver_memo"
                   },
                   "val": {
-                    "string": ""
+                    "i128": {
+                      "hi": 0,
+                      "lo": 0
+                    }
                   }
                 },
                 {
@@ -1071,7 +1077,10 @@
                     "symbol": "receiver_memo"
                   },
                   "val": {
-                    "string": ""
+                    "i128": {
+                      "hi": 0,
+                      "lo": 0
+                    }
                   }
                 },
                 {

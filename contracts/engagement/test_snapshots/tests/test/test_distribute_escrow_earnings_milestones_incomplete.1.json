@@ -383,7 +383,10 @@
                                 "symbol": "receiver_memo"
                               },
                               "val": {
-                                "string": "Memo for receiver"
+                                "i128": {
+                                  "hi": 0,
+                                  "lo": 0
+                                }
                               }
                             },
                             {
@@ -710,7 +713,10 @@
                     "symbol": "receiver_memo"
                   },
                   "val": {
-                    "string": "Memo for receiver"
+                    "i128": {
+                      "hi": 0,
+                      "lo": 0
+                    }
                   }
                 },
                 {
@@ -962,7 +968,10 @@
                     "symbol": "receiver_memo"
                   },
                   "val": {
-                    "string": "Memo for receiver"
+                    "i128": {
+                      "hi": 0,
+                      "lo": 0
+                    }
                   }
                 },
                 {

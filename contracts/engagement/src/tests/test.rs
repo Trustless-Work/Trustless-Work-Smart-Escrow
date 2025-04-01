@@ -67,7 +67,7 @@ fn test_initialize_excrow() {
         trustline: usdc_token.address,
         trustline_decimals: 10_000_000,
         receiver: service_provider_address.clone(),
-        receiver_memo: String::from_str(&env, ""),
+        receiver_memo: 0,
     };
 
     let initialized_escrow = engagement_approver.initialize_escrow(&escrow_properties);
@@ -142,7 +142,7 @@ fn test_change_escrow_properties() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: service_provider_address.clone(),
-        receiver_memo: String::from_str(&env, ""),
+        receiver_memo: 0,
     };
 
     engagement_approver.initialize_escrow(&initial_escrow_properties);
@@ -188,7 +188,7 @@ fn test_change_escrow_properties() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: new_receiver_address.clone(),
-        receiver_memo: String::from_str(&env, "Updated memo"),
+        receiver_memo: 0,
     };
 
     // Update escrow properties
@@ -275,7 +275,7 @@ fn test_change_milestone_status_and_approved_flag() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: service_provider_address.clone(),
-        receiver_memo: String::from_str(&env, ""),
+        receiver_memo: 0,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -351,7 +351,7 @@ fn test_change_milestone_status_and_approved_flag() {
         trustline: usdc_token.address,
         trustline_decimals: 10_000_000,
         receiver: service_provider_address.clone(),
-        receiver_memo: String::from_str(&env, ""),
+        receiver_memo: 0,
     };
 
     engagement_approver.change_escrow_properties(&platform_address, &escrow_properties_v2);
@@ -426,7 +426,7 @@ fn test_distribute_escrow_earnings_successful_flow() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: _receiver_address.clone(),
-        receiver_memo: String::from_str(&env, "Memo for custodial wallet"),
+        receiver_memo: 0,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -515,7 +515,7 @@ fn test_distribute_escrow_earnings_no_milestones() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: _receiver_address.clone(),
-        receiver_memo: String::from_str(&env, "Memo for receiver"),
+        receiver_memo: 0,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -583,7 +583,7 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: _receiver_address.clone(),
-        receiver_memo: String::from_str(&env, "Memo for receiver"),
+        receiver_memo: 0,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -649,7 +649,7 @@ fn test_distribute_escrow_earnings_same_receiver_as_provider() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: _receiver_address, // Set to service_provider to test same-address case
-        receiver_memo: String::from_str(&env, ""),
+        receiver_memo: 0,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -744,7 +744,7 @@ fn test_distribute_escrow_earnings_invalid_receiver_fallback() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: _receiver_address.clone(), // Different receiver address than service provider
-        receiver_memo: String::from_str(&env, "Memo for receiver"),
+        receiver_memo: 0,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -841,7 +841,7 @@ fn test_dispute_flag_management() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: service_provider_address.clone(),
-        receiver_memo: String::from_str(&env, ""),
+        receiver_memo: 0,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -926,7 +926,7 @@ fn test_dispute_resolution_process() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: service_provider_address.clone(),
-        receiver_memo: String::from_str(&env, ""),
+        receiver_memo: 0,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -1054,7 +1054,7 @@ fn test_fund_escrow_successful_deposit() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: _receiver_address.clone(),
-        receiver_memo: String::from_str(&env, "Memo for receiver"),
+        receiver_memo: 0,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -1136,7 +1136,7 @@ fn test_fund_escrow_fully_funded_error() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: service_provider_address.clone(),
-        receiver_memo: String::from_str(&env, ""),
+        receiver_memo: 0,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -1205,7 +1205,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: _receiver_address.clone(),
-        receiver_memo: String::from_str(&env, "Memo for receiver"),
+        receiver_memo: 0,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
@@ -1273,7 +1273,7 @@ fn test_fund_escrow_dispute_flag_error() {
         trustline: usdc_token.address.clone(),
         trustline_decimals: 10_000_000,
         receiver: _receiver_address.clone(),
-        receiver_memo: String::from_str(&env, "Memo for receiver"),
+        receiver_memo: 0,
     };
 
     engagement_approver.initialize_escrow(&escrow_properties);
