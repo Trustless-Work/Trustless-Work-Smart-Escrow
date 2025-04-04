@@ -13,11 +13,10 @@ pub fn read_administrator(e: &Env) -> Result<Address, ContractError> {
     e.storage()
         .instance()
         .get(&key)
-        .ok_or(ContractError::AdminNotFound) // Added Result type to avoid panic if the return type is none
+        .ok_or(ContractError::AdminNotFound)
 }
 
 pub fn write_administrator(e: &Env, id: &Address) -> Result<(), ContractError> {
-    // Added result type to return error if code fails
     let key = DataKey::Admin;
     e.storage().instance().set(&key, id);
 

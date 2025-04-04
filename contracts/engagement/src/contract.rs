@@ -88,7 +88,7 @@ impl EngagementContract {
         e.events().publish(
             (symbol_short!("chg_esc"),),
             (plataform_address, escrow_properties),
-        ); // emitted an event when storage is modified
+        );
 
         Ok(updated_escrow)
     }
