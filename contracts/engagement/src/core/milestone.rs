@@ -1,6 +1,6 @@
 use crate::core::escrow::EscrowManager;
 use crate::error::ContractError;
-use crate::events::escrows_by_engagement_id;
+use crate::events::escrows_by_contract_id;
 use crate::storage::types::{DataKey, Escrow, Milestone};
 use soroban_sdk::{Address, Env, String, Vec};
 
@@ -50,7 +50,7 @@ impl MilestoneManager {
             .instance()
             .set(&DataKey::Escrow, &updated_escrow);
 
-        escrows_by_engagement_id(&e, updated_escrow.engagement_id.clone(), updated_escrow);
+        escrows_by_contract_id(&e, updated_escrow.engagement_id.clone(), updated_escrow);
 
         Ok(())
     }
@@ -99,7 +99,7 @@ impl MilestoneManager {
             .instance()
             .set(&DataKey::Escrow, &updated_escrow);
 
-        escrows_by_engagement_id(&e, updated_escrow.engagement_id.clone(), updated_escrow);
+        escrows_by_contract_id(&e, updated_escrow.engagement_id.clone(), updated_escrow);
 
         Ok(())
     }

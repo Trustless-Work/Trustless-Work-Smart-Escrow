@@ -3,7 +3,7 @@ use soroban_sdk::{Address, Env};
 
 use crate::core::escrow::EscrowManager;
 use crate::error::ContractError;
-use crate::events::escrows_by_engagement_id;
+use crate::events::escrows_by_contract_id;
 use crate::storage::types::DataKey;
 use crate::traits::{SafeMath, SafeArithmetic, BasicMath, BasicArithmetic};
 
@@ -96,7 +96,7 @@ impl DisputeManager {
         escrow.dispute_flag = false;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
-        escrows_by_engagement_id(&e, escrow.engagement_id.clone(), escrow);
+        escrows_by_contract_id(&e, escrow.engagement_id.clone(), escrow);
 
         Ok(())
     }
@@ -115,7 +115,7 @@ impl DisputeManager {
         escrow.dispute_flag = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
-        escrows_by_engagement_id(&e, escrow.engagement_id.clone(), escrow);
+        escrows_by_contract_id(&e, escrow.engagement_id.clone(), escrow);
 
         Ok(())
     }

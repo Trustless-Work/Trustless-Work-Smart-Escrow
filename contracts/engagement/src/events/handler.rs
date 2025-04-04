@@ -2,7 +2,7 @@ use crate::storage::types::Escrow;
 use soroban_sdk::{symbol_short, vec, Env, IntoVal, String, Val};
 
 // ------ Escrows
-pub fn escrows_by_engagement_id(e: &Env, engagement_id: String, escrow: Escrow) {
+pub fn escrows_by_contract_id(e: &Env, engagement_id: String, escrow: Escrow) {
     let topics = (symbol_short!("p_by_spdr"),);
 
     let engagement_id_val: Val = engagement_id.into_val(e);
