@@ -119,9 +119,10 @@ impl EngagementContract {
         e: Env,
         milestone_index: i128,
         new_status: String,
+        new_evidence: Option<String>,
         service_provider: Address,
     ) -> Result<(), ContractError> {
-        MilestoneManager::change_milestone_status(e, milestone_index, new_status, service_provider)
+        MilestoneManager::change_milestone_status(e, milestone_index, new_status, new_evidence, service_provider)
     }
 
     pub fn change_milestone_flag(

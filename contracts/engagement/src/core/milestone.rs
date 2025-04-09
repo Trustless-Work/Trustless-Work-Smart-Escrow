@@ -11,6 +11,7 @@ impl MilestoneManager {
         e: Env,
         milestone_index: i128,
         new_status: String,
+        new_evidence: Option<String>,
         service_provider: Address,
     ) -> Result<(), ContractError> {
         let escrow_result = EscrowManager::get_escrow(e.clone());
@@ -36,6 +37,9 @@ impl MilestoneManager {
         for (index, milestone) in existing_escrow.milestones.iter().enumerate() {
             let mut new_milestone = milestone.clone();
             if index as i128 == milestone_index {
+                if let Some(evidence) = new_evidence.clone() {
+                    new_milestone.evidence = evidence;
+                }
                 new_milestone.status = new_status.clone();
             }
             updated_milestones.push_back(new_milestone);
