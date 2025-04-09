@@ -157,6 +157,26 @@ impl EscrowManager {
 
         plataform_address.require_auth();
 
+        if !existing_escrow.milestones.is_empty() {
+            for (_, milestone) in existing_escrow.milestones.iter().enumerate() {
+                if milestone.approved_flag {
+                    return Err(ContractError::MilestoneApprovedCantChangeEscrowProperties);
+                }
+            }
+        }
+
+        let current_address = e.current_contract_address();
+        let token_client = TokenClient::new(&e, &existing_escrow.trustline);
+        let contract_balance = token_client.balance(&current_address);
+
+        if contract_balance > 0 {
+            return Err(ContractError::EscrowHasFunds);
+        }
+
+        if existing_escrow.dispute_flag {
+            return Err(ContractError::EscrowOpenedForDisputeResolution);
+        }
+
         e.storage()
             .instance()
             .set(&DataKey::Escrow, &escrow_properties);
