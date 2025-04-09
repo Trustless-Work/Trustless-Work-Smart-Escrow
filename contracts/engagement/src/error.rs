@@ -41,6 +41,8 @@ pub enum ContractError {
     AdminNotFound = 35,
     InsufficientApproverFundsForCommissions = 36,
     InsufficientServiceProviderFundsForCommissions = 37,
+    MilestoneApprovedCantChangeEscrowProperties = 38,
+    EscrowHasFunds = 39,
 }
 
 impl fmt::Display for ContractError {
@@ -121,6 +123,10 @@ impl fmt::Display for ContractError {
             ContractError::InsufficientServiceProviderFundsForCommissions => {
                 write!(f, "Insufficient Service Provider funds for commissions")
             }
+            ContractError::MilestoneApprovedCantChangeEscrowProperties => {
+                write!(f, "You can't change the escrow properties after the milestone is approved")
+            }
+            ContractError::EscrowHasFunds => write!(f, "Escrow has funds"),
             ContractError::Overflow => write!(f, "This operation can cause an Overflow"),
             ContractError::Underflow => write!(f, "This operation can cause an Underflow"),
             ContractError::DivisionError => write!(f, "This operation can cause Division error"),
