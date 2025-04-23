@@ -41,11 +41,11 @@ impl EscrowManager {
             return Err(ContractError::EscrowOpenedForDisputeResolution);
         }
 
-        let usdc_approver = TokenClient::new(&e, &escrow.trustline);
+        let token_client = TokenClient::new(&e, &escrow.trustline);
 
-        let signer_balance = usdc_approver.balance(&signer);
+        let signer_balance = token_client.balance(&signer);
         let contract_address = e.current_contract_address();
-        let contract_balance = usdc_approver.balance(&contract_address);
+        let contract_balance = token_client.balance(&contract_address);
 
         if contract_balance >= escrow.amount {
             return Err(ContractError::EscrowFullyFunded);
@@ -55,7 +55,7 @@ impl EscrowManager {
             return Err(ContractError::SignerInsufficientFunds);
         }
 
-        usdc_approver.transfer(&signer, &contract_address, &amount_to_deposit);
+        token_client.transfer(&signer, &contract_address, &amount_to_deposit);
 
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
@@ -95,10 +95,10 @@ impl EscrowManager {
             return Err(ContractError::EscrowOpenedForDisputeResolution);
         }
 
-        let usdc_approver = TokenClient::new(&e, &escrow.trustline);
+        let token_client = TokenClient::new(&e, &escrow.trustline);
         let contract_address = e.current_contract_address();
         
-        let contract_balance = usdc_approver.balance(&contract_address);
+        let contract_balance = token_client.balance(&contract_address);
         if contract_balance < escrow.amount as i128 {
             return Err(ContractError::EscrowBalanceNotEnoughToSendEarnings);
         }
@@ -110,13 +110,13 @@ impl EscrowManager {
         let trustless_work_commission = SafeMath::safe_mul_div(total_amount, 30, 10000)?;
         let platform_commission = SafeMath::safe_mul_div(total_amount, platform_fee_percentage, 10000)?;
 
-        usdc_approver.transfer(
+        token_client.transfer(
             &contract_address,
             &trustless_work_address,
             &trustless_work_commission,
         );
 
-        usdc_approver.transfer(&contract_address, &platform_address, &platform_commission);
+        token_client.transfer(&contract_address, &platform_address, &platform_commission);
 
         let after_tw = BasicMath::safe_sub(total_amount, trustless_work_commission)?;
         let receiver_amount = BasicMath::safe_sub(after_tw, platform_commission)?;
@@ -127,7 +127,7 @@ impl EscrowManager {
             escrow.receiver.clone()
         };
 
-        usdc_approver.transfer(
+        token_client.transfer(
             &contract_address,
             &receiver,
             &receiver_amount,
@@ -197,8 +197,8 @@ impl EscrowManager {
                 Err(err) => return Err(err),
             };
 
-            let token_approver = TokenClient::new(&e, &escrow.trustline);
-            let balance = token_approver.balance(&address);
+            let token_client = TokenClient::new(&e, &escrow.trustline);
+            let balance = token_client.balance(&address);
 
             balances.push_back(AddressBalance {
                 address: address.clone(),

@@ -33,8 +33,8 @@ impl DisputeManager {
             return Err(ContractError::EscrowNotInDispute);
         }
 
-        let usdc_approver = TokenClient::new(&e, &escrow.trustline);
-        let escrow_balance = usdc_approver.balance(&e.current_contract_address());
+        let token_client = TokenClient::new(&e, &escrow.trustline);
+        let escrow_balance = token_client.balance(&e.current_contract_address());
 
         let total_funds = BasicMath::safe_add(approver_funds, service_provider_funds)?;
         if total_funds > escrow_balance {
@@ -58,20 +58,20 @@ impl DisputeManager {
             return Err(ContractError::InsufficientServiceProviderFundsForCommissions);
         }
 
-        usdc_approver.transfer(
+        token_client.transfer(
             &e.current_contract_address(),
             &trustless_work_address,
             &trustless_work_fee,
         );
 
-        usdc_approver.transfer(
+        token_client.transfer(
             &e.current_contract_address(),
             &escrow.platform_address,
             &platform_fee,
         );
 
         if net_approver_funds > 0 {
-            usdc_approver.transfer(
+            token_client.transfer(
                 &e.current_contract_address(),
                 &escrow.approver,
                 &net_approver_funds,
@@ -85,7 +85,7 @@ impl DisputeManager {
                 escrow.receiver.clone()
             };
             
-            usdc_approver.transfer(
+            token_client.transfer(
                 &e.current_contract_address(),
                 &receiver,
                 &net_provider_funds,
