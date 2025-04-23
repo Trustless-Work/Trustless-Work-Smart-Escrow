@@ -7,8 +7,10 @@ use crate::error::ContractError;
 use crate::storage::types::{AddressBalance, Escrow};
 
 #[contract]
+#[allow(dead_code)] 
 pub struct EngagementContract;
 
+#[allow(dead_code)]
 #[contractimpl]
 impl EngagementContract {
     pub fn deploy(

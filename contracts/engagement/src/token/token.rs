@@ -15,9 +15,11 @@ fn check_nonnegative_amount(amount: i128) {
     }
 }
 
+#[allow(dead_code)]
 #[contract]
 pub struct Token;
 
+#[allow(dead_code)]
 #[contractimpl]
 impl Token {
     pub fn initialize(e: Env, admin: Address, decimal: u32, name: String, symbol: String) {
