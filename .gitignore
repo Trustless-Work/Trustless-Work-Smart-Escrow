@@ -8,7 +8,7 @@ target
 .idea/
 
 # Ignore Test snapshots, they do not provide value in tracked Version Control
-contracts/engagement/test_snapshots/tests
+contracts/escrow/test_snapshots/tests
 
 # Ignore macOS system files
 **/.DS_Store
