@@ -2,8 +2,11 @@ use soroban_sdk::token::Client as TokenClient;
 use soroban_sdk::{Address, Env, Symbol, Val, Vec};
 
 use crate::error::ContractError;
+use crate::shared::{
+    fee::FeeCalculator,
+    transfer::TokenTransferHandler,
+};
 use crate::storage::types::{AddressBalance, DataKey, Escrow};
-use crate::traits::{BasicArithmetic, BasicMath, SafeArithmetic, SafeMath};
 
 pub struct EscrowManager;
 
@@ -103,38 +106,28 @@ impl EscrowManager {
             return Err(ContractError::EscrowBalanceNotEnoughToSendEarnings);
         }
 
+        let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline, &contract_address);
+        let fee_calculator = FeeCalculator;
+        let total_amount = escrow.amount as i128;
         let platform_fee_percentage = escrow.platform_fee as i128;
+        let fee_result = fee_calculator.calculate_standard_fees(
+            total_amount,
+            platform_fee_percentage,
+        )?;
+
         let platform_address = escrow.platform_address.clone();
 
-        let total_amount = escrow.amount as i128;
-        let trustless_work_commission = SafeMath::safe_mul_div(total_amount, 30, 10000)?;
-        let platform_commission = SafeMath::safe_mul_div(total_amount, platform_fee_percentage, 10000)?;
-
-        token_client.transfer(
-            &contract_address,
-            &trustless_work_address,
-            &trustless_work_commission,
-        );
-
-        token_client.transfer(&contract_address, &platform_address, &platform_commission);
-
-        let after_tw = BasicMath::safe_sub(total_amount, trustless_work_commission)?;
-        let receiver_amount = BasicMath::safe_sub(after_tw, platform_commission)?;
+        transfer_handler.transfer(&trustless_work_address, &fee_result.trustless_work_fee);
+        transfer_handler.transfer(&platform_address, &fee_result.platform_fee);
 
         let receiver = if escrow.receiver == escrow.service_provider {
-            escrow.service_provider.clone()
+             escrow.service_provider.clone()
         } else {
-            escrow.receiver.clone()
+             escrow.receiver.clone()
         };
-
-        token_client.transfer(
-            &contract_address,
-            &receiver,
-            &receiver_amount,
-        );
+        transfer_handler.transfer(&receiver, &fee_result.receiver_amount);
 
         escrow.release_flag = true;
-
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         Ok(())
