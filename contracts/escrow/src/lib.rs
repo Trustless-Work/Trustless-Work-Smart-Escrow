@@ -37,6 +37,9 @@ mod token {
     pub mod token;
 }
 
-pub mod shared;
+pub mod shared{
+    pub mod fee;
+    pub mod transfer;
+   }
 
 pub use crate::contract::EscrowContract;
