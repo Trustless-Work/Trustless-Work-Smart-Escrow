@@ -15,11 +15,26 @@ mod events {
     pub mod handler;
     pub(crate) use handler::escrows_by_contract_id;
 }
+mod modules {
+    pub mod math {
+        pub mod basic;
+        pub mod safe;
 
-mod traits {
-    pub mod safe_math;
-    pub mod basic_math;
-    pub use basic_math::{BasicMath, BasicArithmetic};
+        pub use basic::*;
+        pub use safe::*;
+    }
+
+    pub mod fee {
+        pub mod calculator;
+
+        pub use calculator::*;
+    }
+
+    pub mod token {
+        pub mod transfer_handler;
+
+        pub use transfer_handler::*;
+    }
 }
 
 /// This module is currently Work In Progress.
@@ -36,10 +51,5 @@ mod token {
     pub mod metadata;
     pub mod token;
 }
-
-pub mod shared{
-    pub mod fee;
-    pub mod transfer;
-   }
 
 pub use crate::contract::EscrowContract;

@@ -1,8 +1,8 @@
 use crate::{
     error::ContractError,
-    traits::{
-        safe_math::{SafeMath, SafeArithmetic},
-        basic_math::{BasicMath, BasicArithmetic},
+    modules::{
+        math::{SafeMath, SafeArithmetic},
+        math::{BasicMath, BasicArithmetic},
     },
 };
 
