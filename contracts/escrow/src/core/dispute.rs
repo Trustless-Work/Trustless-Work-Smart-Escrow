@@ -1,11 +1,11 @@
-use soroban_sdk::token::Client as TokenClient;
 use soroban_sdk::{Address, Env};
-
 use crate::core::escrow::EscrowManager;
 use crate::error::ContractError;
 use crate::events::escrows_by_contract_id;
+use crate::shared::fee::{FeeCalculator, FeeCalculatorTrait};
+use crate::shared::transfer::{TokenTransferHandler, TokenTransferHandlerTrait};
 use crate::storage::types::DataKey;
-use crate::traits::{SafeMath, SafeArithmetic, BasicMath, BasicArithmetic};
+use crate::traits::{BasicMath, BasicArithmetic};
 
 pub struct DisputeManager;
 
@@ -33,62 +33,53 @@ impl DisputeManager {
             return Err(ContractError::EscrowNotInDispute);
         }
 
-        let token_client = TokenClient::new(&e, &escrow.trustline);
-        let escrow_balance = token_client.balance(&e.current_contract_address());
+        let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline, &e.current_contract_address());
+        let escrow_balance = transfer_handler.balance(&e.current_contract_address());
 
         let total_funds = BasicMath::safe_add(approver_funds, service_provider_funds)?;
         if total_funds > escrow_balance {
             return Err(ContractError::InsufficientFundsForResolution);
         }
 
-        let trustless_work_fee = SafeMath::safe_mul_div(total_funds, 30, 10000)?;
-        let platform_fee = SafeMath::safe_mul_div(total_funds, escrow.platform_fee, 10000)?;
-        let total_fees = BasicMath::safe_add(trustless_work_fee, platform_fee)?;
+        let fee_result = FeeCalculator::calculate_dispute_fees(
+            approver_funds,
+            service_provider_funds,
+            escrow.platform_fee as i128,
+            total_funds,
+        )?;
 
-        let approver_fee = SafeMath::safe_mul_div(approver_funds, total_fees, total_funds)?;
-        let net_approver_funds = BasicMath::safe_sub(approver_funds, approver_fee)?;
-        let fees_portion = SafeMath::safe_mul_div(service_provider_funds, total_fees, total_funds)?;
-        let net_provider_funds = BasicMath::safe_sub(service_provider_funds, fees_portion)?;
-
-        if approver_funds < net_approver_funds {
+        if approver_funds < fee_result.net_approver_funds {
             return Err(ContractError::InsufficientApproverFundsForCommissions);
         }
 
-        if service_provider_funds < net_provider_funds {
+        if service_provider_funds < fee_result.net_provider_funds {
             return Err(ContractError::InsufficientServiceProviderFundsForCommissions);
         }
 
-        token_client.transfer(
-            &e.current_contract_address(),
+        transfer_handler.transfer(
             &trustless_work_address,
-            &trustless_work_fee,
+            &fee_result.trustless_work_fee,
         );
 
-        token_client.transfer(
-            &e.current_contract_address(),
+        transfer_handler.transfer(
             &escrow.platform_address,
-            &platform_fee,
+            &fee_result.platform_fee,
         );
 
-        if net_approver_funds > 0 {
-            token_client.transfer(
-                &e.current_contract_address(),
+        if fee_result.net_approver_funds > 0 {
+            transfer_handler.transfer(
                 &escrow.approver,
-                &net_approver_funds,
+                &fee_result.net_approver_funds,
             );
         }
 
-        if net_provider_funds > 0 {
-            let receiver = if escrow.receiver == escrow.service_provider {
-                escrow.service_provider.clone()
-            } else {
-                escrow.receiver.clone()
-            };
+        if fee_result.net_provider_funds > 0 {
+
+            let receiver = EscrowManager::get_receiver(&escrow);
             
-            token_client.transfer(
-                &e.current_contract_address(),
+            transfer_handler.transfer(
                 &receiver,
-                &net_provider_funds,
+                &fee_result.net_provider_funds,
             );
         }
 

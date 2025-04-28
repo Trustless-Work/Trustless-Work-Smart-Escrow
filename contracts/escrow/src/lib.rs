@@ -19,7 +19,6 @@ mod events {
 mod traits {
     pub mod safe_math;
     pub mod basic_math;
-    pub use safe_math::{SafeArithmetic, SafeMath};
     pub use basic_math::{BasicMath, BasicArithmetic};
 }
 
@@ -37,5 +36,10 @@ mod token {
     pub mod metadata;
     pub mod token;
 }
+
+pub mod shared{
+    pub mod fee;
+    pub mod transfer;
+   }
 
 pub use crate::contract::EscrowContract;
