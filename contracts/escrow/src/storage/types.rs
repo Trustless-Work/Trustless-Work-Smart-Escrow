@@ -9,21 +9,14 @@ pub(crate) const INSTANCE_LIFETIME_THRESHOLD: u32 = INSTANCE_BUMP_AMOUNT - DAY_I
 pub struct Escrow {
     pub engagement_id: String,
     pub title: String,
+    pub roles: Roles,
     pub description: String,
-    pub approver: Address,
-    pub service_provider: Address,
-    pub platform_address: Address,
     pub amount: i128,
     pub platform_fee: i128,
     pub milestones: Vec<Milestone>,
-    pub release_signer: Address,
-    pub dispute_resolver: Address,
-    pub dispute_flag: bool,
-    pub release_flag: bool,
-    pub resolved_flag: bool,
+    pub flags: Flags,
     pub trustline: Address,
     pub trustline_decimals: i128,
-    pub receiver: Address,
     pub receiver_memo: i128,
 }
 
@@ -34,6 +27,25 @@ pub struct Milestone {
     pub status: String,
     pub evidence: String,
     pub approved_flag: bool,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Roles {
+    pub approver: Address,
+    pub service_provider: Address,
+    pub platform_address: Address,
+    pub release_signer: Address,
+    pub dispute_resolver: Address,
+    pub receiver: Address,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Flags {
+    pub dispute_flag: bool,
+    pub release_flag: bool,
+    pub resolved_flag: bool,
 }
 
 #[contracttype]
