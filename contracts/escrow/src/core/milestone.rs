@@ -20,7 +20,7 @@ impl MilestoneManager {
             Err(err) => return Err(err),
         };
 
-        if service_provider != existing_escrow.service_provider {
+        if service_provider != existing_escrow.roles.service_provider {
             return Err(ContractError::OnlyServiceProviderChangeMilstoneStatus);
         }
         service_provider.require_auth();
@@ -71,7 +71,7 @@ impl MilestoneManager {
             Err(err) => return Err(err),
         };
 
-        if approver != existing_escrow.approver {
+        if approver != existing_escrow.roles.approver {
             return Err(ContractError::OnlyApproverChangeMilstoneFlag);
         }
 

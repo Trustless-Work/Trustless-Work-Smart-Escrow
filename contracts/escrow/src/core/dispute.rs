@@ -27,11 +27,11 @@ impl DisputeManager {
             Err(err) => return Err(err),
         };
 
-        if dispute_resolver != escrow.dispute_resolver {
+        if dispute_resolver != escrow.roles.dispute_resolver {
             return Err(ContractError::OnlyDisputeResolverCanExecuteThisFunction);
         }
 
-        if !escrow.dispute_flag {
+        if !escrow.flags.dispute_flag {
             return Err(ContractError::EscrowNotInDispute);
         }
 
@@ -61,13 +61,13 @@ impl DisputeManager {
         );
 
         transfer_handler.transfer(
-            &escrow.platform_address,
+            &escrow.roles.platform_address,
             &fee_result.platform_fee,
         );
 
         if fee_result.net_approver_funds > 0 {
             transfer_handler.transfer(
-                &escrow.approver,
+                &escrow.roles.approver,
                 &fee_result.net_approver_funds,
             );
         }
@@ -82,8 +82,8 @@ impl DisputeManager {
             );
         }
 
-        escrow.resolved_flag = true;
-        escrow.dispute_flag = false;
+        escrow.flags.resolved_flag = true;
+        escrow.flags.dispute_flag = false;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         escrows_by_contract_id(&e, escrow.engagement_id.clone(), escrow);
@@ -98,11 +98,11 @@ impl DisputeManager {
             Err(err) => return Err(err),
         };
 
-        if escrow.dispute_flag {
+        if escrow.flags.dispute_flag {
             return Err(ContractError::EscrowAlreadyInDispute);
         }
         
-        escrow.dispute_flag = true;
+        escrow.flags.dispute_flag = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         escrows_by_contract_id(&e, escrow.engagement_id.clone(), escrow);

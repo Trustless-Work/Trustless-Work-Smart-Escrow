@@ -16,10 +16,10 @@ impl EscrowManager {
     /// If the receiver is the same as the service provider, it returns the service provider's address.
     /// Otherwise, it returns the receiver's address.
     pub fn get_receiver(escrow: &Escrow) -> Address {
-        if escrow.receiver == escrow.service_provider {
-            escrow.service_provider.clone()
+        if escrow.roles.receiver == escrow.roles.service_provider {
+            escrow.roles.service_provider.clone()
         } else {
-            escrow.receiver.clone()
+            escrow.roles.receiver.clone()
         }
     }
 
@@ -52,7 +52,7 @@ impl EscrowManager {
             Err(err) => return Err(err),
         };
 
-        if escrow.dispute_flag {
+        if escrow.flags.dispute_flag {
             return Err(ContractError::EscrowOpenedForDisputeResolution);
         }
 
@@ -90,7 +90,7 @@ impl EscrowManager {
             Err(err) => return Err(err),
         };
 
-        if release_signer != escrow.release_signer {
+        if release_signer != escrow.roles.release_signer {
             return Err(ContractError::OnlyReleaseSignerCanDistributeEarnings);
         }
 
@@ -106,7 +106,7 @@ impl EscrowManager {
             return Err(ContractError::EscrowNotCompleted);
         }
 
-        if escrow.dispute_flag {
+        if escrow.flags.dispute_flag {
             return Err(ContractError::EscrowOpenedForDisputeResolution);
         }
 
@@ -123,7 +123,7 @@ impl EscrowManager {
             platform_fee_percentage,
         )?;
 
-        let platform_address = escrow.platform_address.clone();
+        let platform_address = escrow.roles.platform_address.clone();
 
         transfer_handler.transfer(&trustless_work_address, &fee_result.trustless_work_fee);
         transfer_handler.transfer(&platform_address, &fee_result.platform_fee);
@@ -131,7 +131,7 @@ impl EscrowManager {
         let receiver = Self::get_receiver(&escrow);
         transfer_handler.transfer(&receiver, &fee_result.receiver_amount);
 
-        escrow.release_flag = true;
+        escrow.flags.release_flag = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         Ok(())
@@ -148,7 +148,7 @@ impl EscrowManager {
             Err(err) => return Err(err),
         };
 
-        if plataform_address != existing_escrow.platform_address {
+        if plataform_address != existing_escrow.roles.platform_address {
             return Err(ContractError::OnlyPlatformAddressExecuteThisFunction);
         }
 
@@ -170,7 +170,7 @@ impl EscrowManager {
             return Err(ContractError::EscrowHasFunds);
         }
 
-        if existing_escrow.dispute_flag {
+        if existing_escrow.flags.dispute_flag {
             return Err(ContractError::EscrowOpenedForDisputeResolution);
         }
 
