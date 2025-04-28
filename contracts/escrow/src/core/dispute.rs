@@ -2,10 +2,12 @@ use soroban_sdk::{Address, Env};
 use crate::core::escrow::EscrowManager;
 use crate::error::ContractError;
 use crate::events::escrows_by_contract_id;
-use crate::shared::fee::{FeeCalculator, FeeCalculatorTrait};
-use crate::shared::transfer::{TokenTransferHandler, TokenTransferHandlerTrait};
 use crate::storage::types::DataKey;
-use crate::traits::{BasicMath, BasicArithmetic};
+use crate::modules::{
+    fee::{FeeCalculator, FeeCalculatorTrait},
+    token::{TokenTransferHandler, TokenTransferHandlerTrait},
+    math::{BasicMath, BasicArithmetic},
+};
 
 pub struct DisputeManager;
 
@@ -34,12 +36,9 @@ impl DisputeManager {
         }
 
         let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline, &e.current_contract_address());
-        let escrow_balance = transfer_handler.balance(&e.current_contract_address());
 
         let total_funds = BasicMath::safe_add(approver_funds, service_provider_funds)?;
-        if total_funds > escrow_balance {
-            return Err(ContractError::InsufficientFundsForResolution);
-        }
+        transfer_handler.has_sufficient_balance(total_funds)?; 
 
         let fee_result = FeeCalculator::calculate_dispute_fees(
             approver_funds,

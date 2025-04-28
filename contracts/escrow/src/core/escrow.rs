@@ -2,15 +2,19 @@ use soroban_sdk::token::Client as TokenClient;
 use soroban_sdk::{Address, Env, Symbol, Val, Vec};
 
 use crate::error::ContractError;
-use crate::shared::{
+use crate::modules::{
     fee::{FeeCalculator, FeeCalculatorTrait},
-    transfer::{TokenTransferHandler, TokenTransferHandlerTrait},
+    token::{TokenTransferHandler, TokenTransferHandlerTrait},
 };
 use crate::storage::types::{AddressBalance, DataKey, Escrow};
 
 pub struct EscrowManager;
 
 impl EscrowManager {
+    /// Returns the final receiver address for escrow fund distribution.
+    /// 
+    /// If the receiver is the same as the service provider, it returns the service provider's address.
+    /// Otherwise, it returns the receiver's address.
     pub fn get_receiver(escrow: &Escrow) -> Address {
         if escrow.receiver == escrow.service_provider {
             escrow.service_provider.clone()
@@ -109,10 +113,7 @@ impl EscrowManager {
         let contract_address = e.current_contract_address();
         let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline, &contract_address);
         
-        let contract_balance = transfer_handler.balance(&contract_address);
-        if contract_balance < escrow.amount as i128 {
-            return Err(ContractError::EscrowBalanceNotEnoughToSendEarnings);
-        }
+        transfer_handler.has_sufficient_balance(escrow.amount)?;
 
         let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline, &contract_address);
         let total_amount = escrow.amount as i128;
