@@ -64,9 +64,9 @@ fn test_initialize_excrow() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: false,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: false,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -152,9 +152,9 @@ fn test_change_escrow_properties() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: false,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: false,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -248,7 +248,7 @@ fn test_change_escrow_properties() {
 }
 
 #[test]
-fn test_change_milestone_status_and_approved_flag() {
+fn test_change_milestone_status_and_approved() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -288,9 +288,9 @@ fn test_change_milestone_status_and_approved_flag() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: false,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: false,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -331,7 +331,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert_eq!(updated_escrow.milestones.get(0).unwrap().status, new_status);
     assert_eq!(updated_escrow.milestones.get(0).unwrap().evidence, String::from_str(&env, "New evidence"));
 
-    // Change milestone approved_flag (valid case)
+    // Change milestone approved (valid case)
     escrow_approver.change_milestone_flag(&(0 as i128), &true, &approver_address);
 
     let final_escrow = escrow_approver.get_escrow();
@@ -364,7 +364,7 @@ fn test_change_milestone_status_and_approved_flag() {
     );
     assert!(result.is_err());
 
-    // Test for `change_approved_flag` by invalid approver
+    // Test for `change_approved` by invalid approver
     let result =
         escrow_approver.try_change_milestone_flag(&(0 as i128), &true, &unauthorized_address);
     assert!(result.is_err());
@@ -447,9 +447,9 @@ fn test_distribute_escrow_earnings_successful_flow() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: false,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: false,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -552,9 +552,9 @@ fn test_distribute_escrow_earnings_no_milestones() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: false,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: false,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -634,9 +634,9 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: false,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: false,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -709,9 +709,9 @@ fn test_distribute_escrow_earnings_same_receiver_as_provider() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: false,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: false,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -817,9 +817,9 @@ fn test_distribute_escrow_earnings_invalid_receiver_fallback() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: false,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: false,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -891,7 +891,7 @@ fn test_distribute_escrow_earnings_invalid_receiver_fallback() {
 }
 
 #[test]
-fn test_dispute_flag_management() {
+fn test_dispute_management() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -907,7 +907,7 @@ fn test_dispute_flag_management() {
     let escrow_contract_address = env.register_contract(None, EscrowContract);
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
-    let engagement_id = String::from_str(&env, "test_dispute_flag");
+    let engagement_id = String::from_str(&env, "test_dispute");
     let amount: i128 = 100_000_000;
     let platform_fee = 30;
 
@@ -931,9 +931,9 @@ fn test_dispute_flag_management() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: false,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: false,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -957,12 +957,12 @@ fn test_dispute_flag_management() {
     escrow_approver.initialize_escrow(&escrow_properties);
 
     let escrow = escrow_approver.get_escrow();
-    assert!(!escrow.flags.dispute_flag);
+    assert!(!escrow.flags.dispute);
 
     escrow_approver.change_dispute_flag();
 
     let escrow_after_change = escrow_approver.get_escrow();
-    assert!(escrow_after_change.flags.dispute_flag);
+    assert!(escrow_after_change.flags.dispute);
 
     // Test block on funding during dispute
     usdc_token.mint(&approver_address, &(amount as i128));
@@ -977,7 +977,7 @@ fn test_dispute_flag_management() {
     let _ = escrow_approver.try_change_dispute_flag();
 
     let escrow_after_second_change = escrow_approver.get_escrow();
-    assert!(escrow_after_second_change.flags.dispute_flag);
+    assert!(escrow_after_second_change.flags.dispute);
 }
 
 #[test]
@@ -1020,9 +1020,9 @@ fn test_dispute_resolution_process() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: false,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: false,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -1054,7 +1054,7 @@ fn test_dispute_resolution_process() {
     escrow_approver.change_dispute_flag();
 
     let escrow_with_dispute = escrow_approver.get_escrow();
-    assert!(escrow_with_dispute.flags.dispute_flag);
+    assert!(escrow_with_dispute.flags.dispute);
 
     // Try to resolve dispute with incorrect dispute resolver (should fail)
     let result = escrow_approver.try_resolving_disputes(
@@ -1078,8 +1078,8 @@ fn test_dispute_resolution_process() {
 
     // Verify dispute was resolved
     let escrow_after_resolution = escrow_approver.get_escrow();
-    assert!(!escrow_after_resolution.flags.dispute_flag);
-    assert!(escrow_after_resolution.flags.resolved_flag);
+    assert!(!escrow_after_resolution.flags.dispute);
+    assert!(escrow_after_resolution.flags.resolved);
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
@@ -1157,9 +1157,9 @@ fn test_fund_escrow_successful_deposit() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: false,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: false,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -1250,9 +1250,9 @@ fn test_fund_escrow_fully_funded_error() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: false,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: false,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -1329,9 +1329,9 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: false,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: false,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -1371,7 +1371,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
 }
 
 #[test]
-fn test_fund_escrow_dispute_flag_error() {
+fn test_fund_escrow_dispute_error() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -1410,9 +1410,9 @@ fn test_fund_escrow_dispute_flag_error() {
     };
 
     let flags: Flags = Flags {
-        dispute_flag: true,
-        release_flag: false,
-        resolved_flag: false,
+        dispute: true,
+        release: false,
+        resolved: false,
     };
 
     let trustline: Trustline = Trustline {
