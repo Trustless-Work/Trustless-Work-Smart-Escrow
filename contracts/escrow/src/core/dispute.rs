@@ -35,7 +35,7 @@ impl DisputeManager {
             return Err(ContractError::EscrowNotInDispute);
         }
 
-        let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline, &e.current_contract_address());
+        let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline.address, &e.current_contract_address());
 
         let total_funds = BasicMath::safe_add(approver_funds, service_provider_funds)?;
         transfer_handler.has_sufficient_balance(total_funds)?; 

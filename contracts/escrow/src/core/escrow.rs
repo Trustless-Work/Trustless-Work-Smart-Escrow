@@ -56,7 +56,7 @@ impl EscrowManager {
             return Err(ContractError::EscrowOpenedForDisputeResolution);
         }
 
-        let token_client = TokenClient::new(&e, &escrow.trustline);
+        let token_client = TokenClient::new(&e, &escrow.trustline.address);
 
         let signer_balance = token_client.balance(&signer);
         let contract_address = e.current_contract_address();
@@ -111,11 +111,11 @@ impl EscrowManager {
         }
 
         let contract_address = e.current_contract_address();
-        let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline, &contract_address);
+        let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline.address, &contract_address);
         
         transfer_handler.has_sufficient_balance(escrow.amount)?;
 
-        let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline, &contract_address);
+        let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline.address, &contract_address);
         let total_amount = escrow.amount as i128;
         let platform_fee_percentage = escrow.platform_fee as i128;
         let fee_result = FeeCalculator::calculate_standard_fees(
@@ -163,7 +163,7 @@ impl EscrowManager {
         }
 
         let current_address = e.current_contract_address();
-        let token_client = TokenClient::new(&e, &existing_escrow.trustline);
+        let token_client = TokenClient::new(&e, &existing_escrow.trustline.address);
         let contract_balance = token_client.balance(&current_address);
 
         if contract_balance > 0 {
@@ -194,13 +194,13 @@ impl EscrowManager {
                 Err(err) => return Err(err),
             };
 
-            let token_client = TokenClient::new(&e, &escrow.trustline);
+            let token_client = TokenClient::new(&e, &escrow.trustline.address);
             let balance = token_client.balance(&address);
 
             balances.push_back(AddressBalance {
                 address: address.clone(),
                 balance,
-                trustline_decimals: escrow.trustline_decimals,
+                trustline_decimals: escrow.trustline.decimals,
             })
         }
 
