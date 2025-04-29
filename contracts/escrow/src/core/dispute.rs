@@ -31,7 +31,7 @@ impl DisputeManager {
             return Err(ContractError::OnlyDisputeResolverCanExecuteThisFunction);
         }
 
-        if !escrow.flags.dispute_flag {
+        if !escrow.flags.dispute {
             return Err(ContractError::EscrowNotInDispute);
         }
 
@@ -82,8 +82,8 @@ impl DisputeManager {
             );
         }
 
-        escrow.flags.resolved_flag = true;
-        escrow.flags.dispute_flag = false;
+        escrow.flags.resolved = true;
+        escrow.flags.dispute = false;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         escrows_by_contract_id(&e, escrow.engagement_id.clone(), escrow);
@@ -98,11 +98,11 @@ impl DisputeManager {
             Err(err) => return Err(err),
         };
 
-        if escrow.flags.dispute_flag {
+        if escrow.flags.dispute {
             return Err(ContractError::EscrowAlreadyInDispute);
         }
         
-        escrow.flags.dispute_flag = true;
+        escrow.flags.dispute = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         escrows_by_contract_id(&e, escrow.engagement_id.clone(), escrow);

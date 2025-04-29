@@ -52,7 +52,7 @@ impl EscrowManager {
             Err(err) => return Err(err),
         };
 
-        if escrow.flags.dispute_flag {
+        if escrow.flags.dispute {
             return Err(ContractError::EscrowOpenedForDisputeResolution);
         }
 
@@ -106,7 +106,7 @@ impl EscrowManager {
             return Err(ContractError::EscrowNotCompleted);
         }
 
-        if escrow.flags.dispute_flag {
+        if escrow.flags.dispute {
             return Err(ContractError::EscrowOpenedForDisputeResolution);
         }
 
@@ -131,7 +131,7 @@ impl EscrowManager {
         let receiver = Self::get_receiver(&escrow);
         transfer_handler.transfer(&receiver, &fee_result.receiver_amount);
 
-        escrow.flags.release_flag = true;
+        escrow.flags.release = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         Ok(())
@@ -170,7 +170,7 @@ impl EscrowManager {
             return Err(ContractError::EscrowHasFunds);
         }
 
-        if existing_escrow.flags.dispute_flag {
+        if existing_escrow.flags.dispute {
             return Err(ContractError::EscrowOpenedForDisputeResolution);
         }
 
