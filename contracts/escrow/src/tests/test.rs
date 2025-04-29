@@ -8,6 +8,7 @@ use crate::contract::EscrowContract;
 use crate::contract::EscrowContractClient;
 use crate::storage::types::Flags;
 use crate::storage::types::Roles;
+use crate::storage::types::Trustline;
 use crate::storage::types::{Escrow, Milestone};
 use crate::token::token::{Token, TokenClient};
 
@@ -68,6 +69,11 @@ fn test_initialize_excrow() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -77,8 +83,7 @@ fn test_initialize_excrow() {
         platform_fee: platform_fee,
         milestones: milestones,
         flags,
-        trustline: usdc_token.address,
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
@@ -152,6 +157,11 @@ fn test_change_escrow_properties() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let engagement_id = String::from_str(&env, "test_escrow_2");
     let initial_escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
@@ -162,8 +172,7 @@ fn test_change_escrow_properties() {
         platform_fee: platform_fee,
         milestones: initial_milestones.clone(),
         flags: flags.clone(),
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline: trustline.clone(),
         receiver_memo: 0,
     };
 
@@ -201,8 +210,7 @@ fn test_change_escrow_properties() {
         platform_fee: platform_fee * 2,
         milestones: new_milestones.clone(),
         flags,
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
@@ -248,6 +256,7 @@ fn test_change_milestone_status_and_approved_flag() {
     let service_provider_address = Address::generate(&env);
     let admin = Address::generate(&env);
     let platform_address = Address::generate(&env);
+    let usdc_token = create_usdc_token(&env, &admin);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
     let amount: i128 = 100_000_000;
@@ -284,9 +293,13 @@ fn test_change_milestone_status_and_approved_flag() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let escrow_contract_address = env.register_contract(None, EscrowContract);
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
-    let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "test_escrow");
     let escrow_properties: Escrow = Escrow {
@@ -298,8 +311,7 @@ fn test_change_milestone_status_and_approved_flag() {
         platform_fee: platform_fee,
         milestones: initial_milestones.clone(),
         flags: flags.clone(),
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline: trustline.clone(),
         receiver_memo: 0,
     };
 
@@ -309,13 +321,12 @@ fn test_change_milestone_status_and_approved_flag() {
     let new_status = String::from_str(&env, "completed");
     let new_evidence = Some(String::from_str(&env, "New evidence"));
     escrow_approver.change_milestone_status(
-        &(0 as i128), // Milestone index
+        &(0 as i128), 
         &new_status,
         &new_evidence,
         &service_provider_address,
     );
 
-    // Verify milestone status change
     let updated_escrow = escrow_approver.get_escrow();
     assert_eq!(updated_escrow.milestones.get(0).unwrap().status, new_status);
     assert_eq!(updated_escrow.milestones.get(0).unwrap().evidence, String::from_str(&env, "New evidence"));
@@ -323,16 +334,13 @@ fn test_change_milestone_status_and_approved_flag() {
     // Change milestone approved_flag (valid case)
     escrow_approver.change_milestone_flag(&(0 as i128), &true, &approver_address);
 
-    // Verify milestone approved_flag change
     let final_escrow = escrow_approver.get_escrow();
     assert!(final_escrow.milestones.get(0).unwrap().approved_flag);
 
-    // Invalid index test
     let invalid_index = 10 as i128;
     let new_status = String::from_str(&env, "completed");
     let new_evidence = Some(String::from_str(&env, "New evidence"));
 
-    // Test for `change_status` with invalid index
     let result = escrow_approver.try_change_milestone_status(
         &invalid_index,
         &new_status,
@@ -341,12 +349,10 @@ fn test_change_milestone_status_and_approved_flag() {
     );
     assert!(result.is_err());
 
-    // Test for `change_approved_flag` with invalid index
     let result =
         escrow_approver.try_change_milestone_flag(&invalid_index, &true, &approver_address);
     assert!(result.is_err());
 
-    // Test only authorized party can perform the function
     let unauthorized_address = Address::generate(&env);
 
     // Test for `change_status` by invalid service provider
@@ -376,8 +382,7 @@ fn test_change_milestone_status_and_approved_flag() {
         platform_fee: platform_fee,
         milestones: vec![&env],
         flags,
-        trustline: usdc_token.address,
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
@@ -447,6 +452,11 @@ fn test_distribute_escrow_earnings_successful_flow() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let escrow_contract_address = env.register_contract(None, EscrowContract);
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
@@ -460,8 +470,7 @@ fn test_distribute_escrow_earnings_successful_flow() {
         platform_fee: platform_fee,
         milestones: milestones.clone(),
         flags,
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
@@ -548,6 +557,11 @@ fn test_distribute_escrow_earnings_no_milestones() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id_no_milestones.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -557,8 +571,7 @@ fn test_distribute_escrow_earnings_no_milestones() {
         platform_fee: platform_fee,
         milestones: vec![&env],
         flags,
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
@@ -626,6 +639,11 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id_incomplete_milestones.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -635,8 +653,7 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
         platform_fee: platform_fee,
         milestones: incomplete_milestones.clone(),
         flags,
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
@@ -697,6 +714,11 @@ fn test_distribute_escrow_earnings_same_receiver_as_provider() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let escrow_contract_address = env.register_contract(None, EscrowContract);
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
@@ -710,8 +732,7 @@ fn test_distribute_escrow_earnings_same_receiver_as_provider() {
         platform_fee: platform_fee,
         milestones: milestones.clone(),
         flags,
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
@@ -801,6 +822,11 @@ fn test_distribute_escrow_earnings_invalid_receiver_fallback() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let escrow_contract_address = env.register_contract(None, EscrowContract);
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
@@ -814,8 +840,7 @@ fn test_distribute_escrow_earnings_invalid_receiver_fallback() {
         platform_fee: platform_fee,
         milestones: milestones.clone(),
         flags,
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
@@ -911,6 +936,11 @@ fn test_dispute_flag_management() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let escrow_properties: Escrow = Escrow {
         engagement_id: engagement_id.clone(),
         title: String::from_str(&env, "Test Escrow"),
@@ -920,21 +950,17 @@ fn test_dispute_flag_management() {
         platform_fee: platform_fee,
         milestones: milestones.clone(),
         flags,
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
     escrow_approver.initialize_escrow(&escrow_properties);
 
-    // Verify initial dispute_flag state
     let escrow = escrow_approver.get_escrow();
     assert!(!escrow.flags.dispute_flag);
 
-    // Change dispute flag
     escrow_approver.change_dispute_flag();
 
-    // Verify dispute_flag was changed to true
     let escrow_after_change = escrow_approver.get_escrow();
     assert!(escrow_after_change.flags.dispute_flag);
 
@@ -948,10 +974,8 @@ fn test_dispute_flag_management() {
         .try_distribute_escrow_earnings(&release_signer_address, &platform_address);
     assert!(result.is_err());
 
-    // Try to change dispute flag again
     let _ = escrow_approver.try_change_dispute_flag();
 
-    // Verify dispute_flag remains true
     let escrow_after_second_change = escrow_approver.get_escrow();
     assert!(escrow_after_second_change.flags.dispute_flag);
 }
@@ -1001,6 +1025,11 @@ fn test_dispute_resolution_process() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let escrow_contract_address = env.register_contract(None, EscrowContract);
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
@@ -1014,20 +1043,16 @@ fn test_dispute_resolution_process() {
         platform_fee: platform_fee,
         milestones: milestones.clone(),
         flags,
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
     escrow_approver.initialize_escrow(&escrow_properties);
     
-    // Fund the escrow
     usdc_token.transfer(&approver_address, &escrow_contract_address, &amount);
 
-    // Simulate dispute by setting dispute_flag
     escrow_approver.change_dispute_flag();
 
-    // Verify dispute_flag was set
     let escrow_with_dispute = escrow_approver.get_escrow();
     assert!(escrow_with_dispute.flags.dispute_flag);
 
@@ -1056,7 +1081,6 @@ fn test_dispute_resolution_process() {
     assert!(!escrow_after_resolution.flags.dispute_flag);
     assert!(escrow_after_resolution.flags.resolved_flag);
 
-    // Calculate expected amounts
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
     let platform_commission = (total_amount * platform_fee as i128) / 10000 as i128;
@@ -1138,6 +1162,11 @@ fn test_fund_escrow_successful_deposit() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let escrow_contract_address = env.register_contract(None, EscrowContract);
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
@@ -1151,8 +1180,7 @@ fn test_fund_escrow_successful_deposit() {
         platform_fee: platform_fee,
         milestones: milestones.clone(),
         flags,
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
@@ -1162,7 +1190,6 @@ fn test_fund_escrow_successful_deposit() {
     assert_eq!(usdc_token.balance(&approver_address), amount);
     assert_eq!(usdc_token.balance(&escrow_contract_address), 0);
 
-    // Deposit funds
     let deposit_amount = amount / 2;
     escrow_approver.fund_escrow(&approver_address, &deposit_amount);
 
@@ -1179,7 +1206,6 @@ fn test_fund_escrow_successful_deposit() {
     // Deposit remaining amount
     escrow_approver.fund_escrow(&approver_address, &deposit_amount);
 
-    // Verify final balances
     assert_eq!(usdc_token.balance(&approver_address), 0);
     assert_eq!(usdc_token.balance(&escrow_contract_address), amount);
 }
@@ -1229,6 +1255,11 @@ fn test_fund_escrow_fully_funded_error() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let escrow_contract_address = env.register_contract(None, EscrowContract);
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
@@ -1242,20 +1273,16 @@ fn test_fund_escrow_fully_funded_error() {
         platform_fee: platform_fee,
         milestones: milestones.clone(),
         flags,
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
     escrow_approver.initialize_escrow(&escrow_properties);
 
-    // Primero, creamos los fondos del contrato directamente
     usdc_token.mint(&escrow_contract_address, &amount);
 
-    // Verificar que el contrato ya tiene los fondos completos
     assert_eq!(usdc_token.balance(&escrow_contract_address), amount);
 
-    // Intentar depositar fondos adicionales (debería fallar porque el escrow ya está completamente financiado)
     let result = escrow_approver.try_fund_escrow(&approver_address, &(10_000_000 as i128));
     assert!(result.is_err());
 }
@@ -1307,6 +1334,11 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let escrow_contract_address = env.register_contract(None, EscrowContract);
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
@@ -1320,8 +1352,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
         platform_fee: platform_fee,
         milestones: milestones.clone(),
         flags,
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
@@ -1384,6 +1415,11 @@ fn test_fund_escrow_dispute_flag_error() {
         resolved_flag: false,
     };
 
+    let trustline: Trustline = Trustline {
+        address: usdc_token.address.clone(),
+        decimals: 10_000_000,
+    };
+
     let escrow_contract_address = env.register_contract(None, EscrowContract);
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
@@ -1397,17 +1433,14 @@ fn test_fund_escrow_dispute_flag_error() {
         platform_fee: platform_fee,
         milestones: milestones.clone(),
         flags,
-        trustline: usdc_token.address.clone(),
-        trustline_decimals: 10_000_000,
+        trustline,
         receiver_memo: 0,
     };
 
     escrow_approver.initialize_escrow(&escrow_properties);
 
-    // Try to fund when dispute flag is set (should fail)
     let result = escrow_approver.try_fund_escrow(&approver_address, &(10_000_000 as i128));
     assert!(result.is_err());
 
-    // Verify contract has zero balance
     assert_eq!(usdc_token.balance(&escrow_contract_address), 0);
 }
