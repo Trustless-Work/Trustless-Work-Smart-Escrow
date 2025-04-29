@@ -42,9 +42,9 @@ pub struct Roles {
 #[contracttype]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Flags {
-    pub dispute_flag: bool,
-    pub release_flag: bool,
-    pub resolved_flag: bool,
+    pub dispute: bool,
+    pub release: bool,
+    pub resolved: bool,
 }
 
 #[contracttype]
