@@ -15,8 +15,7 @@ pub struct Escrow {
     pub platform_fee: i128,
     pub milestones: Vec<Milestone>,
     pub flags: Flags,
-    pub trustline: Address,
-    pub trustline_decimals: i128,
+    pub trustline: Trustline,
     pub receiver_memo: i128,
 }
 
@@ -46,6 +45,13 @@ pub struct Flags {
     pub dispute_flag: bool,
     pub release_flag: bool,
     pub resolved_flag: bool,
+}
+
+#[contracttype]
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Trustline {
+    pub address: Address,
+    pub decimals: i128,
 }
 
 #[contracttype]
