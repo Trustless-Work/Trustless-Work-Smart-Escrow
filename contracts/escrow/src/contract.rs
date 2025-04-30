@@ -28,7 +28,7 @@ impl EscrowContract {
         let deployed_address = env
             .deployer()
             .with_address(deployer, salt)
-            .deploy(wasm_hash);
+            .deploy_v2(wasm_hash, init_args.clone());
 
         let res: Val = env.invoke_contract(&deployed_address, &init_fn, init_args);
         (deployed_address, res)

@@ -14,7 +14,9 @@ use crate::storage::types::{Escrow, Milestone};
 use crate::token::token::{Token, TokenClient};
 
 fn create_usdc_token<'a>(e: &Env, admin: &Address) -> TokenClient<'a> {
-    let token = TokenClient::new(e, &e.register_contract(None, Token {}));
+    let token_address = e.register(Token {}, ());
+    
+    let token = TokenClient::new(e, &token_address);
     token.initialize(admin, &7, &"USDC".into_val(e), &"USDC".into_val(e));
     token
 }
@@ -49,7 +51,7 @@ fn test_initialize_excrow() {
         },
     ];
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
     let usdc_token = create_usdc_token(&env, &admin);
 
@@ -139,7 +141,7 @@ fn test_change_escrow_properties() {
         },
     ];
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
     let usdc_token = create_usdc_token(&env, &admin);
 
@@ -299,7 +301,7 @@ fn test_change_milestone_status_and_approved() {
         decimals: 10_000_000,
     };
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
     let engagement_id = String::from_str(&env, "test_escrow");
@@ -370,7 +372,7 @@ fn test_change_milestone_status_and_approved() {
         escrow_approver.try_change_milestone_flag(&(0 as i128), &true, &unauthorized_address);
     assert!(result.is_err());
 
-    let new_escrow_contract_address = env.register_contract(None, EscrowContract);
+    let new_escrow_contract_address = env.register(EscrowContract {}, ());
     let new_escrow_approver = EscrowContractClient::new(&env, &new_escrow_contract_address);
 
     //Escrow Test with no milestone
@@ -458,7 +460,7 @@ fn test_release_funds_successful_flow() {
         decimals: 10_000_000,
     };
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
     let engagement_id = String::from_str(&env, "test_escrow_1");
@@ -536,7 +538,7 @@ fn test_release_funds_no_milestones() {
 
     let usdc_token = create_usdc_token(&env, &admin);
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
     let engagement_id_no_milestones = String::from_str(&env, "test_no_milestones");
@@ -600,7 +602,7 @@ fn test_release_funds_milestones_incomplete() {
 
     let usdc_token = create_usdc_token(&env, &admin);
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
     let engagement_id_incomplete_milestones =
@@ -720,7 +722,7 @@ fn test_release_funds_same_receiver_as_provider() {
         decimals: 10_000_000,
     };
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
     let engagement_id = String::from_str(&env, "test_escrow_same_receiver");
@@ -828,7 +830,7 @@ fn test_release_funds_invalid_receiver_fallback() {
         decimals: 10_000_000,
     };
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
     let engagement_id = String::from_str(&env, "test_escrow_receiver");
@@ -905,7 +907,7 @@ fn test_dispute_management() {
 
     let usdc_token = create_usdc_token(&env, &admin);
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
     let engagement_id = String::from_str(&env, "test_dispute");
@@ -1031,7 +1033,7 @@ fn test_dispute_resolution_process() {
         decimals: 10_000_000,
     };
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
     let engagement_id = String::from_str(&env, "test_dispute_resolution");
@@ -1168,7 +1170,7 @@ fn test_fund_escrow_successful_deposit() {
         decimals: 10_000_000,
     };
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
     let engagement_id = String::from_str(&env, "test_escrow_fund");
@@ -1261,7 +1263,7 @@ fn test_fund_escrow_fully_funded_error() {
         decimals: 10_000_000,
     };
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
     let engagement_id = String::from_str(&env, "test_escrow_fully_funded");
@@ -1340,7 +1342,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
         decimals: 10_000_000,
     };
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
     let engagement_id = String::from_str(&env, "test_escrow_insufficient_funds");
@@ -1421,7 +1423,7 @@ fn test_fund_escrow_dispute_error() {
         decimals: 10_000_000,
     };
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_contract_address = env.register(EscrowContract {}, ());
     let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
 
     let engagement_id = String::from_str(&env, "test_escrow_dispute_error");
@@ -1491,7 +1493,7 @@ fn test_change_dispute_flag_authorized_and_unauthorized() {
         receiver_memo: 0,
     };
 
-    let escrow_contract_address_1 = env.register_contract(None, EscrowContract);
+    let escrow_contract_address_1 = env.register(EscrowContract {}, ());
     let escrow_client_1 = EscrowContractClient::new(&env, &escrow_contract_address_1);
 
     escrow_client_1.initialize_escrow(&escrow_base);
@@ -1503,7 +1505,7 @@ fn test_change_dispute_flag_authorized_and_unauthorized() {
         "Dispute flag should be set to true for authorized address"
     );
 
-    let escrow_contract_address_2 = env.register_contract(None, EscrowContract);
+    let escrow_contract_address_2 = env.register(EscrowContract {}, ());
     let escrow_client_2 = EscrowContractClient::new(&env, &escrow_contract_address_2);
 
     escrow_client_2.initialize_escrow(&escrow_base); // mismo struct, nuevo contrato
