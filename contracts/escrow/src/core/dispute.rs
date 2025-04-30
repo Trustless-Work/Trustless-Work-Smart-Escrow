@@ -35,10 +35,6 @@ impl DisputeManager {
             return Err(ContractError::EscrowNotInDispute);
         }
 
-        if escrow.flags.resolved {
-            return Err(ContractError::EscrowAlreadyResolved);
-        }
-
         let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline.address, &e.current_contract_address());
 
         let total_funds = BasicMath::safe_add(approver_funds, service_provider_funds)?;
@@ -101,10 +97,6 @@ impl DisputeManager {
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
-
-        if escrow.flags.resolved {
-            return Err(ContractError::EscrowAlreadyResolved);
-        }
 
         if escrow.flags.dispute {
             return Err(ContractError::EscrowAlreadyInDispute);
