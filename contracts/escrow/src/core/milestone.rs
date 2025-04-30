@@ -4,6 +4,8 @@ use crate::events::escrows_by_contract_id;
 use crate::storage::types::{DataKey, Escrow, Milestone};
 use soroban_sdk::{Address, Env, String, Vec};
 
+use super::validators::milestone::{validate_milestone_flag_change_conditions, validate_milestone_status_change_conditions};
+
 pub struct MilestoneManager;
 
 impl MilestoneManager {
@@ -20,18 +22,11 @@ impl MilestoneManager {
             Err(err) => return Err(err),
         };
 
-        if service_provider != existing_escrow.roles.service_provider {
-            return Err(ContractError::OnlyServiceProviderChangeMilstoneStatus);
-        }
-        service_provider.require_auth();
-
-        if existing_escrow.milestones.is_empty() {
-            return Err(ContractError::NoMileStoneDefined);
-        }
-
-        if milestone_index < 0 || milestone_index >= existing_escrow.milestones.len() as i128 {
-            return Err(ContractError::InvalidMileStoneIndex);
-        }
+        validate_milestone_status_change_conditions(
+            &existing_escrow,
+            milestone_index,
+            &service_provider,
+        )?;
 
         let mut updated_milestones = Vec::<Milestone>::new(&e);
         for (index, milestone) in existing_escrow.milestones.iter().enumerate() {
@@ -71,19 +66,11 @@ impl MilestoneManager {
             Err(err) => return Err(err),
         };
 
-        if approver != existing_escrow.roles.approver {
-            return Err(ContractError::OnlyApproverChangeMilstoneFlag);
-        }
-
-        approver.require_auth();
-
-        if existing_escrow.milestones.is_empty() {
-            return Err(ContractError::NoMileStoneDefined);
-        }
-
-        if milestone_index < 0 || milestone_index >= existing_escrow.milestones.len() as i128 {
-            return Err(ContractError::InvalidMileStoneIndex);
-        }
+        validate_milestone_flag_change_conditions(
+            &existing_escrow,
+            milestone_index,
+            &approver,
+        )?;
 
         let mut updated_milestones = Vec::<Milestone>::new(&e);
         for (index, milestone) in existing_escrow.milestones.iter().enumerate() {
