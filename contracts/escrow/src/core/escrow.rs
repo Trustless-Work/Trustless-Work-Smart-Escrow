@@ -7,7 +7,7 @@ use crate::modules::{
     token::{TokenTransferHandler, TokenTransferHandlerTrait},
 };
 use crate::storage::types::{AddressBalance, DataKey, Escrow};
-use crate::core::validators::escrow::{validate_release_conditions, validate_funding_conditions, validate_escrow_property_change_conditions};
+use crate::core::validators::escrow::{validate_release_conditions, validate_funding_conditions, validate_escrow_property_change_conditions, validate_initialize_escrow_conditions};
 
 pub struct EscrowManager;
 
@@ -25,13 +25,10 @@ impl EscrowManager {
     }
 
     pub fn initialize_escrow(e: Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
-        if e.storage().instance().has(&DataKey::Escrow) {
-            return Err(ContractError::EscrowAlreadyInitialized);
-        }
-
-        if escrow_properties.amount == 0 {
-            return Err(ContractError::AmountCannotBeZero);
-        }
+        validate_initialize_escrow_conditions(
+            e.clone(),
+            escrow_properties.clone(),
+        )?;
 
         e.storage()
             .instance()
@@ -175,14 +172,14 @@ impl EscrowManager {
         e: Env,
         contract_id: &Address,
     ) -> Result<Escrow, ContractError> {
-        let args: Vec<Val> = Vec::new(&e);
-
+        let args: soroban_sdk::Vec<Val> = soroban_sdk::Vec::new(&e);
+    
         let result = e.invoke_contract::<Escrow>(
             contract_id,
             &Symbol::new(&e, "get_escrow"),
-            args.try_into().unwrap(),
+            args,
         );
-
+    
         Ok(result)
     }
 

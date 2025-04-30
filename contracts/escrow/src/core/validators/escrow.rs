@@ -1,6 +1,6 @@
-use soroban_sdk::{Address, Vec};
+use soroban_sdk::{Address, Env, Vec};
 
-use crate::{error::ContractError, storage::types::{Escrow, Milestone}};
+use crate::{error::ContractError, storage::types::{DataKey, Escrow, Milestone}};
 
 pub fn validate_funding_conditions(
     escrow: &Escrow,
@@ -84,6 +84,25 @@ pub fn validate_escrow_property_change_conditions(
 
     if existing_escrow.flags.dispute {
         return Err(ContractError::EscrowOpenedForDisputeResolution);
+    }
+
+    Ok(())
+}
+
+pub fn validate_initialize_escrow_conditions(
+    e: Env,
+    escrow_properties: Escrow,
+) -> Result<(), ContractError> {
+    if e.storage().instance().has(&DataKey::Escrow) {
+        return Err(ContractError::EscrowAlreadyInitialized);
+    }
+
+    if escrow_properties.amount == 0 {
+        return Err(ContractError::AmountCannotBeZero);
+    }
+
+    if escrow_properties.milestones.len() > 10 {
+        return Err(ContractError::TooManyMilestones);
     }
 
     Ok(())
