@@ -46,6 +46,8 @@ pub enum ContractError {
     EscrowAlreadyResolved = 40,
     TooManyEscrowsRequested = 41,
     UnauthorizedToChangeDisputeFlag = 42,
+    ArgumentConversionFailed = 43,
+    TooManyMilestones = 44,
 }
 
 impl fmt::Display for ContractError {
@@ -140,6 +142,12 @@ impl fmt::Display for ContractError {
             },
             ContractError::UnauthorizedToChangeDisputeFlag => {
                 write!(f, "You are not authorized to change the dispute flag")
+            },
+            ContractError::ArgumentConversionFailed => {
+                write!(f, "Argument conversion failed")
+            },
+            ContractError::TooManyMilestones => {
+                write!(f, "Cannot define more than 10 milestones in an escrow")
             }
         }
     }
