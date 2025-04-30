@@ -1,5 +1,6 @@
 #![cfg(test)]
 
+use soroban_sdk::Vec;
 use soroban_sdk::{
     testutils::Address as _,
     vec, Address, Env, IntoVal, String,
@@ -959,7 +960,7 @@ fn test_dispute_management() {
     let escrow = escrow_approver.get_escrow();
     assert!(!escrow.flags.dispute);
 
-    escrow_approver.change_dispute_flag();
+    escrow_approver.change_dispute_flag(&dispute_resolver_address);
 
     let escrow_after_change = escrow_approver.get_escrow();
     assert!(escrow_after_change.flags.dispute);
@@ -974,7 +975,7 @@ fn test_dispute_management() {
         .try_release_funds(&release_signer_address, &platform_address);
     assert!(result.is_err());
 
-    let _ = escrow_approver.try_change_dispute_flag();
+    let _ = escrow_approver.try_change_dispute_flag(&dispute_resolver_address);
 
     let escrow_after_second_change = escrow_approver.get_escrow();
     assert!(escrow_after_second_change.flags.dispute);
@@ -1051,7 +1052,7 @@ fn test_dispute_resolution_process() {
     
     usdc_token.transfer(&approver_address, &escrow_contract_address, &amount);
 
-    escrow_approver.change_dispute_flag();
+    escrow_approver.change_dispute_flag(&approver_address);
 
     let escrow_with_dispute = escrow_approver.get_escrow();
     assert!(escrow_with_dispute.flags.dispute);
@@ -1443,4 +1444,73 @@ fn test_fund_escrow_dispute_error() {
     assert!(result.is_err());
 
     assert_eq!(usdc_token.balance(&escrow_contract_address), 0);
+}
+
+#[test]
+fn test_change_dispute_flag_authorized_and_unauthorized() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let admin = Address::generate(&env);
+    let approver = Address::generate(&env);
+    let service_provider = Address::generate(&env);
+    let platform_address = Address::generate(&env);
+    let release_signer = Address::generate(&env);
+    let dispute_resolver = Address::generate(&env);
+    let receiver = Address::generate(&env);
+    let unauthorized = Address::generate(&env);
+
+    let usdc_token = create_usdc_token(&env, &admin);
+
+    let roles = Roles {
+        approver: approver.clone(),
+        service_provider: service_provider.clone(),
+        platform_address: platform_address.clone(),
+        release_signer: release_signer.clone(),
+        dispute_resolver: dispute_resolver.clone(),
+        receiver: receiver.clone(),
+    };
+
+    let escrow_base = Escrow {
+        engagement_id: String::from_str(&env, "engagement_001"),
+        title: String::from_str(&env, "Escrow for test"),
+        description: String::from_str(&env, "Test for dispute flag"),
+        roles,
+        amount: 10_000_000,
+        platform_fee: 0,
+        milestones: Vec::new(&env),
+        flags: Flags {
+            dispute: false,
+            release: false,
+            resolved: false,
+        },
+        trustline: Trustline {
+            address: usdc_token.address.clone(),
+            decimals: 7,
+        },
+        receiver_memo: 0,
+    };
+
+    let escrow_contract_address_1 = env.register_contract(None, EscrowContract);
+    let escrow_client_1 = EscrowContractClient::new(&env, &escrow_contract_address_1);
+
+    escrow_client_1.initialize_escrow(&escrow_base);
+    escrow_client_1.change_dispute_flag(&approver);
+
+    let updated_escrow = escrow_client_1.get_escrow();
+    assert!(
+        updated_escrow.flags.dispute,
+        "Dispute flag should be set to true for authorized address"
+    );
+
+    let escrow_contract_address_2 = env.register_contract(None, EscrowContract);
+    let escrow_client_2 = EscrowContractClient::new(&env, &escrow_contract_address_2);
+
+    escrow_client_2.initialize_escrow(&escrow_base); // mismo struct, nuevo contrato
+    let result = escrow_client_2.try_change_dispute_flag(&unauthorized);
+
+    assert!(
+        result.is_err(),
+        "Unauthorized user should not be able to change dispute flag"
+    );
 }
