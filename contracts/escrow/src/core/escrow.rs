@@ -83,21 +83,25 @@ impl EscrowManager {
         trustless_work_address: Address,
     ) -> Result<(), ContractError> {
         release_signer.require_auth();
-
+    
         let escrow_result = Self::get_escrow(e.clone());
         let mut escrow = match escrow_result {
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
-
+    
+        if escrow.flags.release {
+            return Err(ContractError::EscrowAlreadyResolved);
+        }
+    
         if release_signer != escrow.roles.release_signer {
             return Err(ContractError::OnlyReleaseSignerCanDistributeEarnings);
         }
-
+    
         if escrow.milestones.is_empty() {
             return Err(ContractError::NoMileStoneDefined);
         }
-
+    
         if !escrow
             .milestones
             .iter()
@@ -105,35 +109,34 @@ impl EscrowManager {
         {
             return Err(ContractError::EscrowNotCompleted);
         }
-
+    
         if escrow.flags.dispute {
             return Err(ContractError::EscrowOpenedForDisputeResolution);
         }
-
+    
+        escrow.flags.release = true;
+        e.storage().instance().set(&DataKey::Escrow, &escrow);
+    
         let contract_address = e.current_contract_address();
         let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline.address, &contract_address);
         
         transfer_handler.has_sufficient_balance(escrow.amount)?;
-
-        let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline.address, &contract_address);
+    
         let total_amount = escrow.amount as i128;
         let platform_fee_percentage = escrow.platform_fee as i128;
         let fee_result = FeeCalculator::calculate_standard_fees(
             total_amount,
             platform_fee_percentage,
         )?;
-
+    
         let platform_address = escrow.roles.platform_address.clone();
-
+    
         transfer_handler.transfer(&trustless_work_address, &fee_result.trustless_work_fee);
         transfer_handler.transfer(&platform_address, &fee_result.platform_fee);
-
+    
         let receiver = Self::get_receiver(&escrow);
         transfer_handler.transfer(&receiver, &fee_result.receiver_amount);
-
-        escrow.flags.release = true;
-        e.storage().instance().set(&DataKey::Escrow, &escrow);
-
+    
         Ok(())
     }
 
