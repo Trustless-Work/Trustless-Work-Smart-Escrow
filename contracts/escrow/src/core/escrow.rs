@@ -7,6 +7,7 @@ use crate::modules::{
     token::{TokenTransferHandler, TokenTransferHandlerTrait},
 };
 use crate::storage::types::{AddressBalance, DataKey, Escrow};
+use crate::core::validators::escrow::{validate_release_conditions, validate_funding_conditions, validate_escrow_property_change_conditions};
 
 pub struct EscrowManager;
 
@@ -51,24 +52,18 @@ impl EscrowManager {
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
-
-        if escrow.flags.dispute {
-            return Err(ContractError::EscrowOpenedForDisputeResolution);
-        }
-
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
 
         let signer_balance = token_client.balance(&signer);
         let contract_address = e.current_contract_address();
         let contract_balance = token_client.balance(&contract_address);
 
-        if contract_balance >= escrow.amount {
-            return Err(ContractError::EscrowFullyFunded);
-        }
-
-        if signer_balance < amount_to_deposit {
-            return Err(ContractError::SignerInsufficientFunds);
-        }
+        validate_funding_conditions(
+            &escrow,
+            signer_balance,
+            contract_balance,
+            amount_to_deposit,
+        )?;
 
         token_client.transfer(&signer, &contract_address, &amount_to_deposit);
 
@@ -89,30 +84,7 @@ impl EscrowManager {
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
-    
-        if escrow.flags.release {
-            return Err(ContractError::EscrowAlreadyResolved);
-        }
-    
-        if release_signer != escrow.roles.release_signer {
-            return Err(ContractError::OnlyReleaseSignerCanDistributeEarnings);
-        }
-    
-        if escrow.milestones.is_empty() {
-            return Err(ContractError::NoMileStoneDefined);
-        }
-    
-        if !escrow
-            .milestones
-            .iter()
-            .all(|milestone| milestone.approved_flag)
-        {
-            return Err(ContractError::EscrowNotCompleted);
-        }
-    
-        if escrow.flags.dispute {
-            return Err(ContractError::EscrowOpenedForDisputeResolution);
-        }
+        validate_release_conditions(&escrow, &release_signer)?;
     
         escrow.flags.release = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
@@ -142,7 +114,7 @@ impl EscrowManager {
 
     pub fn change_escrow_properties(
         e: Env,
-        plataform_address: Address,
+        platform_address: Address,
         escrow_properties: Escrow,
     ) -> Result<Escrow, ContractError> {
         let escrow_result = Self::get_escrow(e.clone());
@@ -151,31 +123,16 @@ impl EscrowManager {
             Err(err) => return Err(err),
         };
 
-        if plataform_address != existing_escrow.roles.platform_address {
-            return Err(ContractError::OnlyPlatformAddressExecuteThisFunction);
-        }
-
-        plataform_address.require_auth();
-
-        if !existing_escrow.milestones.is_empty() {
-            for (_, milestone) in existing_escrow.milestones.iter().enumerate() {
-                if milestone.approved_flag {
-                    return Err(ContractError::MilestoneApprovedCantChangeEscrowProperties);
-                }
-            }
-        }
-
         let current_address = e.current_contract_address();
         let token_client = TokenClient::new(&e, &existing_escrow.trustline.address);
         let contract_balance = token_client.balance(&current_address);
 
-        if contract_balance > 0 {
-            return Err(ContractError::EscrowHasFunds);
-        }
-
-        if existing_escrow.flags.dispute {
-            return Err(ContractError::EscrowOpenedForDisputeResolution);
-        }
+        validate_escrow_property_change_conditions(
+            &existing_escrow,
+            &platform_address,
+            contract_balance,
+            existing_escrow.milestones.clone(),
+        )?;
 
         e.storage()
             .instance()
@@ -188,8 +145,12 @@ impl EscrowManager {
         e: Env,
         addresses: Vec<Address>,
     ) -> Result<Vec<AddressBalance>, ContractError> {
-        let mut balances: Vec<AddressBalance> = Vec::new(&e);
+        const MAX_ESCROWS: u32 = 20;
+        if addresses.len() > MAX_ESCROWS {
+            return Err(ContractError::TooManyEscrowsRequested);
+        }
 
+        let mut balances: Vec<AddressBalance> = Vec::new(&e);
         for address in addresses.iter() {
             let escrow_result = Self::get_escrow_by_contract_id(e.clone(), &address);
             let escrow = match escrow_result {
