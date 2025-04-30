@@ -77,7 +77,7 @@ impl EscrowManager {
         Ok(())
     }
 
-    pub fn distribute_escrow_earnings(
+    pub fn release_funds(
         e: Env,
         release_signer: Address,
         trustless_work_address: Address,

@@ -401,7 +401,7 @@ fn test_change_milestone_status_and_approved() {
 }
 
 #[test]
-fn test_distribute_escrow_earnings_successful_flow() {
+fn test_release_funds_successful_flow() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -479,7 +479,7 @@ fn test_distribute_escrow_earnings_successful_flow() {
     usdc_token.mint(&escrow_contract_address, &(amount as i128));
 
     escrow_approver
-        .distribute_escrow_earnings(&release_signer_address, &trustless_work_address);
+        .release_funds(&release_signer_address, &trustless_work_address);
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
@@ -521,7 +521,7 @@ fn test_distribute_escrow_earnings_successful_flow() {
 //test claim escrow earnings in failure scenarios
 // Scenario 1: Escrow with no milestones:
 #[test]
-fn test_distribute_escrow_earnings_no_milestones() {
+fn test_release_funds_no_milestones() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -579,13 +579,13 @@ fn test_distribute_escrow_earnings_no_milestones() {
 
     // Try to claim earnings with no milestones (should fail)
     let result = escrow_approver
-        .try_distribute_escrow_earnings(&release_signer_address, &platform_address);
+        .try_release_funds(&release_signer_address, &platform_address);
     assert!(result.is_err());
 }
 
 // Scenario 2: Milestones incomplete
 #[test]
-fn test_distribute_escrow_earnings_milestones_incomplete() {
+fn test_release_funds_milestones_incomplete() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -663,12 +663,12 @@ fn test_distribute_escrow_earnings_milestones_incomplete() {
 
     // Try to distribute earnings with incomplete milestones (should fail)
     let result = escrow_approver
-        .try_distribute_escrow_earnings(&release_signer_address, &platform_address);
+        .try_release_funds(&release_signer_address, &platform_address);
     assert!(result.is_err());
 }
 
 #[test]
-fn test_distribute_escrow_earnings_same_receiver_as_provider() {
+fn test_release_funds_same_receiver_as_provider() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -741,7 +741,7 @@ fn test_distribute_escrow_earnings_same_receiver_as_provider() {
     usdc_token.mint(&escrow_contract_address, &(amount as i128));
 
     escrow_approver
-        .distribute_escrow_earnings(&release_signer_address, &trustless_work_address);
+        .release_funds(&release_signer_address, &trustless_work_address);
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
@@ -775,7 +775,7 @@ fn test_distribute_escrow_earnings_same_receiver_as_provider() {
 }
 
 #[test]
-fn test_distribute_escrow_earnings_invalid_receiver_fallback() {
+fn test_release_funds_invalid_receiver_fallback() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -849,7 +849,7 @@ fn test_distribute_escrow_earnings_invalid_receiver_fallback() {
     usdc_token.mint(&escrow_contract_address, &(amount as i128));
 
     escrow_approver
-        .distribute_escrow_earnings(&release_signer_address, &trustless_work_address);
+        .release_funds(&release_signer_address, &trustless_work_address);
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
@@ -971,7 +971,7 @@ fn test_dispute_management() {
 
     // Test block on distributing earnings during dispute
     let result = escrow_approver
-        .try_distribute_escrow_earnings(&release_signer_address, &platform_address);
+        .try_release_funds(&release_signer_address, &platform_address);
     assert!(result.is_err());
 
     let _ = escrow_approver.try_change_dispute_flag();

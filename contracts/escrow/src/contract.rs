@@ -59,12 +59,12 @@ impl EscrowContract {
         Ok(updated_funded_escrow)
     }
 
-    pub fn distribute_escrow_earnings(
+    pub fn release_funds(
         e: Env,
         release_signer: Address,
         trustless_work_address: Address,
     ) -> Result<(), ContractError> {
-        let updated_distributed_escrow_earnings = EscrowManager::distribute_escrow_earnings(
+        let updated_distributed_escrow_earnings = EscrowManager::release_funds(
             e.clone(),
             release_signer.clone(),
             trustless_work_address.clone(),
