@@ -43,6 +43,7 @@ pub enum ContractError {
     InsufficientServiceProviderFundsForCommissions = 37,
     MilestoneApprovedCantChangeEscrowProperties = 38,
     EscrowHasFunds = 39,
+    EscrowAlreadyResolved = 40,
 }
 
 impl fmt::Display for ContractError {
@@ -131,6 +132,7 @@ impl fmt::Display for ContractError {
             ContractError::Underflow => write!(f, "This operation can cause an Underflow"),
             ContractError::DivisionError => write!(f, "This operation can cause Division error"),
             ContractError::AdminNotFound => write!(f, "Admin not found!"),
+            ContractError::EscrowAlreadyResolved => write!(f, "This escrow is already resolved"),
         }
     }
 }
