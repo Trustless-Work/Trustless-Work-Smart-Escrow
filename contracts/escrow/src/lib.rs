@@ -9,6 +9,11 @@ mod core {
     pub use dispute::*;
     pub use escrow::*;
     pub use milestone::*;
+    pub mod validators{
+        pub mod escrow;
+        pub mod dispute;
+        pub mod milestone;
+    }
 }
 mod error;
 mod events {

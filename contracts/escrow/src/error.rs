@@ -44,6 +44,8 @@ pub enum ContractError {
     MilestoneApprovedCantChangeEscrowProperties = 38,
     EscrowHasFunds = 39,
     EscrowAlreadyResolved = 40,
+    TooManyEscrowsRequested = 41,
+    UnauthorizedToChangeDisputeFlag = 42,
 }
 
 impl fmt::Display for ContractError {
@@ -133,6 +135,12 @@ impl fmt::Display for ContractError {
             ContractError::DivisionError => write!(f, "This operation can cause Division error"),
             ContractError::AdminNotFound => write!(f, "Admin not found!"),
             ContractError::EscrowAlreadyResolved => write!(f, "This escrow is already resolved"),
+            ContractError::TooManyEscrowsRequested => {
+                write!(f, "You have requested too many escrows")
+            },
+            ContractError::UnauthorizedToChangeDisputeFlag => {
+                write!(f, "You are not authorized to change the dispute flag")
+            }
         }
     }
 }

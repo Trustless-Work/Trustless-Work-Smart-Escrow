@@ -156,7 +156,7 @@ impl EscrowContract {
         )
     }
 
-    pub fn change_dispute_flag(e: Env) -> Result<(), ContractError> {
-        DisputeManager::change_dispute_flag(e)
+    pub fn change_dispute_flag(e: Env, signer: Address) -> Result<(), ContractError> {
+        DisputeManager::change_dispute_flag(e, signer)
     }
 }
