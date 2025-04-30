@@ -9,6 +9,8 @@ use crate::modules::{
     math::{BasicMath, BasicArithmetic},
 };
 
+use super::validators::dispute::{validate_dispute_flag_change_conditions, validate_dispute_resolution_conditions};
+
 pub struct DisputeManager;
 
 impl DisputeManager {
@@ -27,14 +29,6 @@ impl DisputeManager {
             Err(err) => return Err(err),
         };
 
-        if dispute_resolver != escrow.roles.dispute_resolver {
-            return Err(ContractError::OnlyDisputeResolverCanExecuteThisFunction);
-        }
-
-        if !escrow.flags.dispute {
-            return Err(ContractError::EscrowNotInDispute);
-        }
-
         let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline.address, &e.current_contract_address());
 
         let total_funds = BasicMath::safe_add(approver_funds, service_provider_funds)?;
@@ -47,13 +41,13 @@ impl DisputeManager {
             total_funds,
         )?;
 
-        if approver_funds < fee_result.net_approver_funds {
-            return Err(ContractError::InsufficientApproverFundsForCommissions);
-        }
-
-        if service_provider_funds < fee_result.net_provider_funds {
-            return Err(ContractError::InsufficientServiceProviderFundsForCommissions);
-        }
+        validate_dispute_resolution_conditions(
+            &escrow,
+            &dispute_resolver,
+            approver_funds,
+            service_provider_funds,
+            &fee_result,
+        )?;
 
         transfer_handler.transfer(
             &trustless_work_address,
@@ -73,9 +67,7 @@ impl DisputeManager {
         }
 
         if fee_result.net_provider_funds > 0 {
-
             let receiver = EscrowManager::get_receiver(&escrow);
-            
             transfer_handler.transfer(
                 &receiver,
                 &fee_result.net_provider_funds,
@@ -91,16 +83,14 @@ impl DisputeManager {
         Ok(())
     }
 
-    pub fn change_dispute_flag(e: Env) -> Result<(), ContractError> {
+    pub fn change_dispute_flag(e: Env, signer: Address) -> Result<(), ContractError> {
         let escrow_result = EscrowManager::get_escrow(e.clone());
         let mut escrow = match escrow_result {
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
 
-        if escrow.flags.dispute {
-            return Err(ContractError::EscrowAlreadyInDispute);
-        }
+        validate_dispute_flag_change_conditions(&escrow, &signer)?;
         
         escrow.flags.dispute = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
