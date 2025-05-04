@@ -1,6 +1,10 @@
 use soroban_sdk::Address;
 
-use crate::{error::ContractError, modules::fee::DisputeFeeResult, storage::types::{Escrow, Roles}};
+use crate::{
+    error::ContractError,
+    modules::fee::DisputeFeeResult,
+    storage::types::{Escrow, Roles},
+};
 
 pub fn validate_dispute_resolution_conditions(
     escrow: &Escrow,

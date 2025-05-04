@@ -1,8 +1,8 @@
 use crate::{
     error::ContractError,
     modules::{
-        math::{SafeMath, SafeArithmetic},
-        math::{BasicMath, BasicArithmetic},
+        math::{BasicArithmetic, BasicMath},
+        math::{SafeArithmetic, SafeMath},
     },
 };
 
@@ -51,11 +51,8 @@ impl FeeCalculatorTrait for FeeCalculator {
             TRUSTLESS_WORK_FEE_BPS,
             BASIS_POINTS_DENOMINATOR,
         )?;
-        let platform_fee = SafeMath::safe_mul_div(
-            total_amount,
-            platform_fee_bps,
-            BASIS_POINTS_DENOMINATOR,
-        )?;
+        let platform_fee =
+            SafeMath::safe_mul_div(total_amount, platform_fee_bps, BASIS_POINTS_DENOMINATOR)?;
 
         let after_tw = BasicMath::safe_sub(total_amount, trustless_work_fee)?;
         let receiver_amount = BasicMath::safe_sub(after_tw, platform_fee)?;
@@ -86,14 +83,16 @@ impl FeeCalculatorTrait for FeeCalculator {
         let total_fees = BasicMath::safe_add(trustless_work_fee, platform_fee)?;
 
         let net_approver_funds = if total_resolved_funds > 0 {
-            let approver_fee_share = SafeMath::safe_mul_div(approver_funds, total_fees, total_resolved_funds)?;
+            let approver_fee_share =
+                SafeMath::safe_mul_div(approver_funds, total_fees, total_resolved_funds)?;
             BasicMath::safe_sub(approver_funds, approver_fee_share)?
         } else {
             0
         };
 
         let net_provider_funds = if total_resolved_funds > 0 {
-            let provider_fee_share = SafeMath::safe_mul_div(service_provider_funds, total_fees, total_resolved_funds)?;
+            let provider_fee_share =
+                SafeMath::safe_mul_div(service_provider_funds, total_fees, total_resolved_funds)?;
             BasicMath::safe_sub(service_provider_funds, provider_fee_share)?
         } else {
             0

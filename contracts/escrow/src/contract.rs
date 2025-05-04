@@ -7,7 +7,7 @@ use crate::error::ContractError;
 use crate::storage::types::{AddressBalance, Escrow};
 
 #[contract]
-#[allow(dead_code)] 
+#[allow(dead_code)]
 pub struct EscrowContract;
 
 #[allow(dead_code)]
@@ -124,7 +124,13 @@ impl EscrowContract {
         new_evidence: Option<String>,
         service_provider: Address,
     ) -> Result<(), ContractError> {
-        MilestoneManager::change_milestone_status(e, milestone_index, new_status, new_evidence, service_provider)
+        MilestoneManager::change_milestone_status(
+            e,
+            milestone_index,
+            new_status,
+            new_evidence,
+            service_provider,
+        )
     }
 
     pub fn change_milestone_flag(

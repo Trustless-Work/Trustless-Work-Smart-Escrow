@@ -1,11 +1,12 @@
 [package]
-name = "escrow"
+name = "test-token"
 version = "0.0.0"
 edition = "2021"
 publish = false
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["lib", "cdylib"]
+doctest = false
 
 [dependencies]
 soroban-sdk = { workspace = true }
@@ -14,4 +15,3 @@ soroban-token-sdk = { workspace = true }
 [dev-dependencies]
 soroban-sdk = { workspace = true, features = ["testutils"] }
 soroban-token-sdk = { workspace = true }
-test-token = { path = "../test-token" }

@@ -4,7 +4,9 @@ use crate::events::escrows_by_contract_id;
 use crate::storage::types::{DataKey, Escrow, Milestone};
 use soroban_sdk::{Address, Env, String, Vec};
 
-use super::validators::milestone::{validate_milestone_flag_change_conditions, validate_milestone_status_change_conditions};
+use super::validators::milestone::{
+    validate_milestone_flag_change_conditions, validate_milestone_status_change_conditions,
+};
 
 pub struct MilestoneManager;
 
@@ -66,11 +68,7 @@ impl MilestoneManager {
             Err(err) => return Err(err),
         };
 
-        validate_milestone_flag_change_conditions(
-            &existing_escrow,
-            milestone_index,
-            &approver,
-        )?;
+        validate_milestone_flag_change_conditions(&existing_escrow, milestone_index, &approver)?;
 
         let mut updated_milestones = Vec::<Milestone>::new(&e);
         for (index, milestone) in existing_escrow.milestones.iter().enumerate() {

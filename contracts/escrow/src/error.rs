@@ -129,7 +129,10 @@ impl fmt::Display for ContractError {
                 write!(f, "Insufficient Service Provider funds for commissions")
             }
             ContractError::MilestoneApprovedCantChangeEscrowProperties => {
-                write!(f, "You can't change the escrow properties after the milestone is approved")
+                write!(
+                    f,
+                    "You can't change the escrow properties after the milestone is approved"
+                )
             }
             ContractError::EscrowHasFunds => write!(f, "Escrow has funds"),
             ContractError::Overflow => write!(f, "This operation can cause an Overflow"),
@@ -139,13 +142,13 @@ impl fmt::Display for ContractError {
             ContractError::EscrowAlreadyResolved => write!(f, "This escrow is already resolved"),
             ContractError::TooManyEscrowsRequested => {
                 write!(f, "You have requested too many escrows")
-            },
+            }
             ContractError::UnauthorizedToChangeDisputeFlag => {
                 write!(f, "You are not authorized to change the dispute flag")
-            },
+            }
             ContractError::ArgumentConversionFailed => {
                 write!(f, "Argument conversion failed")
-            },
+            }
             ContractError::TooManyMilestones => {
                 write!(f, "Cannot define more than 10 milestones in an escrow")
             }
