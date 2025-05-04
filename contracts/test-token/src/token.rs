@@ -2,11 +2,11 @@ use soroban_sdk::token::{self, Interface as _};
 use soroban_sdk::{contract, contractimpl, Address, Env, String};
 use soroban_token_sdk::metadata::TokenMetadata;
 
-use crate::core::admin::{has_administrator, read_administrator, write_administrator};
+use crate::admin::{has_administrator, read_administrator, write_administrator};
+use crate::allowance::{read_allowance, spend_allowance, write_allowance};
+use crate::balance::{read_balance, receive_balance, spend_balance};
+use crate::metadata::write_metadata;
 use crate::storage::types::{INSTANCE_BUMP_AMOUNT, INSTANCE_LIFETIME_THRESHOLD};
-use crate::token::allowance::{read_allowance, spend_allowance, write_allowance};
-use crate::token::balance::{read_balance, receive_balance, spend_balance};
-use crate::token::metadata::write_metadata;
 use soroban_token_sdk::TokenUtils;
 
 fn check_nonnegative_amount(amount: i128) {
@@ -27,9 +27,8 @@ impl Token {
             panic!("already initialized");
         }
 
-        write_administrator(&e, &admin)
-        .expect("Failed to write administrator");
-    
+        write_administrator(&e, &admin).expect("Failed to write administrator");
+
         if decimal > 18 {
             panic!("Decimal must not be greater than 18");
         }

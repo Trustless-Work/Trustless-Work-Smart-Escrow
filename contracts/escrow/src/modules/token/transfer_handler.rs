@@ -22,11 +22,7 @@ impl<'a> TokenTransferHandler<'a> {
 
 impl<'a> TokenTransferHandlerTrait<'a> for TokenTransferHandler<'a> {
     fn transfer(&self, to: &Address, amount: &i128) {
-        self.token_client.transfer(
-            &self.source_address,
-            to,
-            amount,
-        )
+        self.token_client.transfer(&self.source_address, to, amount)
     }
 
     fn has_sufficient_balance(&self, amount: i128) -> Result<(), ContractError> {

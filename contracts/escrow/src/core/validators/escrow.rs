@@ -1,6 +1,9 @@
 use soroban_sdk::{Address, Env, Vec};
 
-use crate::{error::ContractError, storage::types::{DataKey, Escrow, Milestone}};
+use crate::{
+    error::ContractError,
+    storage::types::{DataKey, Escrow, Milestone},
+};
 
 pub fn validate_funding_conditions(
     escrow: &Escrow,
@@ -23,7 +26,10 @@ pub fn validate_funding_conditions(
     Ok(())
 }
 
-pub fn validate_release_conditions(escrow: &Escrow, release_signer: &Address) -> Result<(), ContractError> {
+pub fn validate_release_conditions(
+    escrow: &Escrow,
+    release_signer: &Address,
+) -> Result<(), ContractError> {
     if escrow.flags.release {
         return Err(ContractError::EscrowAlreadyResolved);
     }
@@ -57,7 +63,6 @@ pub fn validate_escrow_property_change_conditions(
     contract_balance: i128,
     milestones: Vec<Milestone>,
 ) -> Result<(), ContractError> {
-
     if !milestones.is_empty() {
         for (_, milestone) in milestones.iter().enumerate() {
             if milestone.approved_flag {

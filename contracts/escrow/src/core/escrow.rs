@@ -1,19 +1,22 @@
 use soroban_sdk::token::Client as TokenClient;
 use soroban_sdk::{Address, Env, Symbol, Val, Vec};
 
+use crate::core::validators::escrow::{
+    validate_escrow_property_change_conditions, validate_funding_conditions,
+    validate_initialize_escrow_conditions, validate_release_conditions,
+};
 use crate::error::ContractError;
 use crate::modules::{
     fee::{FeeCalculator, FeeCalculatorTrait},
     token::{TokenTransferHandler, TokenTransferHandlerTrait},
 };
 use crate::storage::types::{AddressBalance, DataKey, Escrow};
-use crate::core::validators::escrow::{validate_release_conditions, validate_funding_conditions, validate_escrow_property_change_conditions, validate_initialize_escrow_conditions};
 
 pub struct EscrowManager;
 
 impl EscrowManager {
     /// Returns the final receiver address for escrow fund distribution.
-    /// 
+    ///
     /// If the receiver is the same as the service provider, it returns the service provider's address.
     /// Otherwise, it returns the receiver's address.
     pub fn get_receiver(escrow: &Escrow) -> Address {
@@ -25,10 +28,7 @@ impl EscrowManager {
     }
 
     pub fn initialize_escrow(e: Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
-        validate_initialize_escrow_conditions(
-            e.clone(),
-            escrow_properties.clone(),
-        )?;
+        validate_initialize_escrow_conditions(e.clone(), escrow_properties.clone())?;
 
         e.storage()
             .instance()
@@ -55,12 +55,7 @@ impl EscrowManager {
         let contract_address = e.current_contract_address();
         let contract_balance = token_client.balance(&contract_address);
 
-        validate_funding_conditions(
-            &escrow,
-            signer_balance,
-            contract_balance,
-            amount_to_deposit,
-        )?;
+        validate_funding_conditions(&escrow, signer_balance, contract_balance, amount_to_deposit)?;
 
         token_client.transfer(&signer, &contract_address, &amount_to_deposit);
 
@@ -75,37 +70,36 @@ impl EscrowManager {
         trustless_work_address: Address,
     ) -> Result<(), ContractError> {
         release_signer.require_auth();
-    
+
         let escrow_result = Self::get_escrow(e.clone());
         let mut escrow = match escrow_result {
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
         validate_release_conditions(&escrow, &release_signer)?;
-    
+
         escrow.flags.release = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
-    
+
         let contract_address = e.current_contract_address();
-        let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline.address, &contract_address);
-        
+        let transfer_handler =
+            TokenTransferHandler::new(&e, &escrow.trustline.address, &contract_address);
+
         transfer_handler.has_sufficient_balance(escrow.amount)?;
-    
+
         let total_amount = escrow.amount as i128;
         let platform_fee_percentage = escrow.platform_fee as i128;
-        let fee_result = FeeCalculator::calculate_standard_fees(
-            total_amount,
-            platform_fee_percentage,
-        )?;
-    
+        let fee_result =
+            FeeCalculator::calculate_standard_fees(total_amount, platform_fee_percentage)?;
+
         let platform_address = escrow.roles.platform_address.clone();
-    
+
         transfer_handler.transfer(&trustless_work_address, &fee_result.trustless_work_fee);
         transfer_handler.transfer(&platform_address, &fee_result.platform_fee);
-    
+
         let receiver = Self::get_receiver(&escrow);
         transfer_handler.transfer(&receiver, &fee_result.receiver_amount);
-    
+
         Ok(())
     }
 
@@ -173,13 +167,9 @@ impl EscrowManager {
         contract_id: &Address,
     ) -> Result<Escrow, ContractError> {
         let args: soroban_sdk::Vec<Val> = soroban_sdk::Vec::new(&e);
-    
-        let result = e.invoke_contract::<Escrow>(
-            contract_id,
-            &Symbol::new(&e, "get_escrow"),
-            args,
-        );
-    
+
+        let result = e.invoke_contract::<Escrow>(contract_id, &Symbol::new(&e, "get_escrow"), args);
+
         Ok(result)
     }
 

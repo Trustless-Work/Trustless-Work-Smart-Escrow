@@ -9,9 +9,9 @@ mod core {
     pub use dispute::*;
     pub use escrow::*;
     pub use milestone::*;
-    pub mod validators{
-        pub mod escrow;
+    pub mod validators {
         pub mod dispute;
+        pub mod escrow;
         pub mod milestone;
     }
 }
@@ -49,12 +49,6 @@ mod storage {
 mod tests {
     #[cfg(test)]
     mod test;
-}
-mod token {
-    pub mod allowance;
-    pub mod balance;
-    pub mod metadata;
-    pub mod token;
 }
 
 pub use crate::contract::EscrowContract;
