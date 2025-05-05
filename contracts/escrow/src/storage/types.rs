@@ -51,20 +51,6 @@ pub struct Trustline {
 }
 
 #[contracttype]
-#[derive(Clone)]
-pub struct AllowanceValue {
-    pub amount: i128,
-    pub expiration_ledger: u32,
-}
-
-#[contracttype]
-#[derive(Clone)]
-pub struct AllowanceDataKey {
-    pub from: Address,
-    pub spender: Address,
-}
-
-#[contracttype]
 #[derive(Clone, Debug)]
 pub struct AddressBalance {
     pub address: Address,
@@ -77,6 +63,4 @@ pub struct AddressBalance {
 pub enum DataKey {
     Escrow,
     Balance(Address),
-    Allowance(AllowanceDataKey),
-    Admin,
 }

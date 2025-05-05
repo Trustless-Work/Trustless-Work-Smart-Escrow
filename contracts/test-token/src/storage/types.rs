@@ -21,7 +21,6 @@ pub struct AllowanceDataKey {
 #[derive(Clone)]
 #[contracttype]
 pub enum DataKey {
-    Escrow,
     Balance(Address),
     Allowance(AllowanceDataKey),
     Admin,
