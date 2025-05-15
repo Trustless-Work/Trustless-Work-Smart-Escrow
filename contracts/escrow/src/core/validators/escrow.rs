@@ -12,6 +12,12 @@ pub fn validate_funding_conditions(
     amount_to_deposit: i128,
 ) -> Result<(), ContractError> {
     let total_amount: i128 = milestones.iter().map(|m| m.amount).sum();
+    let has_dispute = milestones.iter().any(|m| m.flags.dispute);
+
+    if has_dispute{
+        return Err(ContractError::MilestoneOpenedForDisputeResolution);
+    }
+
     if contract_balance >= total_amount{
         return Err(ContractError::EscrowFullyFunded);
     }
