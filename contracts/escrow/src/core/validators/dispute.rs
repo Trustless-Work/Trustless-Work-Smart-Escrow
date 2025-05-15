@@ -18,6 +18,7 @@ pub fn validate_dispute_resolution_conditions(
     if dispute_resolver != &escrow.roles.dispute_resolver {
         return Err(ContractError::OnlyDisputeResolverCanExecuteThisFunction);
     }
+    dispute_resolver.require_auth();
 
     if total_funds != milestone.amount {
         return Err(ContractError::InsufficientFundsForResolution);

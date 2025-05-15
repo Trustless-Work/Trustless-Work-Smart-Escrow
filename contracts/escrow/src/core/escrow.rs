@@ -69,9 +69,7 @@ impl EscrowManager{
         release_signer: Address, 
         trustless_work_address: Address,
         milestone_index: u32
-    ) -> Result<(), ContractError> {
-        release_signer.require_auth();
-        
+    ) -> Result<(), ContractError> {        
         let escrow_result = Self::get_escrow(e.clone());
         let mut escrow = match escrow_result {
             Ok(esc) => esc,
