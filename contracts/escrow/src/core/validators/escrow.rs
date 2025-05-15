@@ -38,6 +38,8 @@ pub fn validate_release_conditions(
         return Err(ContractError::OnlyReleaseSignerCanDistributeEarnings);
     }
 
+    release_signer.require_auth();
+
     if escrow.milestones.is_empty() {
         return Err(ContractError::NoMileStoneDefined);
     }

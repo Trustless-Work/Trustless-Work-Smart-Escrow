@@ -17,6 +17,8 @@ pub fn validate_dispute_resolution_conditions(
         return Err(ContractError::OnlyDisputeResolverCanExecuteThisFunction);
     }
 
+    dispute_resolver.require_auth();
+
     if !escrow.flags.dispute {
         return Err(ContractError::EscrowNotInDispute);
     }
