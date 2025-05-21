@@ -135,7 +135,7 @@ impl EscrowContract {
         )
     }
     
-    pub fn change_milestone_approved_flag(
+    pub fn change_milestone_flag(
         e: Env,
         milestone_index: i128,
         new_flag: bool,
