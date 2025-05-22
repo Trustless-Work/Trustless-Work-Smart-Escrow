@@ -20,7 +20,7 @@ pub fn validate_dispute_resolution_conditions(
     }
     dispute_resolver.require_auth();
 
-    if total_funds != milestone.amount {
+    if total_funds > milestone.amount {
         return Err(ContractError::InsufficientFundsForResolution);
     }
 
