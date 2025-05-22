@@ -1074,14 +1074,25 @@ fn test_dispute_resolution_process() {
     );
     assert!(result.is_err());
 
-    // Resolve dispute with correct dispute resolver (50/50 split)
     let approver_funds: i128 = 50_000_000;
-    let service_provider_funds: i128 = 50_000_000;
+    let insufficient_receiver_funds: i128 = 40_000_000;
+
+    let incorrect_dispute_resolution_result = escrow_approver.try_resolving_disputes(
+        &dispute_resolver_address,
+        &approver_funds,
+        &insufficient_receiver_funds,
+        &trustless_work_address,
+    );
+
+    assert!(incorrect_dispute_resolution_result.is_err());
+
+    // Resolve dispute with correct dispute resolver (50/50 split)
+    let receiver_funds: i128 = 50_000_000;
 
     escrow_approver.resolving_disputes(
         &dispute_resolver_address,
         &approver_funds,
-        &service_provider_funds,
+        &receiver_funds,
         &trustless_work_address,
     );
 
@@ -1097,7 +1108,7 @@ fn test_dispute_resolution_process() {
 
     let platform_amount = platform_commission;
     let trustless_amount = trustless_work_commission;
-    let service_provider_amount = (remaining_amount * service_provider_funds) / total_amount;
+    let service_provider_amount = (remaining_amount * receiver_funds) / total_amount;
     let approver_amount = (remaining_amount * approver_funds) / total_amount;
 
     // Check balances
