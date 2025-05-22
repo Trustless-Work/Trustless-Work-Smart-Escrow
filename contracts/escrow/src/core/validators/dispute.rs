@@ -10,7 +10,8 @@ pub fn validate_dispute_resolution_conditions(
     escrow: &Escrow,
     dispute_resolver: &Address,
     approver_funds: i128,
-    provider_funds: i128,
+    receiver_funds: i128,
+    total_funds: i128,
     fee_result: &DisputeFeeResult,
 ) -> Result<(), ContractError> {
     if dispute_resolver != &escrow.roles.dispute_resolver {
@@ -23,11 +24,15 @@ pub fn validate_dispute_resolution_conditions(
         return Err(ContractError::EscrowNotInDispute);
     }
 
+    if total_funds != escrow.amount {
+        return Err(ContractError::ReceiverAndApproverFundsNotEqual);
+    }
+
     if approver_funds < fee_result.net_approver_funds {
         return Err(ContractError::InsufficientApproverFundsForCommissions);
     }
 
-    if provider_funds < fee_result.net_provider_funds {
+    if receiver_funds < fee_result.net_receiver_funds {
         return Err(ContractError::InsufficientServiceProviderFundsForCommissions);
     }
 

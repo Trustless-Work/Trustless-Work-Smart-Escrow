@@ -20,7 +20,7 @@ impl DisputeManager {
         e: Env,
         dispute_resolver: Address,
         approver_funds: i128,
-        service_provider_funds: i128,
+        receiver_funds: i128,
         trustless_work_address: Address,
     ) -> Result<(), ContractError> {
         let escrow_result = EscrowManager::get_escrow(e.clone());
@@ -32,12 +32,12 @@ impl DisputeManager {
         let transfer_handler =
             TokenTransferHandler::new(&e, &escrow.trustline.address, &e.current_contract_address());
 
-        let total_funds = BasicMath::safe_add(approver_funds, service_provider_funds)?;
+        let total_funds = BasicMath::safe_add(approver_funds, receiver_funds)?;
         transfer_handler.has_sufficient_balance(total_funds)?;
 
         let fee_result = FeeCalculator::calculate_dispute_fees(
             approver_funds,
-            service_provider_funds,
+            receiver_funds,
             escrow.platform_fee as i128,
             total_funds,
         )?;
@@ -46,7 +46,8 @@ impl DisputeManager {
             &escrow,
             &dispute_resolver,
             approver_funds,
-            service_provider_funds,
+            receiver_funds,
+            total_funds,
             &fee_result,
         )?;
 
@@ -58,9 +59,9 @@ impl DisputeManager {
             transfer_handler.transfer(&escrow.roles.approver, &fee_result.net_approver_funds);
         }
 
-        if fee_result.net_provider_funds > 0 {
+        if fee_result.net_receiver_funds > 0 {
             let receiver = EscrowManager::get_receiver(&escrow);
-            transfer_handler.transfer(&receiver, &fee_result.net_provider_funds);
+            transfer_handler.transfer(&receiver, &fee_result.net_receiver_funds);
         }
 
         escrow.flags.resolved = true;
