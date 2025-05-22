@@ -56,7 +56,7 @@ impl MilestoneManager {
         Ok(())
     }
 
-    pub fn change_milestone_flag(
+    pub fn change_milestone_approved_flag(
         e: Env,
         milestone_index: i128,
         new_flag: bool,

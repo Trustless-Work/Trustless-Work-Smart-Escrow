@@ -133,13 +133,13 @@ impl EscrowContract {
         )
     }
 
-    pub fn change_milestone_flag(
+    pub fn change_milestone_approved_flag(
         e: Env,
         milestone_index: i128,
         new_flag: bool,
         approver: Address,
     ) -> Result<(), ContractError> {
-        MilestoneManager::change_milestone_flag(e, milestone_index, new_flag, approver)
+        MilestoneManager::change_milestone_approved_flag(e, milestone_index, new_flag, approver)
     }
 
     ////////////////////////
