@@ -48,6 +48,7 @@ pub enum ContractError {
     UnauthorizedToChangeDisputeFlag = 42,
     ArgumentConversionFailed = 43,
     TooManyMilestones = 44,
+    ReceiverAndApproverFundsNotEqual = 45,
 }
 
 impl fmt::Display for ContractError {
@@ -151,6 +152,9 @@ impl fmt::Display for ContractError {
             }
             ContractError::TooManyMilestones => {
                 write!(f, "Cannot define more than 10 milestones in an escrow")
+            }
+            ContractError::ReceiverAndApproverFundsNotEqual => {
+                write!(f, "The receiver's and approver's funds must equal the value of the defined escrow.")
             }
         }
     }
