@@ -330,7 +330,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert_eq!(updated_escrow.milestones.get(0).unwrap().status, new_status);
 
     // Change milestone approved_flag (valid case)
-    escrow_approver.change_milestone_flag(&(0), &true, &approver_address);
+    escrow_approver.change_milestone_approved_flag(&(0), &true, &approver_address);
 
     // Verify milestone approved_flag change
     let final_escrow = escrow_approver.get_escrow();
@@ -350,7 +350,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert!(result.is_err());
 
     // Test for `change_approved_flag` with invalid index
-    let result = escrow_approver.try_change_milestone_flag(
+    let result = escrow_approver.try_change_milestone_approved_flag(
         &invalid_index,
         &true,
         &approver_address
@@ -370,7 +370,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert!(result.is_err());
 
     // Test for `change_approved_flag` by invalid approver
-    let result = escrow_approver.try_change_milestone_flag(
+    let result = escrow_approver.try_change_milestone_approved_flag(
         &(0),
         &true,
         &unauthorized_address
@@ -404,7 +404,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert!(result.is_err());
 
     // Test for `change_approved_flag` on escrow with no milestones
-    let result = new_escrow_approver.try_change_milestone_flag(&(0 ), &true, &approver_address);
+    let result = new_escrow_approver.try_change_milestone_approved_flag(&(0 ), &true, &approver_address);
     assert!(result.is_err());
 }
 
