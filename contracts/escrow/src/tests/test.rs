@@ -969,7 +969,7 @@ fn test_dispute_management() {
     let escrow = escrow_approver.get_escrow();
     assert!(!escrow.flags.dispute);
 
-    escrow_approver.change_dispute_flag(&dispute_resolver_address);
+    escrow_approver.start_dispute(&dispute_resolver_address);
 
     let escrow_after_change = escrow_approver.get_escrow();
     assert!(escrow_after_change.flags.dispute);
@@ -983,7 +983,7 @@ fn test_dispute_management() {
     let result = escrow_approver.try_release_funds(&release_signer_address, &platform_address);
     assert!(result.is_err());
 
-    let _ = escrow_approver.try_change_dispute_flag(&dispute_resolver_address);
+    let _ = escrow_approver.try_start_dispute(&dispute_resolver_address);
 
     let escrow_after_second_change = escrow_approver.get_escrow();
     assert!(escrow_after_second_change.flags.dispute);
@@ -1060,13 +1060,13 @@ fn test_dispute_resolution_process() {
 
     usdc_token.transfer(&approver_address, &escrow_contract_address, &amount);
 
-    escrow_approver.change_dispute_flag(&approver_address);
+    escrow_approver.start_dispute(&approver_address);
 
     let escrow_with_dispute = escrow_approver.get_escrow();
     assert!(escrow_with_dispute.flags.dispute);
 
     // Try to resolve dispute with incorrect dispute resolver (should fail)
-    let result = escrow_approver.try_resolving_disputes(
+    let result = escrow_approver.try_resolve_dispute(
         &approver_address,
         &(50_000_000 as i128),
         &(50_000_000 as i128),
@@ -1077,7 +1077,7 @@ fn test_dispute_resolution_process() {
     let approver_funds: i128 = 50_000_000;
     let insufficient_receiver_funds: i128 = 40_000_000;
 
-    let incorrect_dispute_resolution_result = escrow_approver.try_resolving_disputes(
+    let incorrect_dispute_resolution_result = escrow_approver.try_resolve_dispute(
         &dispute_resolver_address,
         &approver_funds,
         &insufficient_receiver_funds,
@@ -1089,7 +1089,7 @@ fn test_dispute_resolution_process() {
     // Resolve dispute with correct dispute resolver (50/50 split)
     let receiver_funds: i128 = 50_000_000;
 
-    escrow_approver.resolving_disputes(
+    escrow_approver.resolve_dispute(
         &dispute_resolver_address,
         &approver_funds,
         &receiver_funds,
@@ -1463,7 +1463,7 @@ fn test_fund_escrow_dispute_error() {
 }
 
 #[test]
-fn test_change_dispute_flag_authorized_and_unauthorized() {
+fn test_start_dispute_authorized_and_unauthorized() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -1511,7 +1511,7 @@ fn test_change_dispute_flag_authorized_and_unauthorized() {
     let escrow_client_1 = EscrowContractClient::new(&env, &escrow_contract_address_1);
 
     escrow_client_1.initialize_escrow(&escrow_base);
-    escrow_client_1.change_dispute_flag(&approver);
+    escrow_client_1.start_dispute(&approver);
 
     let updated_escrow = escrow_client_1.get_escrow();
     assert!(
@@ -1523,7 +1523,7 @@ fn test_change_dispute_flag_authorized_and_unauthorized() {
     let escrow_client_2 = EscrowContractClient::new(&env, &escrow_contract_address_2);
 
     escrow_client_2.initialize_escrow(&escrow_base); // mismo struct, nuevo contrato
-    let result = escrow_client_2.try_change_dispute_flag(&unauthorized);
+    let result = escrow_client_2.try_start_dispute(&unauthorized);
 
     assert!(
         result.is_err(),
