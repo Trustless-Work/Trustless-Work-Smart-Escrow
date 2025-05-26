@@ -969,7 +969,7 @@ fn test_dispute_management() {
     let escrow = escrow_approver.get_escrow();
     assert!(!escrow.flags.dispute);
 
-    escrow_approver.start_dispute(&dispute_resolver_address);
+    escrow_approver.dispute_escrow(&dispute_resolver_address);
 
     let escrow_after_change = escrow_approver.get_escrow();
     assert!(escrow_after_change.flags.dispute);
@@ -983,7 +983,7 @@ fn test_dispute_management() {
     let result = escrow_approver.try_release_funds(&release_signer_address, &platform_address);
     assert!(result.is_err());
 
-    let _ = escrow_approver.try_start_dispute(&dispute_resolver_address);
+    let _ = escrow_approver.try_dispute_escrow(&dispute_resolver_address);
 
     let escrow_after_second_change = escrow_approver.get_escrow();
     assert!(escrow_after_second_change.flags.dispute);
@@ -1060,7 +1060,7 @@ fn test_dispute_resolution_process() {
 
     usdc_token.transfer(&approver_address, &escrow_contract_address, &amount);
 
-    escrow_approver.start_dispute(&approver_address);
+    escrow_approver.dispute_escrow(&approver_address);
 
     let escrow_with_dispute = escrow_approver.get_escrow();
     assert!(escrow_with_dispute.flags.dispute);
@@ -1463,7 +1463,7 @@ fn test_fund_escrow_dispute_error() {
 }
 
 #[test]
-fn test_start_dispute_authorized_and_unauthorized() {
+fn test_dispute_escrow_authorized_and_unauthorized() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -1511,7 +1511,7 @@ fn test_start_dispute_authorized_and_unauthorized() {
     let escrow_client_1 = EscrowContractClient::new(&env, &escrow_contract_address_1);
 
     escrow_client_1.initialize_escrow(&escrow_base);
-    escrow_client_1.start_dispute(&approver);
+    escrow_client_1.dispute_escrow(&approver);
 
     let updated_escrow = escrow_client_1.get_escrow();
     assert!(
@@ -1523,7 +1523,7 @@ fn test_start_dispute_authorized_and_unauthorized() {
     let escrow_client_2 = EscrowContractClient::new(&env, &escrow_contract_address_2);
 
     escrow_client_2.initialize_escrow(&escrow_base); // mismo struct, nuevo contrato
-    let result = escrow_client_2.try_start_dispute(&unauthorized);
+    let result = escrow_client_2.try_dispute_escrow(&unauthorized);
 
     assert!(
         result.is_err(),
