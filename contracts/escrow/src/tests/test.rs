@@ -966,7 +966,7 @@ fn test_dispute_management() {
     let escrow = escrow_approver.get_escrow();
     assert!(!escrow.milestones.get(0).unwrap().flags.dispute);
 
-    escrow_approver.change_milestone_dispute_flag(&0, &dispute_resolver_address);
+    escrow_approver.dispute_milestone(&0, &dispute_resolver_address);
 
     let escrow_after_change = escrow_approver.get_escrow();
     assert!(escrow_after_change.milestones.get(0).unwrap().flags.dispute);
@@ -980,7 +980,7 @@ fn test_dispute_management() {
     let result = escrow_approver.try_release_milestone_payment(&release_signer_address, &platform_address, &0);
     assert!(result.is_err());
 
-    let _ = escrow_approver.try_change_milestone_dispute_flag(&0, &dispute_resolver_address);
+    let _ = escrow_approver.try_dispute_milestone(&0, &dispute_resolver_address);
 
     let escrow_after_second_change = escrow_approver.get_escrow();
     assert!(escrow_after_second_change.milestones.get(0).unwrap().flags.dispute);
@@ -1061,7 +1061,7 @@ fn test_dispute_resolution_process() {
     assert_eq!(escrow_balance, amount as i128);
 
     // Change milestone dispute flag
-    escrow_approver.change_milestone_dispute_flag(&(0 as i128), &approver_address);
+    escrow_approver.dispute_milestone(&(0 as i128), &approver_address);
 
     // Verify milestone dispute flag changed
     let disputed_escrow = escrow_approver.get_escrow();
@@ -1073,7 +1073,7 @@ fn test_dispute_resolution_process() {
     let provider_amount: i128 = 60_000_000;
     let total_amount = approver_amount + provider_amount;
 
-    escrow_approver.resolving_milestone_disputes(
+    escrow_approver.resolve_milestone_dispute(
         &dispute_resolver_address,
         &0, // milestone_index
         &approver_amount,
@@ -1489,7 +1489,7 @@ fn test_fund_escrow_dispute_flag_error() {
     };
 
     escrow_approver.initialize_escrow(&escrow_properties);
-    escrow_approver.change_milestone_dispute_flag(&(0 as i128), &approver_address);
+    escrow_approver.dispute_milestone(&(0 as i128), &approver_address);
 
     let amount_to_deposit: i128 = 80_000;
 
@@ -1499,7 +1499,7 @@ fn test_fund_escrow_dispute_flag_error() {
 }
 
 #[test]
-fn test_change_milestone_dispute_flag() {
+fn test_dispute_milestone() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -1570,7 +1570,7 @@ fn test_change_milestone_dispute_flag() {
 
     escrow_approver.initialize_escrow(&escrow_properties);
 
-    escrow_approver.change_milestone_dispute_flag(&(0 as i128), &approver_address);
+    escrow_approver.dispute_milestone(&(0 as i128), &approver_address);
     
     let escrow = escrow_approver.get_escrow();
     let milestone = escrow.milestones.get(0).unwrap();
@@ -1579,10 +1579,10 @@ fn test_change_milestone_dispute_flag() {
     let milestone2 = escrow.milestones.get(1).unwrap();
     assert!(!milestone2.flags.dispute, "Second milestone dispute flag should remain false");
 
-    let result = escrow_approver.try_change_milestone_dispute_flag(&(5 as i128), &approver_address);
+    let result = escrow_approver.try_dispute_milestone(&(5 as i128), &approver_address);
     assert!(result.is_err(), "Should fail with invalid milestone index");
 
-    let result = escrow_approver.try_change_milestone_dispute_flag(&(0 as i128), &approver_address);
+    let result = escrow_approver.try_dispute_milestone(&(0 as i128), &approver_address);
     assert!(result.is_err(), "Should fail when milestone is already in dispute");
 }
 
@@ -1657,7 +1657,7 @@ fn test_change_dispute_flag_authorized_and_unauthorized() {
     let escrow_client_1 = EscrowContractClient::new(&env, &escrow_contract_address_1);
 
     escrow_client_1.initialize_escrow(&escrow_properties);
-    escrow_client_1.change_milestone_dispute_flag(&0, &approver);
+    escrow_client_1.dispute_milestone(&0, &approver);
 
     let updated_escrow = escrow_client_1.get_escrow();
     assert!(
@@ -1669,7 +1669,7 @@ fn test_change_dispute_flag_authorized_and_unauthorized() {
     let escrow_client_2 = EscrowContractClient::new(&env, &escrow_contract_address_2);
 
     escrow_client_2.initialize_escrow(&escrow_properties); // mismo struct, nuevo contrato
-    let result = escrow_client_2.try_change_milestone_dispute_flag(&0, &unauthorized);
+    let result = escrow_client_2.try_dispute_milestone(&0, &unauthorized);
 
     assert!(
         result.is_err(),
