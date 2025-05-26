@@ -18,7 +18,7 @@ pub enum ContractError {
     NoFundsToRefund = 12,
     ContractHasInsufficientBalance = 13,
     EscrowNotFound = 14,
-    OnlyReleaseSignerCanDistributeEarnings = 15,
+    OnlyReleaseSignerCanReleaseEarnings = 15,
     MilestoneNotCompleted = 16,
     EscrowBalanceNotEnoughToSendEarnings = 17,
     ContractInsufficientFunds = 18,
@@ -84,7 +84,7 @@ impl fmt::Display for ContractError {
                 write!(f, "The contract has no balance to repay")
             }
             ContractError::EscrowNotFound => write!(f, "Escrow not found"),
-            ContractError::OnlyReleaseSignerCanDistributeEarnings => write!(
+            ContractError::OnlyReleaseSignerCanReleaseEarnings => write!(
                 f,
                 "Only the release signer can release the escrow funds"
             ),
