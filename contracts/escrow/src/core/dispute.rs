@@ -16,7 +16,7 @@ pub struct DisputeManager;
 
 impl DisputeManager {
 
-    pub fn resolving_milestone_disputes(
+    pub fn resolve_milestone_dispute(
         e: Env,
         dispute_resolver: Address,
         milestone_index: u32,
@@ -96,7 +96,7 @@ impl DisputeManager {
         Ok(())
     }
 
-    pub fn change_milestone_dispute_flag(
+    pub fn dispute_milestone(
         e: Env,
         milestone_index: i128,
         signer: Address,

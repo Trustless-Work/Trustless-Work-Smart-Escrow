@@ -153,7 +153,7 @@ impl EscrowContract {
     // Disputes /////
     ////////////////////////
 
-    pub fn resolving_milestone_disputes(
+    pub fn resolve_milestone_dispute(
         e: Env,
         dispute_resolver: Address,
         milestone_index: u32,
@@ -161,7 +161,7 @@ impl EscrowContract {
         service_provider_funds: i128,
         trustless_work_address: Address
     ) -> Result<(), ContractError> {
-        DisputeManager::resolving_milestone_disputes(
+        DisputeManager::resolve_milestone_dispute(
             e,
             dispute_resolver,
             milestone_index,
@@ -171,12 +171,12 @@ impl EscrowContract {
         )
     }
     
-    pub fn change_milestone_dispute_flag(
+    pub fn dispute_milestone(
         e: Env,
         milestone_index: i128,
         signer: Address
     ) -> Result<(), ContractError> {
-        DisputeManager::change_milestone_dispute_flag(
+        DisputeManager::dispute_milestone(
             e,
             milestone_index,
             signer

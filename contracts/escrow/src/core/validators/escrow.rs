@@ -40,7 +40,7 @@ pub fn validate_release_conditions(
     }
 
     if release_signer != &escrow.roles.release_signer {
-        return Err(ContractError::OnlyReleaseSignerCanDistributeEarnings);
+        return Err(ContractError::OnlyReleaseSignerCanReleaseEarnings);
     }
 
     release_signer.require_auth();
