@@ -16,7 +16,7 @@ use super::validators::dispute::{
 pub struct DisputeManager;
 
 impl DisputeManager {
-    pub fn resolving_disputes(
+    pub fn resolve_dispute(
         e: Env,
         dispute_resolver: Address,
         approver_funds: i128,
@@ -73,7 +73,7 @@ impl DisputeManager {
         Ok(())
     }
 
-    pub fn change_dispute_flag(e: Env, signer: Address) -> Result<(), ContractError> {
+    pub fn start_dispute(e: Env, signer: Address) -> Result<(), ContractError> {
         let escrow_result = EscrowManager::get_escrow(e.clone());
         let mut escrow = match escrow_result {
             Ok(esc) => esc,

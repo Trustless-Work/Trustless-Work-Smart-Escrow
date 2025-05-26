@@ -146,14 +146,14 @@ impl EscrowContract {
     // Disputes /////
     ////////////////////////
 
-    pub fn resolving_disputes(
+    pub fn resolve_dispute(
         e: Env,
         dispute_resolver: Address,
         approver_funds: i128,
         receiver_funds: i128,
         trustless_work_address: Address,
     ) -> Result<(), ContractError> {
-        DisputeManager::resolving_disputes(
+        DisputeManager::resolve_dispute(
             e,
             dispute_resolver,
             approver_funds,
@@ -162,7 +162,7 @@ impl EscrowContract {
         )
     }
 
-    pub fn change_dispute_flag(e: Env, signer: Address) -> Result<(), ContractError> {
-        DisputeManager::change_dispute_flag(e, signer)
+    pub fn start_dispute(e: Env, signer: Address) -> Result<(), ContractError> {
+        DisputeManager::start_dispute(e, signer)
     }
 }
