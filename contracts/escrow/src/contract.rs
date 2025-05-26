@@ -162,7 +162,7 @@ impl EscrowContract {
         )
     }
 
-    pub fn start_dispute(e: Env, signer: Address) -> Result<(), ContractError> {
-        DisputeManager::start_dispute(e, signer)
+    pub fn dispute_escrow(e: Env, signer: Address) -> Result<(), ContractError> {
+        DisputeManager::dispute_escrow(e, signer)
     }
 }

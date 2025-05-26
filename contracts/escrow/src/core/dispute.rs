@@ -73,7 +73,7 @@ impl DisputeManager {
         Ok(())
     }
 
-    pub fn start_dispute(e: Env, signer: Address) -> Result<(), ContractError> {
+    pub fn dispute_escrow(e: Env, signer: Address) -> Result<(), ContractError> {
         let escrow_result = EscrowManager::get_escrow(e.clone());
         let mut escrow = match escrow_result {
             Ok(esc) => esc,
