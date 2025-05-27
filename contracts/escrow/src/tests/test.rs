@@ -117,7 +117,7 @@ fn test_initialize_excrow() {
 }
 
 #[test]
-fn test_change_escrow_properties() {
+fn test_update_escrow() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -226,7 +226,7 @@ fn test_change_escrow_properties() {
 
     // Update escrow properties
     let _updated_escrow =
-        escrow_approver.change_escrow_properties(&platform_address, &updated_escrow_properties);
+        escrow_approver.update_escrow(&platform_address, &updated_escrow_properties);
 
     // Verify updated escrow properties
     let escrow = escrow_approver.get_escrow();
@@ -255,7 +255,7 @@ fn test_change_escrow_properties() {
     // Try to update escrow properties without platform address (should fail)
     let non_platform_address = Address::generate(&env);
     let result = escrow_approver
-        .try_change_escrow_properties(&non_platform_address, &updated_escrow_properties);
+        .try_update_escrow(&non_platform_address, &updated_escrow_properties);
     assert!(result.is_err());
 }
 
@@ -347,7 +347,7 @@ fn test_change_milestone_status_and_approved() {
     );
 
     // Change milestone approved (valid case)
-    escrow_approver.change_milestone_approved_flag(&(0 as i128), &true, &approver_address);
+    escrow_approver.approve_milestone(&(0 as i128), &true, &approver_address);
 
     let final_escrow = escrow_approver.get_escrow();
     assert!(final_escrow.milestones.get(0).unwrap().approved_flag);
@@ -365,7 +365,7 @@ fn test_change_milestone_status_and_approved() {
     assert!(result.is_err());
 
     let result =
-        escrow_approver.try_change_milestone_approved_flag(&invalid_index, &true, &approver_address);
+        escrow_approver.try_approve_milestone(&invalid_index, &true, &approver_address);
     assert!(result.is_err());
 
     let unauthorized_address = Address::generate(&env);
@@ -381,7 +381,7 @@ fn test_change_milestone_status_and_approved() {
 
     // Test for `change_approved` by invalid approver
     let result =
-        escrow_approver.try_change_milestone_approved_flag(&(0 as i128), &true, &unauthorized_address);
+        escrow_approver.try_approve_milestone(&(0 as i128), &true, &unauthorized_address);
     assert!(result.is_err());
 
     let new_escrow_contract_address = env.register_contract(None, EscrowContract);
@@ -412,7 +412,7 @@ fn test_change_milestone_status_and_approved() {
     assert!(result.is_err());
 
     let result =
-        new_escrow_approver.try_change_milestone_approved_flag(&(0 as i128), &true, &approver_address);
+        new_escrow_approver.try_approve_milestone(&(0 as i128), &true, &approver_address);
     assert!(result.is_err());
 }
 

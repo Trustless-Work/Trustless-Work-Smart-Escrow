@@ -77,7 +77,7 @@ impl EscrowContract {
         Ok(updated_distributed_escrow_earnings)
     }
 
-    pub fn change_escrow_properties(
+    pub fn update_escrow(
         e: Env,
         plataform_address: Address,
         escrow_properties: Escrow,
@@ -133,7 +133,7 @@ impl EscrowContract {
         )
     }
 
-    pub fn change_milestone_approved_flag(
+    pub fn approve_milestone(
         e: Env,
         milestone_index: i128,
         new_flag: bool,
