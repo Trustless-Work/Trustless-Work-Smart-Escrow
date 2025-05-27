@@ -101,7 +101,7 @@ fn test_initialize_excrow() {
 }
 
 #[test]
-fn test_change_escrow_properties() {
+fn test_update_escrow() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -212,7 +212,7 @@ fn test_change_escrow_properties() {
 
     // Update escrow properties
     let _updated_escrow =
-        escrow_approver.change_escrow_properties(&platform_address, &updated_escrow_properties);
+        escrow_approver.update_escrow(&platform_address, &updated_escrow_properties);
 
     // Verify updated escrow properties
     let escrow = escrow_approver.get_escrow();
@@ -240,7 +240,7 @@ fn test_change_escrow_properties() {
     // Try to update escrow properties without platform address (should fail)
     let non_platform_address = Address::generate(&env);
     let result = escrow_approver
-        .try_change_escrow_properties(&non_platform_address, &updated_escrow_properties);
+        .try_update_escrow(&non_platform_address, &updated_escrow_properties);
     assert!(result.is_err());
 }
 
@@ -330,7 +330,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert_eq!(updated_escrow.milestones.get(0).unwrap().status, new_status);
 
     // Change milestone approved_flag (valid case)
-    escrow_approver.change_milestone_approved_flag(&(0), &true, &approver_address);
+    escrow_approver.approve_milestone(&(0), &true, &approver_address);
 
     // Verify milestone approved_flag change
     let final_escrow = escrow_approver.get_escrow();
@@ -350,7 +350,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert!(result.is_err());
 
     // Test for `change_approved_flag` with invalid index
-    let result = escrow_approver.try_change_milestone_approved_flag(
+    let result = escrow_approver.try_approve_milestone(
         &invalid_index,
         &true,
         &approver_address
@@ -370,7 +370,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert!(result.is_err());
 
     // Test for `change_approved_flag` by invalid approver
-    let result = escrow_approver.try_change_milestone_approved_flag(
+    let result = escrow_approver.try_approve_milestone(
         &(0),
         &true,
         &unauthorized_address
@@ -404,12 +404,12 @@ fn test_change_milestone_status_and_approved_flag() {
     assert!(result.is_err());
 
     // Test for `change_approved_flag` on escrow with no milestones
-    let result = new_escrow_approver.try_change_milestone_approved_flag(&(0 ), &true, &approver_address);
+    let result = new_escrow_approver.try_approve_milestone(&(0 ), &true, &approver_address);
     assert!(result.is_err());
 }
 
 #[test]
-fn test_release_milestone_payment_successful() {
+fn test_release_milestone_funds_successful() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -490,7 +490,7 @@ fn test_release_milestone_payment_successful() {
 
     let initial_contract_balance = usdc_token.balance(&escrow_contract_address);
     
-    escrow_approver.release_milestone_payment(
+    escrow_approver.release_milestone_funds(
         &release_signer_address,
         &trustless_work_address,
         &(0)
@@ -531,7 +531,7 @@ fn test_release_milestone_payment_successful() {
 // // Scenario 1: Escrow with no milestones:
 
 #[test]
-fn test_release_milestone_payment_no_milestones() {
+fn test_release_milestone_funds_no_milestones() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -579,7 +579,7 @@ fn test_release_milestone_payment_no_milestones() {
     engagement_approver.initialize_escrow(&escrow_properties);
 
     // Try to claim earnings with no milestones (should fail)
-    let result = engagement_approver.try_release_milestone_payment(
+    let result = engagement_approver.try_release_milestone_funds(
         &release_signer_address,
         &platform_address,
         &(0)
@@ -593,7 +593,7 @@ fn test_release_milestone_payment_no_milestones() {
 
 // // Scenario 2: Milestones incomplete
 #[test]
-fn test_release_milestone_payment_milestones_incomplete() {
+fn test_release_milestone_funds_milestones_incomplete() {
     let env = Env::default();
     env.mock_all_auths();
 
@@ -664,7 +664,7 @@ fn test_release_milestone_payment_milestones_incomplete() {
     escrow_approver.initialize_escrow(&escrow_properties);
 
     // Try to claim earnings with incomplete milestones (should fail)
-    let result = escrow_approver.try_release_milestone_payment(
+    let result = escrow_approver.try_release_milestone_funds(
         &release_signer_address,
         &platform_address,
         &(0)
@@ -749,7 +749,7 @@ fn test_release_milestone_funds_same_receiver_as_provider() {
 
     usdc_token.mint(&escrow_contract_address, &(amount as i128));
 
-    escrow_approver.release_milestone_payment(&release_signer_address, &trustless_work_address, &0);
+    escrow_approver.release_milestone_funds(&release_signer_address, &trustless_work_address, &0);
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
@@ -856,7 +856,7 @@ fn test_release_funds_invalid_receiver_fallback() {
 
     usdc_token.mint(&escrow_contract_address, &(amount as i128));
 
-    escrow_approver.release_milestone_payment(&release_signer_address, &trustless_work_address, &0);
+    escrow_approver.release_milestone_funds(&release_signer_address, &trustless_work_address, &0);
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
@@ -977,7 +977,7 @@ fn test_dispute_management() {
     assert!(result.is_err());
 
     // Test block on distributing earnings during dispute
-    let result = escrow_approver.try_release_milestone_payment(&release_signer_address, &platform_address, &0);
+    let result = escrow_approver.try_release_milestone_funds(&release_signer_address, &platform_address, &0);
     assert!(result.is_err());
 
     let _ = escrow_approver.try_dispute_milestone(&0, &dispute_resolver_address);

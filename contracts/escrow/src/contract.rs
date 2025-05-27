@@ -61,7 +61,7 @@ impl EscrowContract {
         Ok(updated_funded_escrow)
     }
 
-    pub fn release_milestone_payment(
+    pub fn release_milestone_funds(
         e: Env, 
         release_signer: Address, 
         trustless_work_address: Address,
@@ -82,7 +82,7 @@ impl EscrowContract {
         Ok(updated_release_escrow_earnings)
     }
 
-    pub fn change_escrow_properties(
+    pub fn update_escrow(
         e: Env,
         plataform_address: Address,
         escrow_properties: Escrow
@@ -135,7 +135,7 @@ impl EscrowContract {
         )
     }
     
-    pub fn change_milestone_approved_flag(
+    pub fn approve_milestone(
         e: Env,
         milestone_index: i128,
         new_flag: bool,
