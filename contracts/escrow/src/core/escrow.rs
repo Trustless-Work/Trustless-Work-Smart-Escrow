@@ -76,7 +76,7 @@ impl EscrowManager {
         };
         validate_release_conditions(&escrow, &release_signer)?;
 
-        escrow.flags.release = true;
+        escrow.flags.released = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         let contract_address = e.current_contract_address();

@@ -62,8 +62,8 @@ fn test_initialize_excrow() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
-        release: false,
+        disputed: false,
+        released: false,
         resolved: false,
     };
 
@@ -162,8 +162,8 @@ fn test_update_escrow() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
-        release: false,
+        disputed: false,
+        released: false,
         resolved: false,
     };
 
@@ -300,8 +300,8 @@ fn test_change_milestone_status_and_approved() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
-        release: false,
+        disputed: false,
+        released: false,
         resolved: false,
     };
 
@@ -463,8 +463,8 @@ fn test_release_funds_successful_flow() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
-        release: false,
+        disputed: false,
+        released: false,
         resolved: false,
     };
 
@@ -567,8 +567,8 @@ fn test_release_funds_no_milestones() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
-        release: false,
+        disputed: false,
+        released: false,
         resolved: false,
     };
 
@@ -649,8 +649,8 @@ fn test_release_funds_milestones_incomplete() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
-        release: false,
+        disputed: false,
+        released: false,
         resolved: false,
     };
 
@@ -723,8 +723,8 @@ fn test_release_funds_same_receiver_as_provider() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
-        release: false,
+        disputed: false,
+        released: false,
         resolved: false,
     };
 
@@ -830,8 +830,8 @@ fn test_release_funds_invalid_receiver_fallback() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
-        release: false,
+        disputed: false,
+        released: false,
         resolved: false,
     };
 
@@ -943,8 +943,8 @@ fn test_dispute_management() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
-        release: false,
+        disputed: false,
+        released: false,
         resolved: false,
     };
 
@@ -969,12 +969,12 @@ fn test_dispute_management() {
     escrow_approver.initialize_escrow(&escrow_properties);
 
     let escrow = escrow_approver.get_escrow();
-    assert!(!escrow.flags.dispute);
+    assert!(!escrow.flags.disputed);
 
     escrow_approver.dispute_escrow(&dispute_resolver_address);
 
     let escrow_after_change = escrow_approver.get_escrow();
-    assert!(escrow_after_change.flags.dispute);
+    assert!(escrow_after_change.flags.disputed);
 
     // Test block on funding during dispute
     usdc_token.mint(&approver_address, &(amount as i128));
@@ -988,7 +988,7 @@ fn test_dispute_management() {
     let _ = escrow_approver.try_dispute_escrow(&dispute_resolver_address);
 
     let escrow_after_second_change = escrow_approver.get_escrow();
-    assert!(escrow_after_second_change.flags.dispute);
+    assert!(escrow_after_second_change.flags.disputed);
 }
 
 #[test]
@@ -1031,8 +1031,8 @@ fn test_dispute_resolution_process() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
-        release: false,
+        disputed: false,
+        released: false,
         resolved: false,
     };
 
@@ -1065,7 +1065,7 @@ fn test_dispute_resolution_process() {
     escrow_approver.dispute_escrow(&approver_address);
 
     let escrow_with_dispute = escrow_approver.get_escrow();
-    assert!(escrow_with_dispute.flags.dispute);
+    assert!(escrow_with_dispute.flags.disputed);
 
     // Try to resolve dispute with incorrect dispute resolver (should fail)
     let result = escrow_approver.try_resolve_dispute(
@@ -1100,7 +1100,7 @@ fn test_dispute_resolution_process() {
 
     // Verify dispute was resolved
     let escrow_after_resolution = escrow_approver.get_escrow();
-    assert!(!escrow_after_resolution.flags.dispute);
+    assert!(!escrow_after_resolution.flags.disputed);
     assert!(escrow_after_resolution.flags.resolved);
 
     let total_amount = amount as i128;
@@ -1179,8 +1179,8 @@ fn test_fund_escrow_successful_deposit() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
-        release: false,
+        disputed: false,
+        released: false,
         resolved: false,
     };
 
@@ -1269,8 +1269,8 @@ fn test_fund_escrow_fully_funded_error() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
-        release: false,
+        disputed: false,
+        released: false,
         resolved: false,
     };
 
@@ -1348,8 +1348,8 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
-        release: false,
+        disputed: false,
+        released: false,
         resolved: false,
     };
 
@@ -1429,8 +1429,8 @@ fn test_fund_escrow_dispute_error() {
     };
 
     let flags: Flags = Flags {
-        dispute: true,
-        release: false,
+        disputed: true,
+        released: false,
         resolved: false,
     };
 
@@ -1498,8 +1498,8 @@ fn test_dispute_escrow_authorized_and_unauthorized() {
         platform_fee: 0,
         milestones: Vec::new(&env),
         flags: Flags {
-            dispute: false,
-            release: false,
+            disputed: false,
+            released: false,
             resolved: false,
         },
         trustline: Trustline {
@@ -1517,7 +1517,7 @@ fn test_dispute_escrow_authorized_and_unauthorized() {
 
     let updated_escrow = escrow_client_1.get_escrow();
     assert!(
-        updated_escrow.flags.dispute,
+        updated_escrow.flags.disputed,
         "Dispute flag should be set to true for authorized address"
     );
 

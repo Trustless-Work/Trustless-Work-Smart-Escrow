@@ -11,7 +11,7 @@ pub fn validate_funding_conditions(
     contract_balance: i128,
     amount_to_deposit: i128,
 ) -> Result<(), ContractError> {
-    if escrow.flags.dispute {
+    if escrow.flags.disputed {
         return Err(ContractError::EscrowOpenedForDisputeResolution);
     }
 
@@ -30,7 +30,7 @@ pub fn validate_release_conditions(
     escrow: &Escrow,
     release_signer: &Address,
 ) -> Result<(), ContractError> {
-    if escrow.flags.release {
+    if escrow.flags.released {
         return Err(ContractError::EscrowAlreadyResolved);
     }
 
@@ -52,7 +52,7 @@ pub fn validate_release_conditions(
         return Err(ContractError::EscrowNotCompleted);
     }
 
-    if escrow.flags.dispute {
+    if escrow.flags.disputed{
         return Err(ContractError::EscrowOpenedForDisputeResolution);
     }
 
@@ -89,7 +89,7 @@ pub fn validate_escrow_property_change_conditions(
         return Err(ContractError::EscrowHasFunds);
     }
 
-    if existing_escrow.flags.dispute {
+    if existing_escrow.flags.disputed {
         return Err(ContractError::EscrowOpenedForDisputeResolution);
     }
 

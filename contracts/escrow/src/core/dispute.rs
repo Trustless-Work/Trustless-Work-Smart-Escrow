@@ -65,7 +65,7 @@ impl DisputeManager {
         }
 
         escrow.flags.resolved = true;
-        escrow.flags.dispute = false;
+        escrow.flags.disputed = false;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         escrows_by_contract_id(&e, escrow.engagement_id.clone(), escrow);
@@ -82,7 +82,7 @@ impl DisputeManager {
 
         validate_dispute_flag_change_conditions(&escrow, &signer)?;
 
-        escrow.flags.dispute = true;
+        escrow.flags.disputed = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         escrows_by_contract_id(&e, escrow.engagement_id.clone(), escrow);

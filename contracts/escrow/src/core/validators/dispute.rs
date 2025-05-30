@@ -20,7 +20,7 @@ pub fn validate_dispute_resolution_conditions(
 
     dispute_resolver.require_auth();
 
-    if !escrow.flags.dispute {
+    if !escrow.flags.disputed {
         return Err(ContractError::EscrowNotInDispute);
     }
 
@@ -43,7 +43,7 @@ pub fn validate_dispute_flag_change_conditions(
     escrow: &Escrow,
     signer: &Address,
 ) -> Result<(), ContractError> {
-    if escrow.flags.dispute {
+    if escrow.flags.disputed {
         return Err(ContractError::EscrowAlreadyInDispute);
     }
 
