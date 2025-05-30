@@ -108,9 +108,10 @@ impl EscrowContract {
 
     pub fn get_multiple_escrow_balances(
         e: Env,
+        signer: Address,
         addresses: Vec<Address>,
     ) -> Result<Vec<AddressBalance>, ContractError> {
-        EscrowManager::get_multiple_escrow_balances(e, addresses)
+        EscrowManager::get_multiple_escrow_balances(e, signer, addresses)
     }
 
     ////////////////////////

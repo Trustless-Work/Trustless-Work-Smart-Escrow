@@ -132,8 +132,10 @@ impl EscrowManager {
 
     pub fn get_multiple_escrow_balances(
         e: Env,
+        signer: Address,
         addresses: Vec<Address>,
     ) -> Result<Vec<AddressBalance>, ContractError> {
+        signer.require_auth();
         const MAX_ESCROWS: u32 = 20;
         if addresses.len() > MAX_ESCROWS {
             return Err(ContractError::TooManyEscrowsRequested);
