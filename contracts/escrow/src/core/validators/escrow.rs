@@ -12,7 +12,7 @@ pub fn validate_funding_conditions(
     amount_to_deposit: i128,
 ) -> Result<(), ContractError> {
     let total_amount: i128 = milestones.iter().map(|m| m.amount).sum();
-    let has_dispute = milestones.iter().any(|m| m.flags.dispute);
+    let has_dispute = milestones.iter().any(|m| m.flags.disputed);
 
     if has_dispute{
         return Err(ContractError::MilestoneOpenedForDisputeResolution);
@@ -53,7 +53,7 @@ pub fn validate_release_conditions(
         return Err(ContractError::MilestoneNotCompleted);
     }
 
-    if milestone.flags.dispute {
+    if milestone.flags.disputed {
         return Err(ContractError::MilestoneOpenedForDisputeResolution);
     }
 
@@ -72,7 +72,7 @@ pub fn validate_escrow_property_change_conditions(
 ) -> Result<(), ContractError> {
     if !milestones.is_empty() {
         for (_, milestone) in milestones.iter().enumerate() {
-            if milestone.flags.dispute {
+            if milestone.flags.disputed {
                 return Err(ContractError::MilestoneOpenedForDisputeResolution);
             }
             if milestone.flags.approved {

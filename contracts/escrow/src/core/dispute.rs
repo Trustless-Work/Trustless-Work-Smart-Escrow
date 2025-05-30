@@ -117,7 +117,7 @@ impl DisputeManager {
         for (index, milestone) in existing_escrow.milestones.iter().enumerate() {
             let mut new_milestone = milestone.clone();
             if index as i128 == milestone_index {
-                new_milestone.flags.dispute = true;
+                new_milestone.flags.disputed = true;
             }
             updated_milestones.push_back(new_milestone);
         }

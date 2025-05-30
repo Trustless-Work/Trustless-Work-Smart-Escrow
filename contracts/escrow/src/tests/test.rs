@@ -44,7 +44,7 @@ fn test_initialize_excrow() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: false,
@@ -127,7 +127,7 @@ fn test_update_escrow() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: false,
@@ -273,7 +273,7 @@ fn test_change_milestone_status_and_approved_flag() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: false,
@@ -444,7 +444,7 @@ fn test_release_milestone_funds_successful() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: true,
@@ -621,7 +621,7 @@ fn test_release_milestone_funds_milestones_incomplete() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: false,
@@ -708,7 +708,7 @@ fn test_release_milestone_funds_same_receiver_as_provider() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: true,
@@ -815,7 +815,7 @@ fn test_release_funds_invalid_receiver_fallback() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: true,
@@ -928,7 +928,7 @@ fn test_dispute_management() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: false,
@@ -964,12 +964,12 @@ fn test_dispute_management() {
     escrow_approver.initialize_escrow(&escrow_properties);
 
     let escrow = escrow_approver.get_escrow();
-    assert!(!escrow.milestones.get(0).unwrap().flags.dispute);
+    assert!(!escrow.milestones.get(0).unwrap().flags.disputed);
 
     escrow_approver.dispute_milestone(&0, &dispute_resolver_address);
 
     let escrow_after_change = escrow_approver.get_escrow();
-    assert!(escrow_after_change.milestones.get(0).unwrap().flags.dispute);
+    assert!(escrow_after_change.milestones.get(0).unwrap().flags.disputed);
 
     // Test block on funding during dispute
     usdc_token.mint(&approver_address, &(amount as i128));
@@ -983,7 +983,7 @@ fn test_dispute_management() {
     let _ = escrow_approver.try_dispute_milestone(&0, &dispute_resolver_address);
 
     let escrow_after_second_change = escrow_approver.get_escrow();
-    assert!(escrow_after_second_change.milestones.get(0).unwrap().flags.dispute);
+    assert!(escrow_after_second_change.milestones.get(0).unwrap().flags.disputed);
 }
 
 #[test]
@@ -1018,7 +1018,7 @@ fn test_dispute_resolution_process() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: false,
@@ -1066,7 +1066,7 @@ fn test_dispute_resolution_process() {
     // Verify milestone dispute flag changed
     let disputed_escrow = escrow_approver.get_escrow();
     let disputed_milestone = disputed_escrow.milestones.get(0).unwrap();
-    assert_eq!(disputed_milestone.flags.dispute, true);
+    assert_eq!(disputed_milestone.flags.disputed, true);
 
     // Resolve dispute
     let approver_amount: i128 = 40_000_000;
@@ -1127,7 +1127,7 @@ fn test_fund_escrow_successful_deposit() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: false,
@@ -1214,7 +1214,7 @@ fn test_fund_escrow_fully_funded_error() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: false,
@@ -1291,7 +1291,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: false,
@@ -1375,7 +1375,7 @@ fn test_fund_escrow_dispute_error() {
     };
 
     let flags: Flags = Flags {
-        dispute: true,
+        disputed: true,
         released: false,
         resolved: false,
         approved: false,
@@ -1448,7 +1448,7 @@ fn test_fund_escrow_dispute_flag_error() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: false,
@@ -1528,7 +1528,7 @@ fn test_dispute_milestone() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: false,
@@ -1574,10 +1574,10 @@ fn test_dispute_milestone() {
     
     let escrow = escrow_approver.get_escrow();
     let milestone = escrow.milestones.get(0).unwrap();
-    assert!(milestone.flags.dispute, "First milestone dispute flag should be true");
+    assert!(milestone.flags.disputed, "First milestone dispute flag should be true");
     
     let milestone2 = escrow.milestones.get(1).unwrap();
-    assert!(!milestone2.flags.dispute, "Second milestone dispute flag should remain false");
+    assert!(!milestone2.flags.disputed, "Second milestone dispute flag should remain false");
 
     let result = escrow_approver.try_dispute_milestone(&(5 as i128), &approver_address);
     assert!(result.is_err(), "Should fail with invalid milestone index");
@@ -1613,7 +1613,7 @@ fn test_change_dispute_flag_authorized_and_unauthorized() {
     };
 
     let flags: Flags = Flags {
-        dispute: false,
+        disputed: false,
         released: false,
         resolved: false,
         approved: false,
@@ -1661,7 +1661,7 @@ fn test_change_dispute_flag_authorized_and_unauthorized() {
 
     let updated_escrow = escrow_client_1.get_escrow();
     assert!(
-        updated_escrow.milestones.get(0).unwrap().flags.dispute,
+        updated_escrow.milestones.get(0).unwrap().flags.disputed,
         "Dispute flag should be set to true for authorized address"
     );
 

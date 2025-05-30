@@ -24,7 +24,7 @@ pub fn validate_dispute_resolution_conditions(
         return Err(ContractError::InsufficientFundsForResolution);
     }
 
-    if !milestone.flags.dispute {
+    if !milestone.flags.disputed {
         return Err(ContractError::MilestoneNotInDispute);
     }
 
@@ -55,7 +55,7 @@ pub fn validate_dispute_flag_change_conditions(
     let milestone = escrow.milestones.get(milestone_index as u32)
         .ok_or(ContractError::InvalidMileStoneIndex)?;
     
-    if milestone.flags.dispute {
+    if milestone.flags.disputed {
         return Err(ContractError::MilestoneAlreadyInDispute);
     }
 

@@ -37,7 +37,7 @@ pub struct Roles {
 #[contracttype]
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Flags {
-    pub dispute: bool,
+    pub disputed: bool,
     pub released: bool,
     pub resolved: bool,
     pub approved: bool,
