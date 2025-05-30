@@ -592,8 +592,10 @@ fn test_release_funds_no_milestones() {
 
     escrow_approver.initialize_escrow(&escrow_properties);
 
+    usdc_token.mint(&escrow_contract_address, &(amount as i128));
+
     // Try to claim earnings with no milestones (should fail)
-    let result = escrow_approver.try_release_funds(&release_signer_address, &platform_address);
+    let result = escrow_approver. try_release_funds(&release_signer_address, &platform_address);
     assert!(result.is_err());
 }
 
