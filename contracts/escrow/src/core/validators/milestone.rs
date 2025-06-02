@@ -11,8 +11,6 @@ pub fn validate_milestone_status_change_conditions(
         return Err(ContractError::OnlyServiceProviderChangeMilstoneStatus);
     }
 
-    service_provider.require_auth();
-
     if escrow.milestones.is_empty() {
         return Err(ContractError::NoMileStoneDefined);
     }
@@ -32,8 +30,6 @@ pub fn validate_milestone_flag_change_conditions(
     if approver != &escrow.roles.approver {
         return Err(ContractError::OnlyApproverChangeMilstoneFlag);
     }
-
-    approver.require_auth();
 
     if escrow.milestones.is_empty() {
         return Err(ContractError::NoMileStoneDefined);

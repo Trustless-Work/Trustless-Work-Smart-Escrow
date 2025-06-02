@@ -69,6 +69,8 @@ impl EscrowManager {
         release_signer: Address,
         trustless_work_address: Address,
     ) -> Result<(), ContractError> {
+        release_signer.require_auth();
+
         let escrow_result = Self::get_escrow(e.clone());
         let mut escrow = match escrow_result {
             Ok(esc) => esc,
@@ -106,6 +108,8 @@ impl EscrowManager {
         platform_address: Address,
         escrow_properties: Escrow,
     ) -> Result<Escrow, ContractError> {
+        platform_address.require_auth();
+
         let escrow_result = Self::get_escrow(e.clone());
         let existing_escrow = match escrow_result {
             Ok(esc) => esc,
@@ -136,6 +140,7 @@ impl EscrowManager {
         addresses: Vec<Address>,
     ) -> Result<Vec<AddressBalance>, ContractError> {
         signer.require_auth();
+        
         const MAX_ESCROWS: u32 = 20;
         if addresses.len() > MAX_ESCROWS {
             return Err(ContractError::TooManyEscrowsRequested);

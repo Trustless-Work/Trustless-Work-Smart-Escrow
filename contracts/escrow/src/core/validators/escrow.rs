@@ -38,8 +38,6 @@ pub fn validate_release_conditions(
         return Err(ContractError::OnlyReleaseSignerCanReleaseEarnings);
     }
 
-    release_signer.require_auth();
-
     if escrow.milestones.is_empty() {
         return Err(ContractError::NoMileStoneDefined);
     }
@@ -76,8 +74,6 @@ pub fn validate_escrow_property_change_conditions(
     if platform_address != &existing_escrow.roles.platform_address {
         return Err(ContractError::OnlyPlatformAddressExecuteThisFunction);
     }
-
-    platform_address.require_auth();
 
     for milestone in existing_escrow.milestones.iter() {
         if milestone.approved_flag {

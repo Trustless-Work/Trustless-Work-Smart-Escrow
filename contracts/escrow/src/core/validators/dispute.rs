@@ -18,8 +18,6 @@ pub fn validate_dispute_resolution_conditions(
         return Err(ContractError::OnlyDisputeResolverCanExecuteThisFunction);
     }
 
-    dispute_resolver.require_auth();
-
     if !escrow.flags.disputed {
         return Err(ContractError::EscrowNotInDispute);
     }
@@ -46,8 +44,6 @@ pub fn validate_dispute_flag_change_conditions(
     if escrow.flags.disputed {
         return Err(ContractError::EscrowAlreadyInDispute);
     }
-
-    signer.require_auth();
 
     let Roles {
         approver,
