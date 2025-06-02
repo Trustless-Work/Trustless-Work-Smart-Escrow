@@ -52,6 +52,7 @@ pub enum ContractError {
     EscrowBalanceNotSufficienteToSendEarnings = 46,
     OnlyReleaseSignerCanClaimEarnings = 47,
     MilestoneAlreadyReleased = 48,
+    MilestoneNotFound = 49,
 }
 
 impl fmt::Display for ContractError {
@@ -160,6 +161,7 @@ impl fmt::Display for ContractError {
             ContractError::EscrowBalanceNotSufficienteToSendEarnings => write!(f, "The escrow balance must be equal to the amount of earnings defined for the escrow"),
             ContractError::OnlyReleaseSignerCanClaimEarnings => write!(f, "Only the release signer can claim escrow earnings"),
             ContractError::MilestoneAlreadyReleased => write!(f, "This milestone is already released"),
+            ContractError::MilestoneNotFound => write!(f, "Milestone not found"),
         }
     }
 }

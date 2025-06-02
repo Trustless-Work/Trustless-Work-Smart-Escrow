@@ -69,54 +69,59 @@ impl EscrowManager{
         release_signer: Address, 
         trustless_work_address: Address,
         milestone_index: u32
-    ) -> Result<(), ContractError> {        
+    ) -> Result<(), ContractError> {      
+        release_signer.require_auth();
+          
         let escrow_result = Self::get_escrow(e.clone());
         let mut escrow = match escrow_result {
             Ok(esc) => esc,
             Err(err) => return Err(err),
         };
-        let milestone = escrow.milestones.get(milestone_index).unwrap();
-
-        validate_release_conditions(&escrow, &milestone, &release_signer, milestone_index)?;
-
-        let mut updated_milestones = Vec::<Milestone>::new(&e);
-        for (index, milestone) in escrow.milestones.iter().enumerate() {
-            let mut new_milestone = milestone.clone();
-            if index as u32 == milestone_index {
-                new_milestone.flags.released = true;
+        
+        if let Some(milestone) = escrow.milestones.get(milestone_index) {
+            validate_release_conditions(&escrow, &milestone, &release_signer, milestone_index)?;
+    
+            let mut updated_milestones = Vec::<Milestone>::new(&e);
+            for (index, milestone) in escrow.milestones.iter().enumerate() {
+                let mut new_milestone = milestone.clone();
+                if index as u32 == milestone_index {
+                    new_milestone.flags.released = true;
+                }
+                updated_milestones.push_back(new_milestone);
             }
-            updated_milestones.push_back(new_milestone);
+    
+            escrow.milestones = updated_milestones;
+    
+            e.storage().instance().set(&DataKey::Escrow, &escrow);
+
+            let contract_address = e.current_contract_address();
+            let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline.address, &contract_address);
+            transfer_handler.has_sufficient_balance(milestone.amount)?;
+    
+            let platform_fee_percentage = escrow.platform_fee as i128;
+            let total_amount = milestone.amount as i128;
+            let fee_result = FeeCalculator::calculate_standard_fees(total_amount, platform_fee_percentage)?;
+            let platform_address = escrow.roles.platform_address.clone();
+    
+            transfer_handler.transfer(
+                &trustless_work_address, 
+                &fee_result.trustless_work_fee
+            );
+    
+            transfer_handler.transfer(
+                &platform_address, 
+                &fee_result.platform_fee
+            );
+    
+            let receiver = Self::get_receiver(&escrow);
+    
+            transfer_handler.transfer(
+                &receiver, 
+                &fee_result.receiver_amount
+            );
+        } else {
+            return Err(ContractError::MilestoneNotFound);
         }
-
-        escrow.milestones = updated_milestones;
-
-        e.storage().instance().set(&DataKey::Escrow, &escrow);
-
-        let contract_address = e.current_contract_address();
-        let transfer_handler = TokenTransferHandler::new(&e, &escrow.trustline.address, &contract_address);
-        transfer_handler.has_sufficient_balance(milestone.amount)?;
-
-        let platform_fee_percentage = escrow.platform_fee as i128;
-        let total_amount = milestone.amount as i128;
-        let fee_result = FeeCalculator::calculate_standard_fees(total_amount, platform_fee_percentage)?;
-        let platform_address = escrow.roles.platform_address.clone();
-
-        transfer_handler.transfer(
-            &trustless_work_address, 
-            &fee_result.trustless_work_fee
-        );
-
-        transfer_handler.transfer(
-            &platform_address, 
-            &fee_result.platform_fee
-        );
-
-        let receiver = Self::get_receiver(&escrow);
-
-        transfer_handler.transfer(
-            &receiver, 
-            &fee_result.receiver_amount
-        );
 
         Ok(())
     }
@@ -126,6 +131,8 @@ impl EscrowManager{
         platform_address: Address,
         escrow_properties: Escrow
     ) -> Result<Escrow, ContractError> {
+        platform_address.require_auth();
+
         let escrow_result = Self::get_escrow(e.clone());
         let existing_escrow = match escrow_result {
             Ok(esc) => esc,
@@ -152,8 +159,11 @@ impl EscrowManager{
 
     pub fn get_multiple_escrow_balances(
         e: Env,
+        signer: Address,
         addresses: Vec<Address>
     ) -> Result<Vec<AddressBalance>, ContractError> {
+        signer.require_auth();
+        
         const MAX_ESCROWS: u32 = 20;
         if addresses.len() > MAX_ESCROWS {
             return Err(ContractError::TooManyEscrowsRequested);

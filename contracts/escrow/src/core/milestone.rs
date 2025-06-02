@@ -16,6 +16,8 @@ impl MilestoneManager {
         new_evidence: Option<String>,
         service_provider: Address,
     ) -> Result<(), ContractError> {
+        service_provider.require_auth();
+
         let escrow_result = EscrowManager::get_escrow(e.clone());
         let existing_escrow = match escrow_result {
             Ok(esc) => esc,
@@ -61,6 +63,8 @@ impl MilestoneManager {
         new_flag: bool,
         approver: Address,
     ) -> Result<(), ContractError> {
+        approver.require_auth();
+        
         let escrow_result = EscrowManager::get_escrow(e.clone());
         let existing_escrow = match escrow_result {
             Ok(esc) => esc,

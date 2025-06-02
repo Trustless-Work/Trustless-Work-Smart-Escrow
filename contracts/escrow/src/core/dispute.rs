@@ -24,6 +24,8 @@ impl DisputeManager {
         receiver_funds: i128,
         trustless_work_address: Address
     ) -> Result<(), ContractError> {
+        dispute_resolver.require_auth();
+
         let escrow_result = EscrowManager::get_escrow(e.clone());
         let mut escrow = match escrow_result {
             Ok(esc) => esc,
@@ -101,6 +103,8 @@ impl DisputeManager {
         milestone_index: i128,
         signer: Address,
     ) -> Result<(), ContractError> {
+        signer.require_auth();
+        
         let escrow_result = EscrowManager::get_escrow(e.clone());
         let existing_escrow = match escrow_result {
             Ok(esc) => esc,

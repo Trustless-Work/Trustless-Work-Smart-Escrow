@@ -18,7 +18,6 @@ pub fn validate_dispute_resolution_conditions(
     if dispute_resolver != &escrow.roles.dispute_resolver {
         return Err(ContractError::OnlyDisputeResolverCanExecuteThisFunction);
     }
-    dispute_resolver.require_auth();
 
     if total_funds > milestone.amount {
         return Err(ContractError::InsufficientFundsForResolution);
@@ -58,8 +57,6 @@ pub fn validate_dispute_flag_change_conditions(
     if milestone.flags.disputed {
         return Err(ContractError::MilestoneAlreadyInDispute);
     }
-
-    signer.require_auth();
 
     let Roles {
         approver,
