@@ -45,7 +45,7 @@ pub fn validate_release_conditions(
     if !escrow
         .milestones
         .iter()
-        .all(|milestone| milestone.approved_flag)
+        .all(|milestone| milestone.approved)
     {
         return Err(ContractError::EscrowNotCompleted);
     }
@@ -65,7 +65,7 @@ pub fn validate_escrow_property_change_conditions(
 ) -> Result<(), ContractError> {
     if !milestones.is_empty() {
         for (_, milestone) in milestones.iter().enumerate() {
-            if milestone.approved_flag {
+            if milestone.approved {
                 return Err(ContractError::MilestoneApprovedCantChangeEscrowProperties);
             }
         }
@@ -76,7 +76,7 @@ pub fn validate_escrow_property_change_conditions(
     }
 
     for milestone in existing_escrow.milestones.iter() {
-        if milestone.approved_flag {
+        if milestone.approved {
             return Err(ContractError::MilestoneApprovedCantChangeEscrowProperties);
         }
     }

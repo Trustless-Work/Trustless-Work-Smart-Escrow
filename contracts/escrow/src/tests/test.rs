@@ -36,13 +36,13 @@ fn test_initialize_excrow() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
     ];
 
@@ -138,13 +138,13 @@ fn test_update_escrow() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
     ];
 
@@ -195,19 +195,19 @@ fn test_update_escrow() {
             description: String::from_str(&env, "First milestone updated"),
             status: String::from_str(&env, "Pending"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone updated"),
             status: String::from_str(&env, "Pending"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
         Milestone {
             description: String::from_str(&env, "Third milestone new"),
             status: String::from_str(&env, "Pending"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
     ];
 
@@ -280,13 +280,13 @@ fn test_change_milestone_status_and_approved() {
             description: String::from_str(&env, "Milestone 1"),
             status: String::from_str(&env, "in-progress"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
         Milestone {
             description: String::from_str(&env, "Milestone 2"),
             status: String::from_str(&env, "in-progress"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
     ];
 
@@ -350,7 +350,7 @@ fn test_change_milestone_status_and_approved() {
     escrow_approver.approve_milestone(&(0 as i128), &true, &approver_address);
 
     let final_escrow = escrow_approver.get_escrow();
-    assert!(final_escrow.milestones.get(0).unwrap().approved_flag);
+    assert!(final_escrow.milestones.get(0).unwrap().approved);
 
     let invalid_index = 10 as i128;
     let new_status = String::from_str(&env, "completed");
@@ -441,15 +441,15 @@ fn test_release_funds_successful_flow() {
         &env,
         Milestone {
             description: String::from_str(&env, "First milestone"),
-            evidence: String::from_str(&env, "Initial evidence"),
             status: String::from_str(&env, "Completed"),
-            approved_flag: true,
+            evidence: String::from_str(&env, "Initial evidence"),
+            approved: true,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
-            evidence: String::from_str(&env, "Initial evidence"),
             status: String::from_str(&env, "Completed"),
-            approved_flag: true,
+            evidence: String::from_str(&env, "Initial evidence"),
+            approved: true,
         },
     ];
 
@@ -468,7 +468,7 @@ fn test_release_funds_successful_flow() {
         resolved: false,
     };
 
-    let trustline = Trustline {
+    let trustline: Trustline = Trustline {
         address: usdc_token.address.clone(),
         decimals: 7,
     };
@@ -624,13 +624,13 @@ fn test_release_funds_milestones_incomplete() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Completed"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: true,
+            approved: true,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
             status: String::from_str(&env, "Pending"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false, // Not approved yet
+            approved: false, // Not approved yet
         },
     ];
 
@@ -703,7 +703,7 @@ fn test_release_funds_same_receiver_as_provider() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Completed"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: true,
+            approved: true,
         },
     ];
 
@@ -808,7 +808,7 @@ fn test_release_funds_invalid_receiver_fallback() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Completed"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: true,
+            approved: true,
         },
     ];
 
@@ -921,7 +921,7 @@ fn test_dispute_management() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
     ];
 
@@ -1009,7 +1009,7 @@ fn test_dispute_resolution_process() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Completed"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: true,
+            approved: true,
         },
     ];
 
@@ -1164,7 +1164,7 @@ fn test_fund_escrow_successful_deposit() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
     ];
 
@@ -1254,7 +1254,7 @@ fn test_fund_escrow_fully_funded_error() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
     ];
 
@@ -1333,7 +1333,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
     ];
 
@@ -1414,7 +1414,7 @@ fn test_fund_escrow_dispute_error() {
             description: String::from_str(&env, "First milestone"),
             status: String::from_str(&env, "Pending"),
             evidence: String::from_str(&env, "Initial evidence"),
-            approved_flag: false,
+            approved: false,
         },
     ];
 
