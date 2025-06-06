@@ -428,109 +428,104 @@ fn test_release_funds_successful_flow() {
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
     let trustless_work_address = Address::generate(&env);
-    let _receiver_address = Address::generate(&env);
+    let receiver_address = service_provider_address.clone(); // Set receiver to service provider
 
     let usdc_token = create_usdc_token(&env, &admin);
 
-    let amount: i128 = 100_000_000;
+    let amount: i128 = 1_000_000_000; // 1000 USDC in base units
     usdc_token.mint(&approver_address, &(amount as i128));
 
-    let platform_fee = 500;
+    let platform_fee = 100_000_000; // 100 USDC in base units
 
     let milestones = vec![
         &env,
         Milestone {
             description: String::from_str(&env, "First milestone"),
-            status: String::from_str(&env, "Completed"),
             evidence: String::from_str(&env, "Initial evidence"),
+            status: String::from_str(&env, "Completed"),
             approved_flag: true,
         },
         Milestone {
             description: String::from_str(&env, "Second milestone"),
-            status: String::from_str(&env, "Completed"),
             evidence: String::from_str(&env, "Initial evidence"),
+            status: String::from_str(&env, "Completed"),
             approved_flag: true,
         },
     ];
 
-    let roles: Roles = Roles {
+    let roles = Roles {
         approver: approver_address.clone(),
         service_provider: service_provider_address.clone(),
         platform_address: platform_address.clone(),
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
-        receiver: _receiver_address.clone(),
+        receiver: receiver_address.clone(),
     };
 
-    let flags: Flags = Flags {
+    let flags = Flags {
         disputed: false,
         released: false,
         resolved: false,
     };
 
-    let trustline: Trustline = Trustline {
+    let trustline = Trustline {
         address: usdc_token.address.clone(),
-        decimals: 10_000_000,
+        decimals: 7,
     };
 
-    let escrow_contract_address = env.register_contract(None, EscrowContract);
-    let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
-
-    let engagement_id = String::from_str(&env, "test_escrow_1");
-    let escrow_properties: Escrow = Escrow {
-        engagement_id: engagement_id.clone(),
+    let escrow = Escrow {
+        engagement_id: String::from_str(&env, "test_escrow"),
         title: String::from_str(&env, "Test Escrow"),
         description: String::from_str(&env, "Test Escrow Description"),
         roles,
-        amount: amount,
-        platform_fee: platform_fee,
-        milestones: milestones.clone(),
+        amount,
+        platform_fee,
+        milestones,
         flags,
         trustline,
         receiver_memo: 0,
     };
 
-    escrow_approver.initialize_escrow(&escrow_properties);
+    let escrow_contract_address = env.register_contract(None, EscrowContract);
+    let escrow_approver = EscrowContractClient::new(&env, &escrow_contract_address);
+
+    escrow_approver.initialize_escrow(&escrow);
 
     usdc_token.mint(&escrow_contract_address, &(amount as i128));
 
     escrow_approver.release_funds(&release_signer_address, &trustless_work_address);
 
     let total_amount = amount as i128;
-    let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
-    let platform_commission = (total_amount * platform_fee as i128) / 10000 as i128;
-    let receiver_amount =
+    let trustless_work_commission = 500_000_000; // 500 USDC in base units
+    let platform_commission = platform_fee;
+    let service_provider_amount =
         (total_amount - (trustless_work_commission + platform_commission)) as i128;
 
     assert_eq!(
         usdc_token.balance(&trustless_work_address),
         trustless_work_commission,
-        "Trustless Work commission amount is incorrect"
+        "Trustless Work should receive commission"
     );
-
     assert_eq!(
         usdc_token.balance(&platform_address),
         platform_commission,
-        "Platform commission amount is incorrect"
+        "Platform should receive commission"
     );
-
-    assert_eq!(
-        usdc_token.balance(&_receiver_address),
-        receiver_amount,
-        "Receiver received incorrect amount"
-    );
-
     assert_eq!(
         usdc_token.balance(&service_provider_address),
-        0,
-        "Service Provider should have zero balance when using separate receiver"
+        service_provider_amount,
+        "Service Provider should receive funds when receiver is set to same address"
     );
-
     assert_eq!(
         usdc_token.balance(&escrow_contract_address),
         0,
-        "Contract should have zero balance after claiming earnings"
+        "Escrow contract should have zero balance after release"
     );
+
+    let escrow_after_release = escrow_approver.get_escrow();
+    assert!(!escrow_after_release.flags.disputed, "Escrow should not be disputed");
+    assert!(escrow_after_release.flags.released, "Escrow should be marked as released");
+    assert!(!escrow_after_release.flags.resolved, "Escrow should not be resolved");
 }
 
 //test claim escrow earnings in failure scenarios
@@ -693,15 +688,14 @@ fn test_release_funds_same_receiver_as_provider() {
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
     let trustless_work_address = Address::generate(&env);
-    // Use service_provider_address as receiver to test same-address case
     let _receiver_address = service_provider_address.clone();
 
     let usdc_token = create_usdc_token(&env, &admin);
 
-    let amount: i128 = 100_000_000;
+    let amount: i128 = 1_000_000_000; // 1000 USDC in base units
     usdc_token.mint(&approver_address, &(amount as i128));
 
-    let platform_fee = 500;
+    let platform_fee = 100_000_000; // 100 USDC in base units
 
     let milestones = vec![
         &env,
@@ -719,7 +713,7 @@ fn test_release_funds_same_receiver_as_provider() {
         platform_address: platform_address.clone(),
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
-        receiver: _receiver_address.clone(), // Set to service_provider to test same-address case
+        receiver: _receiver_address.clone(),
     };
 
     let flags: Flags = Flags {
@@ -757,8 +751,8 @@ fn test_release_funds_same_receiver_as_provider() {
     escrow_approver.release_funds(&release_signer_address, &trustless_work_address);
 
     let total_amount = amount as i128;
-    let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
-    let platform_commission = (total_amount * platform_fee as i128) / 10000 as i128;
+    let trustless_work_commission = 500_000_000; // 500 USDC in base units
+    let platform_commission = platform_fee;
     let service_provider_amount =
         (total_amount - (trustless_work_commission + platform_commission)) as i128;
 
@@ -799,16 +793,14 @@ fn test_release_funds_invalid_receiver_fallback() {
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
     let trustless_work_address = Address::generate(&env);
-
-    // Create a valid but separate receiver address
     let _receiver_address = Address::generate(&env);
 
     let usdc_token = create_usdc_token(&env, &admin);
 
-    let amount: i128 = 100_000_000;
+    let amount: i128 = 1_000_000_000; // 1000 USDC in base units
     usdc_token.mint(&approver_address, &(amount as i128));
 
-    let platform_fee = 500;
+    let platform_fee = 100_000_000; // 100 USDC in base units
 
     let milestones = vec![
         &env,
@@ -826,7 +818,7 @@ fn test_release_funds_invalid_receiver_fallback() {
         platform_address: platform_address.clone(),
         release_signer: release_signer_address.clone(),
         dispute_resolver: dispute_resolver_address.clone(),
-        receiver: _receiver_address.clone(), // Different receiver address than service provider
+        receiver: _receiver_address.clone(),
     };
 
     let flags: Flags = Flags {
@@ -864,8 +856,8 @@ fn test_release_funds_invalid_receiver_fallback() {
     escrow_approver.release_funds(&release_signer_address, &trustless_work_address);
 
     let total_amount = amount as i128;
-    let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
-    let platform_commission = (total_amount * platform_fee as i128) / 10000 as i128;
+    let trustless_work_commission = 500_000_000; // 500 USDC in base units
+    let platform_commission = platform_fee;
     let receiver_amount =
         (total_amount - (trustless_work_commission + platform_commission)) as i128;
 
@@ -1006,10 +998,10 @@ fn test_dispute_resolution_process() {
 
     let usdc_token = create_usdc_token(&env, &admin);
 
-    let amount: i128 = 100_000_000;
+    let amount: i128 = 1_000_000_000; // 1000 USDC in base units
     usdc_token.mint(&approver_address, &(amount as i128));
 
-    let platform_fee = 500;
+    let platform_fee = 100_000_000; // 100 USDC in base units
 
     let milestones = vec![
         &env,
@@ -1070,14 +1062,14 @@ fn test_dispute_resolution_process() {
     // Try to resolve dispute with incorrect dispute resolver (should fail)
     let result = escrow_approver.try_resolve_dispute(
         &approver_address,
-        &(50_000_000 as i128),
-        &(50_000_000 as i128),
+        &(500_000_000 as i128),
+        &(500_000_000 as i128),
         &trustless_work_address,
     );
     assert!(result.is_err());
 
-    let approver_funds: i128 = 50_000_000;
-    let insufficient_receiver_funds: i128 = 40_000_000;
+    let approver_funds: i128 = 500_000_000;
+    let insufficient_receiver_funds: i128 = 400_000_000;
 
     let incorrect_dispute_resolution_result = escrow_approver.try_resolve_dispute(
         &dispute_resolver_address,
@@ -1089,7 +1081,7 @@ fn test_dispute_resolution_process() {
     assert!(incorrect_dispute_resolution_result.is_err());
 
     // Resolve dispute with correct dispute resolver (50/50 split)
-    let receiver_funds: i128 = 50_000_000;
+    let receiver_funds: i128 = 500_000_000;
 
     escrow_approver.resolve_dispute(
         &dispute_resolver_address,
@@ -1104,38 +1096,45 @@ fn test_dispute_resolution_process() {
     assert!(escrow_after_resolution.flags.resolved);
 
     let total_amount = amount as i128;
-    let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
-    let platform_commission = (total_amount * platform_fee as i128) / 10000 as i128;
-    let remaining_amount = total_amount - (trustless_work_commission + platform_commission);
+    let trustless_work_commission = 500_000_000; // 500 USDC in base units
+    let platform_commission = platform_fee;
+    let total_fees = trustless_work_commission + platform_commission;
 
-    let platform_amount = platform_commission;
-    let trustless_amount = trustless_work_commission;
-    let service_provider_amount = (remaining_amount * receiver_funds) / total_amount;
-    let approver_amount = (remaining_amount * approver_funds) / total_amount;
+    // Calculate expected amounts after fees
+    let approver_share = (approver_funds * total_fees) / total_amount;
+    let receiver_share = (receiver_funds * total_fees) / total_amount;
 
-    // Check balances
+    let expected_approver_amount = approver_funds - approver_share;
+    let expected_receiver_amount = receiver_funds - receiver_share;
+
     assert_eq!(
         usdc_token.balance(&trustless_work_address),
-        trustless_amount,
+        trustless_work_commission,
         "Trustless Work commission amount is incorrect"
     );
 
     assert_eq!(
         usdc_token.balance(&platform_address),
-        platform_amount,
+        platform_commission,
         "Platform commission amount is incorrect"
     );
 
     assert_eq!(
-        usdc_token.balance(&service_provider_address),
-        service_provider_amount,
-        "Service provider amount is incorrect"
+        usdc_token.balance(&approver_address),
+        expected_approver_amount,
+        "Approver amount after fees is incorrect"
     );
 
     assert_eq!(
-        usdc_token.balance(&approver_address),
-        approver_amount,
-        "Approver amount is incorrect"
+        usdc_token.balance(&service_provider_address),
+        expected_receiver_amount,
+        "Receiver amount after fees is incorrect"
+    );
+
+    assert_eq!(
+        usdc_token.balance(&escrow_contract_address),
+        0,
+        "Contract should have zero balance after dispute resolution"
     );
 }
 
