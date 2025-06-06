@@ -88,9 +88,9 @@ impl EscrowManager {
         transfer_handler.has_sufficient_balance(escrow.amount)?;
 
         let total_amount = escrow.amount as i128;
-        let platform_fee_percentage = escrow.platform_fee as i128;
+        let platform_fee = escrow.platform_fee as i128;
         let fee_result =
-            FeeCalculator::calculate_standard_fees(total_amount, platform_fee_percentage)?;
+            FeeCalculator::calculate_standard_fees(total_amount, platform_fee)?;
 
         let platform_address = escrow.roles.platform_address.clone();
 
