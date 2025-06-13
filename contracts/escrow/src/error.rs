@@ -154,7 +154,7 @@ impl fmt::Display for ContractError {
                 write!(f, "Cannot define more than 10 milestones in an escrow")
             }
             ContractError::ReceiverAndApproverFundsNotEqual => {
-                write!(f, "The receiver's and approver's funds must equal the value of the defined escrow.")
+                write!(f, "The approver's and receiver's funds must equal the current escrow balance.")
             }
         }
     }
