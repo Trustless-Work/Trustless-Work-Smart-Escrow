@@ -80,6 +80,7 @@ impl DisputeManager {
 
         let mut new_flags = milestone.flags.clone();
         new_flags.resolved = true;
+        new_flags.disputed = false;
         
         updated_milestones.set(
             milestone_index,
