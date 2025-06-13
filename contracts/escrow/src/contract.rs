@@ -2,15 +2,21 @@ use soroban_sdk::{
     contract, contractimpl, symbol_short, Address, BytesN, Env, String, Symbol, Val, Vec
 };
 
-use crate::storage::types::{AddressBalance, Escrow};
+use crate::storage::types::{AddressBalance, DataKey, Escrow};
 use crate::error::ContractError;
 use crate::core::{DisputeManager, EscrowManager, MilestoneManager};
+
 
 #[contract]
 pub struct EscrowContract;
 
 #[contractimpl]
 impl EscrowContract {
+
+    pub fn __constructor(env: Env, admin: Address) {
+        admin.require_auth();
+        env.storage().instance().set(&DataKey::Admin, &admin);
+    }
 
     pub fn deploy(
         env: Env,
@@ -19,6 +25,7 @@ impl EscrowContract {
         salt: BytesN<32>,
         init_fn: Symbol,
         init_args: Vec<Val>,
+        constructor_args: Vec<Val>,
     ) -> (Address, Val) {
         if deployer != env.current_contract_address() {
             deployer.require_auth();
@@ -27,7 +34,7 @@ impl EscrowContract {
         let deployed_address = env
             .deployer()
             .with_address(deployer, salt)
-            .deploy(wasm_hash);
+            .deploy_v2(wasm_hash, constructor_args);
 
         let res: Val = env.invoke_contract(&deployed_address, &init_fn, init_args);
         (deployed_address, res)
