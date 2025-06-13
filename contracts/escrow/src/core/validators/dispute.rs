@@ -19,6 +19,10 @@ pub fn validate_dispute_resolution_conditions(
         return Err(ContractError::OnlyDisputeResolverCanExecuteThisFunction);
     }
 
+    if milestone.flags.resolved {
+        return Err(ContractError::MilestoneAlreadyResolved);
+    }
+
     if total_funds > milestone.amount {
         return Err(ContractError::InsufficientFundsForResolution);
     }
