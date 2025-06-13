@@ -14,5 +14,3 @@ soroban-token-sdk = { workspace = true }
 [dev-dependencies]
 soroban-sdk = { workspace = true, features = ["testutils"] }
 soroban-token-sdk = { workspace = true }
-
-test-token = { path = "../test-token" }
