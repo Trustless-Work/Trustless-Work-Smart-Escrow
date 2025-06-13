@@ -13,6 +13,7 @@ pub fn validate_dispute_resolution_conditions(
     receiver_funds: i128,
     total_funds: i128,
     fee_result: &DisputeFeeResult,
+    current_balance: i128,
 ) -> Result<(), ContractError> {
     if dispute_resolver != &escrow.roles.dispute_resolver {
         return Err(ContractError::OnlyDisputeResolverCanExecuteThisFunction);
@@ -22,7 +23,7 @@ pub fn validate_dispute_resolution_conditions(
         return Err(ContractError::EscrowNotInDispute);
     }
 
-    if total_funds != escrow.amount {
+    if total_funds != current_balance {
         return Err(ContractError::ReceiverAndApproverFundsNotEqual);
     }
 
