@@ -5,27 +5,6 @@ use crate::{
     storage::types::{DataKey, Escrow, Milestone},
 };
 
-pub fn validate_funding_conditions(
-    escrow: &Escrow,
-    signer_balance: i128,
-    contract_balance: i128,
-    amount_to_deposit: i128,
-) -> Result<(), ContractError> {
-    if escrow.flags.disputed {
-        return Err(ContractError::EscrowOpenedForDisputeResolution);
-    }
-
-    if contract_balance >= escrow.amount {
-        return Err(ContractError::EscrowFullyFunded);
-    }
-
-    if signer_balance < amount_to_deposit {
-        return Err(ContractError::SignerInsufficientFunds);
-    }
-
-    Ok(())
-}
-
 pub fn validate_release_conditions(
     escrow: &Escrow,
     release_signer: &Address,

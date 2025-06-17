@@ -2,7 +2,7 @@ use soroban_sdk::token::Client as TokenClient;
 use soroban_sdk::{Address, Env, Symbol, Val, Vec};
 
 use crate::core::validators::escrow::{
-    validate_escrow_property_change_conditions, validate_funding_conditions,
+    validate_escrow_property_change_conditions,
     validate_initialize_escrow_conditions, validate_release_conditions,
 };
 use crate::error::ContractError;
@@ -51,11 +51,7 @@ impl EscrowManager {
         };
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
 
-        let signer_balance = token_client.balance(&signer);
         let contract_address = e.current_contract_address();
-        let contract_balance = token_client.balance(&contract_address);
-
-        validate_funding_conditions(&escrow, signer_balance, contract_balance, amount_to_deposit)?;
 
         token_client.transfer(&signer, &contract_address, &amount_to_deposit);
 
