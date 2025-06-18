@@ -5,30 +5,6 @@ use crate::{
     storage::types::{DataKey, Escrow, Milestone}
 };
 
-pub fn validate_funding_conditions(
-    milestones: &Vec<Milestone>,
-    signer_balance: i128,
-    contract_balance: i128,
-    amount_to_deposit: i128,
-) -> Result<(), ContractError> {
-    let total_amount: i128 = milestones.iter().map(|m| m.amount).sum();
-    let has_dispute = milestones.iter().any(|m| m.flags.disputed);
-
-    if has_dispute{
-        return Err(ContractError::MilestoneOpenedForDisputeResolution);
-    }
-
-    if contract_balance >= total_amount{
-        return Err(ContractError::EscrowFullyFunded);
-    }
-
-    if signer_balance < amount_to_deposit {
-        return Err(ContractError::SignerInsufficientFunds);
-    }
-
-    Ok(())
-}
-
 pub fn validate_release_conditions(
     escrow: &Escrow,
     milestone: &Milestone,
