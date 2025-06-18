@@ -61,6 +61,7 @@ pub struct AddressBalance {
 #[derive(Clone)]
 #[contracttype]
 pub enum DataKey {
+    Admin,
     Escrow,
     Balance(Address),
 }

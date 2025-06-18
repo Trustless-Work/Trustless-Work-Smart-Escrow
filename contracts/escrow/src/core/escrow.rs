@@ -50,7 +50,6 @@ impl EscrowManager {
             Err(err) => return Err(err),
         };
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
-
         let contract_address = e.current_contract_address();
 
         token_client.transfer(&signer, &contract_address, &amount_to_deposit);
