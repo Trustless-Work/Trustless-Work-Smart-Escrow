@@ -8,7 +8,7 @@ use crate::modules::{
 use crate::storage::types::{Escrow, DataKey, AddressBalance, Milestone};
 use crate::error::ContractError;
 
-use super::validators::escrow::{validate_escrow_property_change_conditions, validate_funding_conditions, validate_initialize_escrow_conditions, validate_release_conditions};
+use super::validators::escrow::{validate_escrow_property_change_conditions, validate_initialize_escrow_conditions, validate_release_conditions};
 
 pub struct EscrowManager;
 
@@ -51,11 +51,7 @@ impl EscrowManager{
         };
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
 
-        let signer_balance = token_client.balance(&signer);
         let contract_address = e.current_contract_address();
-        let contract_balance = token_client.balance(&contract_address);
-
-        validate_funding_conditions(&escrow.milestones, signer_balance, contract_balance, amount_to_deposit)?;
 
         token_client.transfer(&signer, &contract_address, &amount_to_deposit);
     
