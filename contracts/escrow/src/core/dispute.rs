@@ -7,7 +7,7 @@ use crate::modules::{
     token::{TokenTransferHandler, TokenTransferHandlerTrait},
 };
 use crate::storage::types::DataKey;
-use soroban_sdk::{Address, Env};
+use soroban_sdk::{Address, Env, String};
 
 use super::validators::dispute::{
     validate_dispute_flag_change_conditions, validate_dispute_resolution_conditions,
@@ -21,9 +21,10 @@ impl DisputeManager {
         dispute_resolver: Address,
         approver_funds: i128,
         receiver_funds: i128,
-        trustless_work_address: Address,
     ) -> Result<(), ContractError> {
         dispute_resolver.require_auth();
+        let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
+        let trustless_work_address = Address::from_string(&trustless_address_string);
         
         let escrow_result = EscrowManager::get_escrow(e.clone());
         let mut escrow = match escrow_result {

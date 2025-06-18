@@ -1,5 +1,5 @@
 use soroban_sdk::token::Client as TokenClient;
-use soroban_sdk::{Address, Env, Symbol, Val, Vec};
+use soroban_sdk::{Address, Env, String, Symbol, Val, Vec};
 
 use crate::core::validators::escrow::{
     validate_escrow_property_change_conditions,
@@ -62,9 +62,10 @@ impl EscrowManager {
     pub fn release_funds(
         e: Env,
         release_signer: Address,
-        trustless_work_address: Address,
     ) -> Result<(), ContractError> {
         release_signer.require_auth();
+        let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
+        let trustless_work_address = Address::from_string(&trustless_address_string);
 
         let escrow_result = Self::get_escrow(e.clone());
         let mut escrow = match escrow_result {
