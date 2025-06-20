@@ -15,7 +15,6 @@ pub struct EscrowContract;
 impl EscrowContract {
     
     pub fn __constructor(env: Env, admin: Address) {
-        admin.require_auth();
         env.storage().instance().set(&DataKey::Admin, &admin);
     }
 
