@@ -13,3 +13,5 @@ contracts/escrow/test_snapshots/tests
 
 # Ignore macOS system files
 **/.DS_Store
+/.stellar
+/install_mainnet.json
