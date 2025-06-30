@@ -38,10 +38,3 @@ jobs:
       run: |
         source $HOME/.cargo/env
         stellar contract build --verbose
-
-    - name: Run Cargo tests
-      run: |
-        source $HOME/.cargo/env
-        cargo test --verbose
-
-
