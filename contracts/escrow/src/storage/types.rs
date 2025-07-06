@@ -1,7 +1,7 @@
 use soroban_sdk::{contracttype, Address, String, Vec};
 
 #[contracttype]
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Escrow {
     pub engagement_id: String,
     pub title: String,
@@ -25,7 +25,7 @@ pub struct Milestone {
 }
 
 #[contracttype]
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Roles {
     pub approver: Address,
     pub service_provider: Address,
@@ -36,7 +36,7 @@ pub struct Roles {
 }
 
 #[contracttype]
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Flags {
     pub disputed: bool,
     pub released: bool,
@@ -44,18 +44,18 @@ pub struct Flags {
 }
 
 #[contracttype]
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Trustline {
     pub address: Address,
-    pub decimals: i128,
+    pub decimals: u32,
 }
 
 #[contracttype]
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct AddressBalance {
     pub address: Address,
     pub balance: i128,
-    pub trustline_decimals: i128,
+    pub trustline_decimals: u32,
 }
 
 #[derive(Clone)]
@@ -63,5 +63,4 @@ pub struct AddressBalance {
 pub enum DataKey {
     Admin,
     Escrow,
-    Balance(Address),
 }
