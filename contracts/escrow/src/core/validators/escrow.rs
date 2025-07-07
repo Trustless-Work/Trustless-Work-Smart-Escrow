@@ -1,10 +1,11 @@
-use soroban_sdk::{Address, Env, Vec};
+use soroban_sdk::{Address, Env};
 
 use crate::{
     error::ContractError,
-    storage::types::{DataKey, Escrow, Milestone},
+    storage::types::{DataKey, Escrow},
 };
 
+#[inline]
 pub fn validate_release_conditions(
     escrow: &Escrow,
     release_signer: &Address,
@@ -29,26 +30,19 @@ pub fn validate_release_conditions(
         return Err(ContractError::EscrowNotCompleted);
     }
 
-    if escrow.flags.disputed{
+    if escrow.flags.disputed {
         return Err(ContractError::EscrowOpenedForDisputeResolution);
     }
 
     Ok(())
 }
 
+#[inline]
 pub fn validate_escrow_property_change_conditions(
     existing_escrow: &Escrow,
     platform_address: &Address,
     contract_balance: i128,
-    milestones: Vec<Milestone>,
 ) -> Result<(), ContractError> {
-    if !milestones.is_empty() {
-        for (_, milestone) in milestones.iter().enumerate() {
-            if milestone.approved {
-                return Err(ContractError::MilestoneApprovedCantChangeEscrowProperties);
-            }
-        }
-    }
 
     if platform_address != &existing_escrow.roles.platform_address {
         return Err(ContractError::OnlyPlatformAddressExecuteThisFunction);
@@ -71,6 +65,7 @@ pub fn validate_escrow_property_change_conditions(
     Ok(())
 }
 
+#[inline]
 pub fn validate_initialize_escrow_conditions(
     e: Env,
     escrow_properties: Escrow,
