@@ -6,6 +6,7 @@ use crate::{
     storage::types::{Escrow, Milestone, Roles},
 };
 
+#[inline]
 pub fn validate_dispute_resolution_conditions(
     escrow: &Escrow,
     milestone: &Milestone,
@@ -42,6 +43,7 @@ pub fn validate_dispute_resolution_conditions(
     Ok(())
 }
 
+#[inline]
 pub fn validate_dispute_flag_change_conditions(
     escrow: &Escrow,
     milestone_index: i128,

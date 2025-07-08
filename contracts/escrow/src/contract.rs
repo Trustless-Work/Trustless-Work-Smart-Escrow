@@ -48,7 +48,7 @@ impl EscrowContract {
         escrow_properties: Escrow
     ) -> Result<Escrow, ContractError> {
         let initialized_escrow =
-            EscrowManager::initialize_escrow(e.clone(), escrow_properties.clone())?;
+            EscrowManager::initialize_escrow(e.clone(), escrow_properties)?;
         e.events().publish((symbol_short!("init_esc"),), ());
 
         Ok(initialized_escrow)
@@ -59,12 +59,11 @@ impl EscrowContract {
         signer: Address, 
         amount_to_deposit: i128
     ) -> Result<(), ContractError> {
-        let updated_funded_escrow =
-            EscrowManager::fund_escrow(e.clone(), signer.clone(), amount_to_deposit.clone())?;
+        EscrowManager::fund_escrow(e.clone(), signer.clone(), amount_to_deposit.clone())?;
         e.events()
             .publish((symbol_short!("fund_esc"),), (signer, amount_to_deposit));
 
-        Ok(updated_funded_escrow)
+        Ok(())
     }
 
     pub fn release_milestone_funds(
@@ -75,7 +74,7 @@ impl EscrowContract {
         let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
         let trustless_work_address = Address::from_string(&trustless_address_string);
 
-        let updated_release_escrow_earnings = EscrowManager::release_milestone_funds(
+        EscrowManager::release_milestone_funds(
             e.clone(), 
             release_signer.clone(), 
             trustless_work_address.clone(),
@@ -87,7 +86,7 @@ impl EscrowContract {
             (release_signer, trustless_work_address),
         );
 
-        Ok(updated_release_escrow_earnings)
+        Ok(())
     }
 
     pub fn update_escrow(

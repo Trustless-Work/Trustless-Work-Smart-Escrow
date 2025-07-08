@@ -5,6 +5,7 @@ use crate::{
     storage::types::{DataKey, Escrow, Milestone}
 };
 
+#[inline]
 pub fn validate_release_conditions(
     escrow: &Escrow,
     milestone: &Milestone,
@@ -38,6 +39,7 @@ pub fn validate_release_conditions(
     Ok(())
 }
 
+#[inline]
 pub fn validate_escrow_property_change_conditions(
     existing_escrow: &Escrow,
     platform_address: &Address,
@@ -59,12 +61,6 @@ pub fn validate_escrow_property_change_conditions(
         return Err(ContractError::OnlyPlatformAddressExecuteThisFunction);
     }
 
-    for milestone in existing_escrow.milestones.iter() {
-        if milestone.flags.approved {
-            return Err(ContractError::MilestoneApprovedCantChangeEscrowProperties);
-        }
-    }
-
     if contract_balance > 0 {
         return Err(ContractError::EscrowHasFunds);
     }
@@ -72,6 +68,7 @@ pub fn validate_escrow_property_change_conditions(
     Ok(())
 }
 
+#[inline]
 pub fn validate_initialize_escrow_conditions(
     e: Env,
     escrow_properties: Escrow,
