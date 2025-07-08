@@ -3,6 +3,7 @@ use soroban_sdk::Address;
 
 use crate::{error::ContractError, storage::types::Escrow};
 
+#[inline]
 pub fn validate_milestone_status_change_conditions(
     escrow: &Escrow,
     milestone_index: i128,
@@ -23,6 +24,7 @@ pub fn validate_milestone_status_change_conditions(
     Ok(())
 }
 
+#[inline]
 pub fn validate_milestone_flag_change_conditions(
     escrow: &Escrow,
     milestone_index: i128,
