@@ -7,13 +7,10 @@ use crate::error::ContractError;
 use crate::storage::types::{AddressBalance, DataKey, Escrow};
 
 #[contract]
-#[allow(dead_code)]
 pub struct EscrowContract;
 
-#[allow(dead_code)]
 #[contractimpl]
 impl EscrowContract {
-    
     pub fn __constructor(env: Env, admin: Address) {
         env.storage().instance().set(&DataKey::Admin, &admin);
     }
@@ -46,9 +43,8 @@ impl EscrowContract {
 
     pub fn initialize_escrow(e: Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
         let initialized_escrow =
-            EscrowManager::initialize_escrow(e.clone(), escrow_properties.clone())?;
+            EscrowManager::initialize_escrow(e.clone(), escrow_properties)?;
         e.events().publish((symbol_short!("init_esc"),), ());
-
         Ok(initialized_escrow)
     }
 
@@ -57,19 +53,17 @@ impl EscrowContract {
         signer: Address,
         amount_to_deposit: i128,
     ) -> Result<(), ContractError> {
-        let updated_funded_escrow =
-            EscrowManager::fund_escrow(e.clone(), signer.clone(), amount_to_deposit.clone())?;
+        EscrowManager::fund_escrow(e.clone(), signer.clone(), amount_to_deposit)?;
         e.events()
             .publish((symbol_short!("fund_esc"),), (signer, amount_to_deposit));
-
-        Ok(updated_funded_escrow)
+        Ok(())
     }
 
     pub fn release_funds(
         e: Env,
         release_signer: Address,
     ) -> Result<(), ContractError> {
-        let updated_distributed_escrow_earnings = EscrowManager::release_funds(
+        EscrowManager::release_funds(
             e.clone(),
             release_signer.clone(),
         )?;
@@ -77,8 +71,7 @@ impl EscrowContract {
             (symbol_short!("dis_esc"),),
             release_signer,
         );
-
-        Ok(updated_distributed_escrow_earnings)
+        Ok(())
     }
 
     pub fn update_escrow(
@@ -93,9 +86,8 @@ impl EscrowContract {
         )?;
         e.events().publish(
             (symbol_short!("chg_esc"),),
-            (plataform_address, escrow_properties),
+            (plataform_address, escrow_properties.engagement_id),
         );
-
         Ok(updated_escrow)
     }
 
