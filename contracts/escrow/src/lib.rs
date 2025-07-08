@@ -34,12 +34,6 @@ mod modules {
 
         pub use calculator::*;
     }
-
-    pub mod token {
-        pub mod transfer_handler;
-
-        pub use transfer_handler::*;
-    }
 }
 mod error;
 mod contract;
