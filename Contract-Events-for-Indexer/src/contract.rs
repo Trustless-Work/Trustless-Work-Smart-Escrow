@@ -44,7 +44,6 @@ impl EscrowContract {
     pub fn initialize_escrow(e: Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
         let initialized_escrow =
             EscrowManager::initialize_escrow(e.clone(), escrow_properties)?;
-        e.events().publish((symbol_short!("init_esc"),), ());
         env.events().publish(
             (symbol_short!("escrow"), symbol_short!("created")), 
             (initialized_escrow.engagement_id, initialized_escrow.amount, initialized_escrow.roles.receiver)
@@ -58,8 +57,11 @@ impl EscrowContract {
         amount_to_deposit: i128,
     ) -> Result<(), ContractError> {
         EscrowManager::fund_escrow(e.clone(), signer.clone(), amount_to_deposit)?;
-        e.events()
-            .publish((symbol_short!("fund_esc"),), (signer, amount_to_deposit));
+        let escrow = EscrowManager::get_escrow(e.clone())?;
+        env.events().publish(
+            (symbol_short!("escrow"), symbol_short!("funded")),
+            (e.current_contract_address(), escrow.engagement_id, signer, amount_to_deposit)
+        );
         Ok(())
     }
 
