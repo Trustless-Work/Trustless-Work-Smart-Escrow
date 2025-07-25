@@ -44,9 +44,10 @@ impl EscrowContract {
     pub fn initialize_escrow(e: Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
         let initialized_escrow =
             EscrowManager::initialize_escrow(e.clone(), escrow_properties)?;
-        env.events().publish(
+        let escrow = initialized_escrow.clone();
+        e.events().publish(
             (symbol_short!("escrow"), symbol_short!("created")), 
-            (initialized_escrow.engagement_id, initialized_escrow.amount, initialized_escrow.roles.receiver)
+            (escrow.engagement_id, escrow.amount, escrow.roles.receiver)
         );
         Ok(initialized_escrow)
     }
@@ -58,7 +59,7 @@ impl EscrowContract {
     ) -> Result<(), ContractError> {
         EscrowManager::fund_escrow(e.clone(), signer.clone(), amount_to_deposit)?;
         let escrow = EscrowManager::get_escrow(e.clone())?;
-        env.events().publish(
+        e.events().publish(
             (symbol_short!("escrow"), symbol_short!("funded")),
             (e.current_contract_address(), escrow.engagement_id, signer, amount_to_deposit)
         );
@@ -76,9 +77,9 @@ impl EscrowContract {
             trustless_work_address.clone(),
         )?;
         let escrow = EscrowManager::get_escrow(e.clone())?;
-        env.events().publish(
+        e.events().publish(
             (symbol_short!("escrow"), symbol_short!("released")),
-            (escrow.engagement_id, receiver)
+            (escrow.engagement_id, trustless_work_address)
         );
         Ok(())
     }
@@ -128,15 +129,15 @@ impl EscrowContract {
         service_provider: Address,
     ) -> Result<(), ContractError> {
         MilestoneManager::change_milestone_status(
-            e,
+            e.clone(),
             milestone_index,
             new_status.clone(),
             new_evidence,
             service_provider,
         )?;
         let escrow = EscrowManager::get_escrow(e.clone())?;
-        env.events().publish(
-            (symbol_short!("escrow"), symbol_short!("milestone_marked")),
+        e.events().publish(
+            (symbol_short!("escrow"), symbol_short!("marked")),
             (milestone_index, new_status, escrow.engagement_id)
         );
         Ok(())
@@ -148,10 +149,10 @@ impl EscrowContract {
         new_flag: bool,
         approver: Address,
     ) -> Result<(), ContractError> {
-        MilestoneManager::change_milestone_approved_flag(e, milestone_index, new_flag, approver)?;
+        MilestoneManager::change_milestone_approved_flag(e.clone(), milestone_index, new_flag, approver)?;
         let escrow = EscrowManager::get_escrow(e.clone())?;
-        env.events().publish(
-            (symbol_short!("escrow"), symbol_short!("milestone_approved")), 
+        e.events().publish(
+            (symbol_short!("escrow"), symbol_short!("approved")), 
             (milestone_index, new_flag, escrow.engagement_id));
         Ok(())
     }
@@ -168,25 +169,25 @@ impl EscrowContract {
         trustless_work_address: Address,
     ) -> Result<(), ContractError> {
         DisputeManager::resolve_dispute(
-            e,
+            e.clone(),
             dispute_resolver,
             approver_funds,
             receiver_funds,
             trustless_work_address,
         )?;
         let escrow = EscrowManager::get_escrow(e.clone())?;
-        env.events().publish(
-            (symbol_short!("escrow"), symbol_short!("dispute_resolved")),
+        e.events().publish(
+            (symbol_short!("escrow"), symbol_short!("resolved")),
             (approver_funds, receiver_funds, escrow.engagement_id)
         );
         Ok(())
     }
 
     pub fn dispute_escrow(e: Env, signer: Address) -> Result<(), ContractError> {
-        DisputeManager::dispute_escrow(e, signer)?;
+        DisputeManager::dispute_escrow(e.clone(), signer.clone())?;
         let escrow = EscrowManager::get_escrow(e.clone())?;
-        env.events().publish(
-            (symbol_short!("escrow"), symbol_short!("dispute_raised")), 
+        e.events().publish(
+            (symbol_short!("escrow"), symbol_short!("raised")), 
             (signer, escrow.engagement_id)
         );
         Ok(())
