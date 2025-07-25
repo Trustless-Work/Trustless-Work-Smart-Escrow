@@ -93,10 +93,7 @@ impl EscrowContract {
             plataform_address.clone(),
             escrow_properties.clone(),
         )?;
-        e.events().publish(
-            (symbol_short!("chg_esc"),),
-            (plataform_address, escrow_properties.engagement_id),
-        );
+        
         Ok(updated_escrow)
     }
 
@@ -137,6 +134,11 @@ impl EscrowContract {
             new_evidence,
             service_provider,
         )
+        let escrow = EscrowManager::get_escrow(e.clone())?;
+        env.events().publish(
+            (symbol_short!("escrow"), symbol_short!("milestone_marked")),
+            (milestone_index, new_status, escrow.engagement_id)
+        );
     }
 
     pub fn approve_milestone(
