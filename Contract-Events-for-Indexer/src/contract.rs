@@ -130,15 +130,16 @@ impl EscrowContract {
         MilestoneManager::change_milestone_status(
             e,
             milestone_index,
-            new_status,
+            new_status.clone(),
             new_evidence,
             service_provider,
-        )
+        )?;
         let escrow = EscrowManager::get_escrow(e.clone())?;
         env.events().publish(
             (symbol_short!("escrow"), symbol_short!("milestone_marked")),
             (milestone_index, new_status, escrow.engagement_id)
         );
+        Ok(())
     }
 
     pub fn approve_milestone(
@@ -147,7 +148,12 @@ impl EscrowContract {
         new_flag: bool,
         approver: Address,
     ) -> Result<(), ContractError> {
-        MilestoneManager::change_milestone_approved_flag(e, milestone_index, new_flag, approver)
+        MilestoneManager::change_milestone_approved_flag(e, milestone_index, new_flag, approver)?;
+        let escrow = EscrowManager::get_escrow(e.clone())?;
+        env.events().publish(
+            (symbol_short!("escrow"), symbol_short!("milestone_approved")), 
+            (milestone_index, new_flag, escrow.engagement_id));
+        Ok(())
     }
 
     ////////////////////////
@@ -167,10 +173,22 @@ impl EscrowContract {
             approver_funds,
             receiver_funds,
             trustless_work_address,
-        )
+        )?;
+        let escrow = EscrowManager::get_escrow(e.clone())?;
+        env.events().publish(
+            (symbol_short!("escrow"), symbol_short!("dispute_resolved")),
+            (approver_funds, receiver_funds, escrow.engagement_id)
+        );
+        Ok(())
     }
 
     pub fn dispute_escrow(e: Env, signer: Address) -> Result<(), ContractError> {
-        DisputeManager::dispute_escrow(e, signer)
+        DisputeManager::dispute_escrow(e, signer)?;
+        let escrow = EscrowManager::get_escrow(e.clone())?;
+        env.events().publish(
+            (symbol_short!("escrow"), symbol_short!("dispute_raised")), 
+            (signer, escrow.engagement_id)
+        );
+        Ok(())
     }
 }
