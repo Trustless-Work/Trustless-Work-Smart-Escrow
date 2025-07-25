@@ -75,9 +75,10 @@ impl EscrowContract {
             release_signer.clone(),
             trustless_work_address.clone(),
         )?;
-        e.events().publish(
-            (symbol_short!("dis_esc"),),
-            (release_signer, trustless_work_address),
+        let escrow = EscrowManager::get_escrow(e.clone())?;
+        env.events().publish(
+            (symbol_short!("escrow"), symbol_short!("released")),
+            (escrow.engagement_id, receiver)
         );
         Ok(())
     }
