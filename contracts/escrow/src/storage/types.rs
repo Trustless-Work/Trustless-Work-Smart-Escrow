@@ -44,7 +44,7 @@ pub struct Flags {
 }
 
 #[contracttype]
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Trustline {
     pub address: Address,
     pub decimals: u32,

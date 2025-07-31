@@ -59,7 +59,7 @@ impl EscrowContract {
         signer: Address, 
         amount_to_deposit: i128
     ) -> Result<(), ContractError> {
-        EscrowManager::fund_escrow(e.clone(), signer.clone(), amount_to_deposit.clone())?;
+        EscrowManager::fund_escrow(e.clone(), signer.clone(), amount_to_deposit)?;
         e.events()
             .publish((symbol_short!("fund_esc"),), (signer, amount_to_deposit));
 
@@ -101,7 +101,7 @@ impl EscrowContract {
         )?;
         e.events().publish(
             (symbol_short!("chg_esc"),),
-            (plataform_address, escrow_properties),
+            (plataform_address, escrow_properties.engagement_id),
         );
 
         Ok(updated_escrow)
