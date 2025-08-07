@@ -1,4 +1,4 @@
-use soroban_sdk::{Address, Env, Symbol, Vec};
+use soroban_sdk::{Address, Env, String, Symbol, Vec};
 use soroban_sdk::token::Client as TokenClient;
 
 use crate::modules::fee::{FeeCalculator, FeeCalculatorTrait};
@@ -50,12 +50,14 @@ impl EscrowManager{
     pub fn release_milestone_funds(
         e: Env, 
         release_signer: Address, 
-        trustless_work_address: Address,
         milestone_index: u32
     ) -> Result<(), ContractError> {      
         release_signer.require_auth();
           
         let mut escrow = EscrowManager::get_escrow(e.clone())?;
+
+        let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
+        let trustless_work_address = Address::from_string(&trustless_address_string);
         
         if let Some(milestone) = escrow.milestones.get(milestone_index) {
             validate_release_conditions(&escrow, &milestone, &release_signer, milestone_index)?;

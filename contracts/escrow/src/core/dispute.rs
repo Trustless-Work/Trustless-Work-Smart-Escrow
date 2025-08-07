@@ -22,12 +22,14 @@ impl DisputeManager {
         milestone_index: u32,
         approver_funds: i128,
         receiver_funds: i128,
-        trustless_work_address: Address
     ) -> Result<(), ContractError> {
         dispute_resolver.require_auth();
 
         let mut escrow = EscrowManager::get_escrow(e.clone())?;
         let contract_address = e.current_contract_address();
+
+        let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
+        let trustless_work_address = Address::from_string(&trustless_address_string);
 
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
 

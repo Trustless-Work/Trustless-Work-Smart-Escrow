@@ -71,19 +71,15 @@ impl EscrowContract {
         release_signer: Address, 
         milestone_index: u32
     ) -> Result<(), ContractError> {
-        let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
-        let trustless_work_address = Address::from_string(&trustless_address_string);
-
         EscrowManager::release_milestone_funds(
             e.clone(), 
             release_signer.clone(), 
-            trustless_work_address.clone(),
             milestone_index
         )?;
 
         e.events().publish(
             (symbol_short!("dis_esc"),),
-            (release_signer, trustless_work_address),
+            release_signer,
         );
 
         Ok(())
@@ -167,16 +163,12 @@ impl EscrowContract {
         approver_funds: i128,
         service_provider_funds: i128,
     ) -> Result<(), ContractError> {
-        let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
-        let trustless_work_address = Address::from_string(&trustless_address_string);
-
         DisputeManager::resolve_milestone_dispute(
             e,
             dispute_resolver,
             milestone_index,
             approver_funds,
             service_provider_funds,
-            trustless_work_address
         )
     }
     
