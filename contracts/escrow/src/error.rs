@@ -49,6 +49,9 @@ pub enum ContractError {
     ArgumentConversionFailed = 43,
     TooManyMilestones = 44,
     ReceiverAndApproverFundsNotEqual = 45,
+    MilestoneHasAlreadyBeenApproved = 46,
+    EmptyMilestoneStatus = 47,
+    PlatformFeeTooHigh = 48,
 }
 
 impl fmt::Display for ContractError {
@@ -155,6 +158,15 @@ impl fmt::Display for ContractError {
             }
             ContractError::ReceiverAndApproverFundsNotEqual => {
                 write!(f, "The approver's and receiver's funds must equal the current escrow balance.")
+            },
+            ContractError::MilestoneHasAlreadyBeenApproved => {
+                write!(f, "You cannot approve a milestone that has already been approved previously")
+            },
+            ContractError::EmptyMilestoneStatus => {
+                write!(f, "The milestone status cannot be empty")
+            },
+            ContractError::PlatformFeeTooHigh => {
+                write!(f, "The platform fee cannot exceed 99%")
             }
         }
     }
