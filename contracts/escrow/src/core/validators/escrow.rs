@@ -74,6 +74,10 @@ pub fn validate_initialize_escrow_conditions(
         return Err(ContractError::EscrowAlreadyInitialized);
     }
 
+    if escrow_properties.platform_fee > 99 {
+        return Err(ContractError::PlatformFeeTooHigh);
+    }
+
     if escrow_properties.amount == 0 {
         return Err(ContractError::AmountCannotBeZero);
     }
