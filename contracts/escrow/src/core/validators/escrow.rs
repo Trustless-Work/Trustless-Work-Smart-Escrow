@@ -77,6 +77,10 @@ pub fn validate_initialize_escrow_conditions(
         return Err(ContractError::EscrowAlreadyInitialized);
     }
 
+    if escrow_properties.platform_fee > 99 {
+        return Err(ContractError::PlatformFeeTooHigh);
+    }
+
     if !escrow_properties.milestones.is_empty() {
         for (_, milestone) in escrow_properties.milestones.iter().enumerate() {
             if milestone.amount == 0 {
