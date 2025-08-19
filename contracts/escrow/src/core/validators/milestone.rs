@@ -1,7 +1,7 @@
 
 use soroban_sdk::Address;
 
-use crate::{error::ContractError, storage::types::Escrow};
+use crate::{error::ContractError, storage::types::{Escrow, Milestone}};
 
 #[inline]
 pub fn validate_milestone_status_change_conditions(
@@ -27,11 +27,20 @@ pub fn validate_milestone_status_change_conditions(
 #[inline]
 pub fn validate_milestone_flag_change_conditions(
     escrow: &Escrow,
+    milestone: &Milestone,
     milestone_index: i128,
     approver: &Address,
 ) -> Result<(), ContractError> {
     if approver != &escrow.roles.approver {
         return Err(ContractError::OnlyApproverChangeMilstoneFlag);
+    }
+
+    if milestone.flags.approved {
+        return Err(ContractError::MilestoneHasAlreadyBeenApproved);
+    }
+
+    if milestone.status.is_empty() {
+        return Err(ContractError::MilestoneHasAlreadyBeenApproved);
     }
 
     if escrow.milestones.is_empty() {

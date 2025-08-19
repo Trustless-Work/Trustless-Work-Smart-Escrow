@@ -60,13 +60,13 @@ impl MilestoneManager {
         
         let mut escrow = EscrowManager::get_escrow(e.clone())?;
     
-        validate_milestone_flag_change_conditions(&escrow, milestone_index, &approver)?;
-    
+        
         let mut milestone_to_update = escrow
-            .milestones
-            .get(milestone_index as u32)
-            .ok_or(ContractError::InvalidMileStoneIndex)?;
-
+        .milestones
+        .get(milestone_index as u32)
+        .ok_or(ContractError::InvalidMileStoneIndex)?;
+    
+        validate_milestone_flag_change_conditions(&escrow, &milestone_to_update, milestone_index, &approver)?;
         milestone_to_update.flags.approved = new_flag;
 
         escrow
