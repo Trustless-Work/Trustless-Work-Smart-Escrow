@@ -7,52 +7,37 @@ pub enum ContractError {
     EscrowNotFunded = 1,
     AmountCannotBeZero = 2,
     EscrowAlreadyInitialized = 3,
-    OnlySignerCanFundEscrow = 4,
-    MilestoneAlreadyFunded = 5,
-    EscrowFullyFunded = 6,
-    SignerInsufficientFunds = 7,
-    NotEnoughAllowance = 8,
-    MilestoneAlreadyCompleted = 9,
-    SignerInsufficientFundsToComplete = 10,
-    OnlySignerCanRequestRefund = 11,
-    NoFundsToRefund = 12,
-    ContractHasInsufficientBalance = 13,
-    EscrowNotFound = 14,
-    OnlyReleaseSignerCanReleaseEarnings = 15,
-    MilestoneNotCompleted = 16,
-    EscrowBalanceNotEnoughToSendEarnings = 17,
-    ContractInsufficientFunds = 18,
-    OnlyPlatformAddressExecuteThisFunction = 19,
-    EscrowNotInitialized = 20,
-    OnlyServiceProviderChangeMilstoneStatus = 21,
-    NoMileStoneDefined = 22,
-    InvalidMileStoneIndex = 23,
-    OnlyApproverChangeMilstoneFlag = 24,
-    OnlyDisputeResolverCanExecuteThisFunction = 25,
-    MilestoneAlreadyInDispute = 26,
-    MilestoneNotInDispute = 27,
-    InsufficientFundsForResolution = 28,
-    InvalidState = 29,
-    MilestoneOpenedForDisputeResolution = 30,
-    AmountToDepositGreatherThanEscrowAmount = 31,
-    Overflow = 32,
-    Underflow = 33,
-    DivisionError = 34,
-    AdminNotFound = 35,
-    InsufficientApproverFundsForCommissions = 36,
-    InsufficientServiceProviderFundsForCommissions = 37,
-    MilestoneApprovedCantChangeEscrowProperties = 38,
-    EscrowHasFunds = 39,
-    MilestoneAlreadyResolved = 40,
-    TooManyEscrowsRequested = 41,
-    UnauthorizedToChangeDisputeFlag = 42,
-    ArgumentConversionFailed = 43,
-    TooManyMilestones = 44,
-    CantReleaseAMilestoneInDispute = 45,
-    EscrowBalanceNotSufficienteToSendEarnings = 46,
-    OnlyReleaseSignerCanClaimEarnings = 47,
-    MilestoneAlreadyReleased = 48,
-    MilestoneNotFound = 49,
+    EscrowNotFound = 4,
+    OnlyReleaseSignerCanReleaseEarnings = 5,
+    MilestoneNotCompleted = 6,
+    EscrowBalanceNotEnoughToSendEarnings = 7,
+    OnlyPlatformAddressExecuteThisFunction = 8,
+    OnlyServiceProviderChangeMilstoneStatus = 9,
+    NoMileStoneDefined = 10,
+    InvalidMileStoneIndex = 11,
+    OnlyApproverChangeMilstoneFlag = 12,
+    OnlyDisputeResolverCanExecuteThisFunction = 13,
+    MilestoneAlreadyInDispute = 14,
+    MilestoneNotInDispute = 15,
+    InsufficientFundsForResolution = 16,
+    MilestoneOpenedForDisputeResolution = 17,
+    Overflow = 18,
+    Underflow = 19,
+    DivisionError = 20,
+    InsufficientApproverFundsForCommissions = 21,
+    InsufficientServiceProviderFundsForCommissions = 22,
+    MilestoneApprovedCantChangeEscrowProperties = 23,
+    EscrowHasFunds = 24,
+    MilestoneAlreadyResolved = 25,
+    TooManyEscrowsRequested = 26,
+    UnauthorizedToChangeDisputeFlag = 27,
+    TooManyMilestones = 28,
+    CantReleaseAMilestoneInDispute = 29,
+    MilestoneAlreadyReleased = 30,
+    MilestoneNotFound = 31,
+    MilestoneHasAlreadyBeenApproved = 32,
+    EmptyMilestoneStatus = 33,
+    PlatformFeeTooHigh = 34,
 }
 
 impl fmt::Display for ContractError {
@@ -61,29 +46,6 @@ impl fmt::Display for ContractError {
             ContractError::EscrowNotFunded => write!(f, "Escrow not funded"),
             ContractError::AmountCannotBeZero => write!(f, "Amount cannot be zero"),
             ContractError::EscrowAlreadyInitialized => write!(f, "Escrow already initialized"),
-            ContractError::OnlySignerCanFundEscrow => {
-                write!(f, "Only the signer can fund the escrow")
-            }
-            ContractError::MilestoneAlreadyFunded => write!(f, "Milestone already funded"),
-            ContractError::EscrowFullyFunded => write!(f, "This escrow is already fully funded"),
-            ContractError::SignerInsufficientFunds => {
-                write!(f, "The signer does not have sufficient funds")
-            }
-            ContractError::NotEnoughAllowance => {
-                write!(f, "Not enough allowance to fund this escrow")
-            }
-            ContractError::MilestoneAlreadyCompleted => write!(f, "Milestone already completed"),
-            ContractError::SignerInsufficientFundsToComplete => write!(
-                f,
-                "The signer does not have sufficient funds to complete this escrow"
-            ),
-            ContractError::OnlySignerCanRequestRefund => {
-                write!(f, "Only the signer can request a refund")
-            }
-            ContractError::NoFundsToRefund => write!(f, "No funds available to refund"),
-            ContractError::ContractHasInsufficientBalance => {
-                write!(f, "The contract has no balance to repay")
-            }
             ContractError::EscrowNotFound => write!(f, "Escrow not found"),
             ContractError::OnlyReleaseSignerCanReleaseEarnings => write!(
                 f,
@@ -96,14 +58,10 @@ impl fmt::Display for ContractError {
                 f,
                 "The escrow balance must be equal to the amount of earnings defined for the escrow"
             ),
-            ContractError::ContractInsufficientFunds => {
-                write!(f, "The contract does not have sufficient funds")
-            }
             ContractError::OnlyPlatformAddressExecuteThisFunction => write!(
                 f,
                 "Only the platform address should be able to execute this function"
             ),
-            ContractError::EscrowNotInitialized => write!(f, "Escrow not initialized"),
             ContractError::OnlyServiceProviderChangeMilstoneStatus => {
                 write!(f, "Only the service provider can change milestone status")
             }
@@ -120,12 +78,8 @@ impl fmt::Display for ContractError {
             ContractError::InsufficientFundsForResolution => {
                 write!(f, "Insufficient funds for resolution")
             }
-            ContractError::InvalidState => write!(f, "Invalid state"),
             ContractError::MilestoneOpenedForDisputeResolution => {
                 write!(f, "Milestone has been opened for dispute resolution")
-            }
-            ContractError::AmountToDepositGreatherThanEscrowAmount => {
-                write!(f, "Amount to deposit is greater than the escrow amount")
             }
             ContractError::InsufficientApproverFundsForCommissions => {
                 write!(f, "Insufficient approver funds for commissions")
@@ -143,7 +97,6 @@ impl fmt::Display for ContractError {
             ContractError::Overflow => write!(f, "This operation can cause an Overflow"),
             ContractError::Underflow => write!(f, "This operation can cause an Underflow"),
             ContractError::DivisionError => write!(f, "This operation can cause Division error"),
-            ContractError::AdminNotFound => write!(f, "Admin not found!"),
             ContractError::MilestoneAlreadyResolved => write!(f, "This milestone is already resolved"),
             ContractError::TooManyEscrowsRequested => {
                 write!(f, "You have requested too many escrows")
@@ -151,17 +104,21 @@ impl fmt::Display for ContractError {
             ContractError::UnauthorizedToChangeDisputeFlag => {
                 write!(f, "You are not authorized to change the dispute flag")
             }
-            ContractError::ArgumentConversionFailed => {
-                write!(f, "Argument conversion failed")
-            }
             ContractError::TooManyMilestones => {
                 write!(f, "Cannot define more than 10 milestones in an escrow")
             },
             ContractError::CantReleaseAMilestoneInDispute => write!(f, "You cannot launch a milestone in dispute"),
-            ContractError::EscrowBalanceNotSufficienteToSendEarnings => write!(f, "The escrow balance must be equal to the amount of earnings defined for the escrow"),
-            ContractError::OnlyReleaseSignerCanClaimEarnings => write!(f, "Only the release signer can claim escrow earnings"),
             ContractError::MilestoneAlreadyReleased => write!(f, "This milestone is already released"),
             ContractError::MilestoneNotFound => write!(f, "Milestone not found"),
+            ContractError::MilestoneHasAlreadyBeenApproved => {
+                write!(f, "You cannot approve a milestone that has already been approved previously")
+            },
+            ContractError::EmptyMilestoneStatus => {
+                write!(f, "The milestone status cannot be empty")
+            },
+            ContractError::PlatformFeeTooHigh => {
+                write!(f, "The platform fee cannot exceed 99%")
+            }
         }
     }
 }
