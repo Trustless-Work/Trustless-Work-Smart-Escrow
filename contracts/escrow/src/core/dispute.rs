@@ -1,4 +1,4 @@
-use soroban_sdk::{Address, Env, String};
+use soroban_sdk::{Address, Env};
 use soroban_sdk::token::Client as TokenClient;
 
 use crate::core::escrow::EscrowManager;
@@ -20,6 +20,7 @@ impl DisputeManager {
     pub fn resolve_dispute(
         e: Env,
         dispute_resolver: Address,
+        trustless_work_address: Address,
         approver_funds: i128,
         receiver_funds: i128,
     ) -> Result<(), ContractError> {
@@ -27,8 +28,8 @@ impl DisputeManager {
         let mut escrow = EscrowManager::get_escrow(e.clone())?;
         let contract_address = e.current_contract_address();
         
-        let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
-        let trustless_work_address = Address::from_string(&trustless_address_string);
+        // let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
+        // let trustless_work_address = Address::from_string(&trustless_address_string);
         
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
 
@@ -41,7 +42,7 @@ impl DisputeManager {
         let fee_result = FeeCalculator::calculate_dispute_fees(
             approver_funds,
             receiver_funds,
-            escrow.platform_fee as i128,
+            escrow.platform_fee,
             total_funds,
         )?;
 

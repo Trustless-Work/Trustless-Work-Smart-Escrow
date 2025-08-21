@@ -24,6 +24,10 @@ pub fn validate_dispute_resolution_conditions(
         return Err(ContractError::EscrowNotInDispute);
     }
 
+    if approver_funds < 0 || receiver_funds < 0 {
+        return Err(ContractError::ApproverOrReceiverFundsLessThanZero);
+    }
+
     if total_funds != current_balance {
         return Err(ContractError::ReceiverAndApproverFundsNotEqual);
     }
