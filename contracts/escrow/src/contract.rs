@@ -51,21 +51,24 @@ impl EscrowContract {
     pub fn fund_escrow(
         e: Env,
         signer: Address,
-        amount_to_deposit: i128,
+        expected_escrow: Escrow,
+        amount: i128,
     ) -> Result<(), ContractError> {
-        EscrowManager::fund_escrow(e.clone(), signer.clone(), amount_to_deposit)?;
+        EscrowManager::fund_escrow(e.clone(), signer.clone(), expected_escrow, amount)?;
         e.events()
-            .publish((symbol_short!("fund_esc"),), (signer, amount_to_deposit));
+            .publish((symbol_short!("fund_esc"),), (signer, amount));
         Ok(())
     }
 
     pub fn release_funds(
         e: Env,
         release_signer: Address,
+        trustless_work_address: Address,
     ) -> Result<(), ContractError> {
         EscrowManager::release_funds(
             e.clone(),
             release_signer.clone(),
+            trustless_work_address,
         )?;
         e.events().publish(
             (symbol_short!("dis_esc"),),
@@ -133,10 +136,9 @@ impl EscrowContract {
     pub fn approve_milestone(
         e: Env,
         milestone_index: i128,
-        new_flag: bool,
         approver: Address,
     ) -> Result<(), ContractError> {
-        MilestoneManager::change_milestone_approved_flag(e, milestone_index, new_flag, approver)
+        MilestoneManager::change_milestone_approved_flag(e, milestone_index, approver)
     }
 
     ////////////////////////
@@ -146,12 +148,14 @@ impl EscrowContract {
     pub fn resolve_dispute(
         e: Env,
         dispute_resolver: Address,
+        trustless_work_address: Address,
         approver_funds: i128,
         receiver_funds: i128,
     ) -> Result<(), ContractError> {
         DisputeManager::resolve_dispute(
             e,
             dispute_resolver,
+            trustless_work_address,
             approver_funds,
             receiver_funds,
         )
