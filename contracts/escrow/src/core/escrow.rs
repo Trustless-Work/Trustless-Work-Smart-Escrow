@@ -1,9 +1,8 @@
-use soroban_sdk::{Address, Env, Symbol, Vec, String};
+use soroban_sdk::{Address, Env, Symbol, Vec};
 use soroban_sdk::token::Client as TokenClient;
 
 use crate::core::validators::escrow::{
-    validate_escrow_property_change_conditions,
-    validate_initialize_escrow_conditions, validate_release_conditions,
+    validate_escrow_property_change_conditions, validate_fund_escrow_conditions, validate_initialize_escrow_conditions, validate_release_conditions
 };
 use crate::error::ContractError;
 use crate::modules::fee::{FeeCalculator, FeeCalculatorTrait};
@@ -29,25 +28,25 @@ impl EscrowManager {
         Ok(escrow_properties)
     }
 
-    pub fn fund_escrow(
-        e: Env,
-        signer: Address,
-        amount_to_deposit: i128,
-    ) -> Result<(), ContractError> {
+    pub fn fund_escrow(e: Env, signer: Address, expected_escrow: Escrow, amount: i128) -> Result<(), ContractError> {
+        let stored_escrow: Escrow = Self::get_escrow(e.clone())?;
+        validate_fund_escrow_conditions(amount, &stored_escrow, &expected_escrow)?;
         signer.require_auth();
-        let escrow = Self::get_escrow(e.clone())?;
-        let token_client = TokenClient::new(&e, &escrow.trustline.address);
-        token_client.transfer(&signer, &e.current_contract_address(), &amount_to_deposit);
+
+        let token_client = TokenClient::new(&e, &stored_escrow.trustline.address);
+        token_client.transfer(&signer, &e.current_contract_address(), &amount);
+
         Ok(())
     }
 
     pub fn release_funds(
         e: Env,
         release_signer: Address,
+        trustless_work_address: Address,
     ) -> Result<(), ContractError> {
         release_signer.require_auth();
-        let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
-        let trustless_work_address = Address::from_string(&trustless_address_string);
+        // let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
+        // let trustless_work_address = Address::from_string(&trustless_address_string);
 
         let mut escrow = Self::get_escrow(e.clone())?;
         validate_release_conditions(&escrow, &release_signer)?;
@@ -63,7 +62,7 @@ impl EscrowManager {
         }
 
         let fee_result =
-            FeeCalculator::calculate_standard_fees(escrow.amount as i128, escrow.platform_fee as i128)?;
+            FeeCalculator::calculate_standard_fees(escrow.amount as i128, escrow.platform_fee)?;
 
         token_client.transfer(&contract_address, &trustless_work_address, &fee_result.trustless_work_fee);
         token_client.transfer(&contract_address, &escrow.roles.platform_address, &fee_result.platform_fee);
@@ -86,6 +85,7 @@ impl EscrowManager {
 
         validate_escrow_property_change_conditions(
             &existing_escrow,
+            &escrow_properties,
             &platform_address,
             contract_balance,
         )?;
