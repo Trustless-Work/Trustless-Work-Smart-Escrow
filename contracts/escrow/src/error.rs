@@ -35,12 +35,15 @@ pub enum ContractError {
     MilestoneHasAlreadyBeenApproved = 29,
     EmptyMilestoneStatus = 30,
     PlatformFeeTooHigh = 31,
+    FlagsMustBeFalse = 32,
+    EscrowPropertiesMismatch = 33,
+    ApproverOrReceiverFundsLessThanZero = 34,
 }
 
 impl fmt::Display for ContractError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ContractError::AmountCannotBeZero => write!(f, "Amount cannot be zero"),
+            ContractError::AmountCannotBeZero => write!(f, "Amount cannot be equal to or less than zero"),
             ContractError::EscrowAlreadyInitialized => write!(f, "Escrow already initialized"),
             ContractError::EscrowNotFound => write!(f, "Escrow not found"),
             ContractError::OnlyReleaseSignerCanReleaseEarnings => write!(
@@ -114,6 +117,15 @@ impl fmt::Display for ContractError {
             },
             ContractError::PlatformFeeTooHigh => {
                 write!(f, "The platform fee cannot exceed 99%")
+            }
+            ContractError::FlagsMustBeFalse => {
+                write!(f, "All flags (approved, disputed, released) must be false in order to execute this function.")
+            }
+            ContractError::EscrowPropertiesMismatch => {
+                write!(f, "The provided escrow properties do not match the stored escrow.")
+            }
+            ContractError::ApproverOrReceiverFundsLessThanZero => {
+                write!(f, "The funds of the approver or receiver must not be less than 0.")
             }
         }
     }
