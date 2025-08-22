@@ -23,7 +23,6 @@ impl MilestoneManager {
 
         validate_milestone_status_change_conditions(
             &existing_escrow,
-            milestone_index,
             &service_provider,
         )?;
 
@@ -62,7 +61,7 @@ impl MilestoneManager {
         .get(milestone_index as u32)
         .ok_or(ContractError::InvalidMileStoneIndex)?;
     
-        validate_milestone_flag_change_conditions(&existing_escrow, &milestone_to_update, milestone_index, &approver)?;
+        validate_milestone_flag_change_conditions(&existing_escrow, &milestone_to_update, &approver)?;
         milestone_to_update.approved = true;
 
         existing_escrow
