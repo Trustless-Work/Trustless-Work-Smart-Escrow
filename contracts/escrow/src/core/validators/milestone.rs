@@ -12,7 +12,7 @@ pub fn validate_milestone_status_change_conditions(
     }
 
     if escrow.milestones.is_empty() {
-        return Err(ContractError::NoMileStoneDefined);
+        return Err(ContractError::NoMilestoneDefined);
     }
 
     Ok(())
@@ -37,7 +37,7 @@ pub fn validate_milestone_flag_change_conditions(
     }
 
     if escrow.milestones.is_empty() {
-        return Err(ContractError::NoMileStoneDefined);
+        return Err(ContractError::NoMilestoneDefined);
     }
 
     Ok(())

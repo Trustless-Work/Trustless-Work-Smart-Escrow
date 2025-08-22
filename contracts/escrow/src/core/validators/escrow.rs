@@ -19,7 +19,7 @@ pub fn validate_release_conditions(
     }
 
     if escrow.milestones.is_empty() {
-        return Err(ContractError::NoMileStoneDefined);
+        return Err(ContractError::NoMilestoneDefined);
     }
 
     if !escrow
@@ -79,6 +79,10 @@ pub fn validate_escrow_property_change_conditions(
         return Err(ContractError::TooManyMilestones);
     }
 
+    if existing_escrow.milestones.is_empty() {
+        return Err(ContractError::NoMilestoneDefined);
+    }
+
     Ok(())
 }
 
@@ -97,6 +101,10 @@ pub fn validate_initialize_escrow_conditions(
         || escrow_properties.milestones.iter().any(|m| m.approved)
     {
         return Err(ContractError::FlagsMustBeFalse);
+    }
+
+    if escrow_properties.milestones.is_empty() {
+        return Err(ContractError::NoMilestoneDefined);
     }
 
     let max_bps_percentage: u32 = 99*100;
