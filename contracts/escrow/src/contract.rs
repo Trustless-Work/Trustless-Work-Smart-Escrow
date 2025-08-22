@@ -39,34 +39,34 @@ impl EscrowContract {
     // Escrow /////
     ////////////////////////
 
-    pub fn initialize_escrow(e: Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
+    pub fn initialize_escrow(e: &Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
         let initialized_escrow =
-            EscrowManager::initialize_escrow(e.clone(), escrow_properties)?;
+            EscrowManager::initialize_escrow(e, escrow_properties)?;
         e.events().publish((symbol_short!("init_esc"),), ());
         Ok(initialized_escrow)
     }
 
     pub fn fund_escrow(
-        e: Env,
+        e: &Env,
         signer: Address,
         expected_escrow: Escrow,
         amount: i128,
     ) -> Result<(), ContractError> {
-        EscrowManager::fund_escrow(e.clone(), signer.clone(), expected_escrow, amount)?;
+        EscrowManager::fund_escrow(e, &signer, &expected_escrow, amount)?;
         e.events()
             .publish((symbol_short!("fund_esc"),), (signer, amount));
         Ok(())
     }
 
     pub fn release_funds(
-        e: Env,
+        e: &Env,
         release_signer: Address,
         trustless_work_address: Address,
     ) -> Result<(), ContractError> {
         EscrowManager::release_funds(
-            e.clone(),
-            release_signer.clone(),
-            trustless_work_address,
+            e,
+            &release_signer,
+            &trustless_work_address,
         )?;
         e.events().publish(
             (symbol_short!("dis_esc"),),
@@ -76,13 +76,13 @@ impl EscrowContract {
     }
 
     pub fn update_escrow(
-        e: Env,
+        e: &Env,
         plataform_address: Address,
         escrow_properties: Escrow,
     ) -> Result<Escrow, ContractError> {
         let updated_escrow = EscrowManager::change_escrow_properties(
-            e.clone(),
-            plataform_address.clone(),
+            e,
+            &plataform_address,
             escrow_properties.clone(),
         )?;
         e.events().publish(
@@ -92,23 +92,23 @@ impl EscrowContract {
         Ok(updated_escrow)
     }
 
-    pub fn get_escrow(e: Env) -> Result<Escrow, ContractError> {
+    pub fn get_escrow(e: &Env) -> Result<Escrow, ContractError> {
         EscrowManager::get_escrow(e)
     }
 
     pub fn get_escrow_by_contract_id(
-        e: Env,
+        e: &Env,
         contract_id: Address,
     ) -> Result<Escrow, ContractError> {
         EscrowManager::get_escrow_by_contract_id(e, &contract_id)
     }
 
     pub fn get_multiple_escrow_balances(
-        e: Env,
+        e: &Env,
         signer: Address,
         addresses: Vec<Address>,
     ) -> Result<Vec<AddressBalance>, ContractError> {
-        EscrowManager::get_multiple_escrow_balances(e, signer, addresses)
+        EscrowManager::get_multiple_escrow_balances(e, &signer, addresses)
     }
 
     ////////////////////////
@@ -123,7 +123,7 @@ impl EscrowContract {
         service_provider: Address,
     ) -> Result<(), ContractError> {
         MilestoneManager::change_milestone_status(
-            e,
+            &e,
             milestone_index,
             new_status,
             new_evidence,
@@ -136,7 +136,7 @@ impl EscrowContract {
         milestone_index: i128,
         approver: Address,
     ) -> Result<(), ContractError> {
-        MilestoneManager::change_milestone_approved_flag(e, milestone_index, approver)
+        MilestoneManager::change_milestone_approved_flag(&e, milestone_index, approver)
     }
 
     ////////////////////////
@@ -151,7 +151,7 @@ impl EscrowContract {
         receiver_funds: i128,
     ) -> Result<(), ContractError> {
         DisputeManager::resolve_dispute(
-            e,
+            &e,
             dispute_resolver,
             trustless_work_address,
             approver_funds,
@@ -160,6 +160,6 @@ impl EscrowContract {
     }
 
     pub fn dispute_escrow(e: Env, signer: Address) -> Result<(), ContractError> {
-        DisputeManager::dispute_escrow(e, signer)
+        DisputeManager::dispute_escrow(&e, signer)
     }
 }

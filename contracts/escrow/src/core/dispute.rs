@@ -18,14 +18,14 @@ pub struct DisputeManager;
 
 impl DisputeManager {
     pub fn resolve_dispute(
-        e: Env,
+        e: &Env,
         dispute_resolver: Address,
         trustless_work_address: Address,
         approver_funds: i128,
         receiver_funds: i128,
     ) -> Result<(), ContractError> {
         dispute_resolver.require_auth();
-        let mut escrow = EscrowManager::get_escrow(e.clone())?;
+        let mut escrow = EscrowManager::get_escrow(e)?;
         let contract_address = e.current_contract_address();
         
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
@@ -75,9 +75,9 @@ impl DisputeManager {
         Ok(())
     }
 
-    pub fn dispute_escrow(e: Env, signer: Address) -> Result<(), ContractError> {
+    pub fn dispute_escrow(e: &Env, signer: Address) -> Result<(), ContractError> {
         signer.require_auth();
-        let mut escrow = EscrowManager::get_escrow(e.clone())?;
+        let mut escrow = EscrowManager::get_escrow(e)?;
         validate_dispute_flag_change_conditions(&escrow, &signer)?;
 
         escrow.flags.disputed = true;
