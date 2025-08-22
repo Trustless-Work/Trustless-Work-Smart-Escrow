@@ -12,7 +12,7 @@ pub enum ContractError {
     EscrowBalanceNotEnoughToSendEarnings = 6,
     OnlyPlatformAddressExecuteThisFunction = 7,
     OnlyServiceProviderChangeMilstoneStatus = 8,
-    NoMileStoneDefined = 9,
+    NoMilestoneDefined = 9,
     InvalidMileStoneIndex = 10,
     OnlyApproverChangeMilstoneFlag = 11,
     OnlyDisputeResolverCanExecuteThisFunction = 12,
@@ -64,7 +64,7 @@ impl fmt::Display for ContractError {
             ContractError::OnlyServiceProviderChangeMilstoneStatus => {
                 write!(f, "Only the service provider can change milestone status")
             }
-            ContractError::NoMileStoneDefined => write!(f, "Escrow initialized without milestone"),
+            ContractError::NoMilestoneDefined => write!(f, "Escrow initialized without milestone"),
             ContractError::InvalidMileStoneIndex => write!(f, "Invalid milestone index"),
             ContractError::OnlyApproverChangeMilstoneFlag => {
                 write!(f, "Only the approver can change milestone flag")
