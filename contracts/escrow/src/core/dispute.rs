@@ -28,14 +28,12 @@ impl DisputeManager {
         let mut escrow = EscrowManager::get_escrow(e.clone())?;
         let contract_address = e.current_contract_address();
         
-        // let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
-        // let trustless_work_address = Address::from_string(&trustless_address_string);
-        
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
+        let current_balance = token_client.balance(&contract_address);
 
         let total_funds = BasicMath::safe_add(approver_funds, receiver_funds)?;
         
-        if token_client.balance(&contract_address) < total_funds {
+        if current_balance < total_funds {
             return Err(ContractError::InsufficientFundsForResolution);
         }
 
@@ -46,7 +44,6 @@ impl DisputeManager {
             total_funds,
         )?;
 
-        let current_balance = token_client.balance(&contract_address);
         validate_dispute_resolution_conditions(
             &escrow,
             &dispute_resolver,
