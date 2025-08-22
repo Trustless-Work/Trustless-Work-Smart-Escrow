@@ -4,16 +4,14 @@ use soroban_sdk::{
 
 use crate::core::{DisputeManager, EscrowManager, MilestoneManager};
 use crate::error::ContractError;
-use crate::storage::types::{AddressBalance, DataKey, Escrow};
+use crate::storage::types::{AddressBalance, Escrow};
 
 #[contract]
 pub struct EscrowContract;
 
 #[contractimpl]
 impl EscrowContract {
-    pub fn __constructor(env: Env, admin: Address) {
-        env.storage().instance().set(&DataKey::Admin, &admin);
-    }
+    pub fn __constructor() {}
 
     pub fn deploy(
         env: Env,
