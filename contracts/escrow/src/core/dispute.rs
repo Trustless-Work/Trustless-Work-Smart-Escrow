@@ -30,18 +30,13 @@ impl DisputeManager {
         
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
         let current_balance = token_client.balance(&contract_address);
-
         let total_funds = BasicMath::safe_add(approver_funds, receiver_funds)?;
-        
-        if current_balance < total_funds {
-            return Err(ContractError::InsufficientFundsForResolution);
-        }
 
         let fee_result = FeeCalculator::calculate_dispute_fees(
             approver_funds,
             receiver_funds,
             escrow.platform_fee,
-            total_funds,
+            total_funds
         )?;
 
         validate_dispute_resolution_conditions(
@@ -50,7 +45,6 @@ impl DisputeManager {
             approver_funds,
             receiver_funds,
             total_funds,
-            &fee_result,
             current_balance,
         )?;
 
