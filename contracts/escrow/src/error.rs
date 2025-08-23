@@ -125,7 +125,7 @@ impl fmt::Display for ContractError {
                 write!(f, "The provided escrow properties do not match the stored escrow.")
             }
             ContractError::ApproverOrReceiverFundsLessThanZero => {
-                write!(f, "The funds of the approver or receiver must not be less than 0.")
+                write!(f, "The funds of the approver or receiver must not be less or equal than 0.")
             }
         }
     }
