@@ -89,7 +89,6 @@ fn test_initialize_excrow() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let escrow_properties: Escrow = Escrow {
@@ -190,7 +189,6 @@ fn test_update_escrow() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let engagement_id = String::from_str(&env, "test_escrow_2");
@@ -331,7 +329,6 @@ fn test_change_milestone_status_and_approved() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let engagement_id = String::from_str(&env, "test_escrow");
@@ -463,7 +460,6 @@ fn test_release_funds_successful_flow() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let engagement_id = String::from_str(&env, "test_escrow_1");
@@ -582,7 +578,6 @@ fn test_release_funds_milestones_incomplete() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let escrow_properties: Escrow = Escrow {
@@ -659,7 +654,6 @@ fn test_release_funds_same_receiver_as_provider() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let engagement_id = String::from_str(&env, "test_escrow_same_receiver");
@@ -767,7 +761,6 @@ fn test_release_funds_invalid_receiver_fallback() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let engagement_id = String::from_str(&env, "test_escrow_receiver");
@@ -879,7 +872,6 @@ fn test_dispute_management() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let escrow_properties: Escrow = Escrow {
@@ -966,7 +958,6 @@ fn test_dispute_resolution_process() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let engagement_id = String::from_str(&env, "test_dispute_resolution");
@@ -1113,7 +1104,6 @@ fn test_fund_escrow_successful_deposit() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let engagement_id = String::from_str(&env, "test_escrow_fund");
@@ -1204,8 +1194,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
     };
 
     let trustline: Trustline = Trustline {
-        address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
+        address: usdc_token.0.address.clone()
     };
 
     let engagement_id = String::from_str(&env, "test_escrow_insufficient_funds");
@@ -1289,7 +1278,6 @@ fn test_dispute_escrow_authorized_and_unauthorized() {
         },
         trustline: Trustline {
             address: usdc_token.0.address.clone(),
-            decimals: 7,
         },
         receiver_memo: 0,
     };
