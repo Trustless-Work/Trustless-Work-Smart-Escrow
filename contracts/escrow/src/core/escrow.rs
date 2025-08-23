@@ -13,11 +13,7 @@ pub struct EscrowManager;
 impl EscrowManager {
     #[inline]
     pub fn get_receiver(escrow: &Escrow) -> Address {
-        if escrow.roles.receiver == escrow.roles.service_provider {
-            escrow.roles.service_provider.clone()
-        } else {
-            escrow.roles.receiver.clone()
-        }
+        escrow.roles.receiver.clone()
     }
 
     pub fn initialize_escrow(e: &Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
@@ -96,10 +92,8 @@ impl EscrowManager {
 
     pub fn get_multiple_escrow_balances(
         e: &Env,
-        signer: &Address,
         addresses: Vec<Address>,
     ) -> Result<Vec<AddressBalance>, ContractError> {
-        signer.require_auth();
         const MAX_ESCROWS: u32 = 20;
         if addresses.len() > MAX_ESCROWS {
             return Err(ContractError::TooManyEscrowsRequested);
