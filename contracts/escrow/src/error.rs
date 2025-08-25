@@ -38,6 +38,7 @@ pub enum ContractError {
     FlagsMustBeFalse = 32,
     EscrowPropertiesMismatch = 33,
     ApproverOrReceiverFundsLessThanZero = 34,
+    EscrowAlreadyReleased = 35,
 }
 
 impl fmt::Display for ContractError {
@@ -127,6 +128,9 @@ impl fmt::Display for ContractError {
             ContractError::ApproverOrReceiverFundsLessThanZero => {
                 write!(f, "The funds of the approver or receiver must not be less or equal than 0.")
             }
+            ContractError::EscrowAlreadyReleased => {
+                write!(f, "The escrow funds have been released.")
+            }        
         }
     }
 }
