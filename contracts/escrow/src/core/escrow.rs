@@ -18,20 +18,22 @@ impl EscrowManager {
 
     pub fn initialize_escrow(e: &Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
         validate_initialize_escrow_conditions(e, escrow_properties.clone())?;
-        e.storage()
-            .instance()
-            .set(&DataKey::Escrow, &escrow_properties);
+        e.storage().instance().set(&DataKey::Escrow, &escrow_properties);
         Ok(escrow_properties)
     }
 
-    pub fn fund_escrow(e: &Env, signer: &Address, expected_escrow: &Escrow, amount: i128) -> Result<(), ContractError> {
+    pub fn fund_escrow(
+        e: &Env,
+        signer: &Address,
+        expected_escrow: &Escrow,
+        amount: i128,
+    ) -> Result<(), ContractError> {
         let stored_escrow: Escrow = Self::get_escrow(e)?;
         validate_fund_escrow_conditions(amount, &stored_escrow, expected_escrow)?;
-        signer.require_auth();
 
+        signer.require_auth();
         let token_client = TokenClient::new(e, &stored_escrow.trustline.address);
         token_client.transfer(signer, &e.current_contract_address(), &amount);
-
         Ok(())
     }
 
@@ -66,7 +68,6 @@ impl EscrowManager {
 
         Ok(())
     }
-
     pub fn change_escrow_properties(
         e: &Env,
         platform_address: &Address,
@@ -84,9 +85,7 @@ impl EscrowManager {
             contract_balance,
         )?;
 
-        e.storage()
-            .instance()
-            .set(&DataKey::Escrow, &escrow_properties);
+        e.storage().instance().set(&DataKey::Escrow, &escrow_properties);
         Ok(escrow_properties)
     }
 

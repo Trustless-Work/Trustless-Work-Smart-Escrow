@@ -11,6 +11,10 @@ pub fn validate_release_conditions(
     release_signer: &Address,
 ) -> Result<(), ContractError> {
     if escrow.flags.released {
+        return Err(ContractError::EscrowAlreadyReleased);
+    }
+
+    if escrow.flags.resolved {
         return Err(ContractError::EscrowAlreadyResolved);
     }
 
