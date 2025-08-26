@@ -1007,6 +1007,15 @@ fn test_dispute_resolution_process() {
 
     assert!(incorrect_dispute_resolution_result.is_err());
 
+    let dispute_resolution_with_incorrect_funds = escrow_approver.try_resolve_dispute(
+        &dispute_resolver_address,
+        &trustless_work_address,
+        &0,
+        &0,
+    );
+
+    assert!(dispute_resolution_with_incorrect_funds.is_err());
+
     // Resolve dispute with correct dispute resolver (50/50 split)
     let receiver_funds: i128 = 50_000_000;
 
