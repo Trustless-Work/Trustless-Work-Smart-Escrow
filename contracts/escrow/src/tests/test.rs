@@ -1130,6 +1130,10 @@ fn test_fund_escrow_successful_deposit() {
     assert_eq!(usdc_token.0.balance(&escrow_approver.address ), 0);
 
     let deposit_amount = amount / 2;
+
+    let test_fund = escrow_approver.try_fund_escrow(&approver_address, &escrow_properties, &0);
+    assert!(test_fund.is_err());
+
     escrow_approver.fund_escrow(&approver_address, &escrow_properties, &deposit_amount);
 
     // Check balances after deposit
