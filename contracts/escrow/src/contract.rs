@@ -1,8 +1,7 @@
-use soroban_sdk::{
-    contract, contractimpl, symbol_short, Address, BytesN, Env, String, Symbol, Val, Vec,
-};
+use soroban_sdk::{contract, contractimpl, Address, BytesN, Env, String, Symbol, Val, Vec};
 
 use crate::core::{DisputeManager, EscrowManager, MilestoneManager};
+use crate::events::handler::{ChgEsc, DisEsc, FundEsc, InitEsc, EscrowsBySpdr};
 use crate::error::ContractError;
 use crate::storage::types::{AddressBalance, Escrow};
 
@@ -40,9 +39,8 @@ impl EscrowContract {
     ////////////////////////
 
     pub fn initialize_escrow(e: &Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
-        let initialized_escrow =
-            EscrowManager::initialize_escrow(e, escrow_properties)?;
-        e.events().publish((symbol_short!("init_esc"),), ());
+    let initialized_escrow = EscrowManager::initialize_escrow(e, escrow_properties)?;
+        InitEsc { escrow: initialized_escrow.clone() }.publish(e);
         Ok(initialized_escrow)
     }
 
@@ -53,8 +51,7 @@ impl EscrowContract {
         amount: i128,
     ) -> Result<(), ContractError> {
         EscrowManager::fund_escrow(e, &signer, &expected_escrow, amount)?;
-        e.events()
-            .publish((symbol_short!("fund_esc"),), (signer, amount));
+        FundEsc { signer, amount }.publish(e);
         Ok(())
     }
 
@@ -68,10 +65,7 @@ impl EscrowContract {
             &release_signer,
             &trustless_work_address,
         )?;
-        e.events().publish(
-            (symbol_short!("dis_esc"),),
-            release_signer,
-        );
+        DisEsc { release_signer }.publish(e);
         Ok(())
     }
 
@@ -85,10 +79,7 @@ impl EscrowContract {
             &plataform_address,
             escrow_properties.clone(),
         )?;
-        e.events().publish(
-            (symbol_short!("chg_esc"),),
-            (plataform_address, escrow_properties.engagement_id),
-        );
+        ChgEsc { platform: plataform_address, engagement_id: escrow_properties.engagement_id.clone() }.publish(e);
         Ok(updated_escrow)
     }
 
@@ -121,13 +112,15 @@ impl EscrowContract {
         new_evidence: Option<String>,
         service_provider: Address,
     ) -> Result<(), ContractError> {
-        MilestoneManager::change_milestone_status(
+        let escrow = MilestoneManager::change_milestone_status(
             &e,
             milestone_index,
             new_status,
             new_evidence,
             service_provider,
-        )
+        )?;
+        EscrowsBySpdr { escrow }.publish(&e);
+        Ok(())
     }
 
     pub fn approve_milestone(
@@ -135,7 +128,9 @@ impl EscrowContract {
         milestone_index: i128,
         approver: Address,
     ) -> Result<(), ContractError> {
-        MilestoneManager::change_milestone_approved_flag(&e, milestone_index, approver)
+        let escrow = MilestoneManager::change_milestone_approved_flag(&e, milestone_index, approver)?;
+        EscrowsBySpdr { escrow }.publish(&e);
+        Ok(())
     }
 
     ////////////////////////
@@ -149,16 +144,20 @@ impl EscrowContract {
         approver_funds: i128,
         receiver_funds: i128,
     ) -> Result<(), ContractError> {
-        DisputeManager::resolve_dispute(
+        let escrow = DisputeManager::resolve_dispute(
             &e,
             dispute_resolver,
             trustless_work_address,
             approver_funds,
             receiver_funds,
-        )
+        )?;
+        EscrowsBySpdr { escrow }.publish(&e);
+        Ok(())
     }
 
     pub fn dispute_escrow(e: Env, signer: Address) -> Result<(), ContractError> {
-        DisputeManager::dispute_escrow(&e, signer)
+        let escrow = DisputeManager::dispute_escrow(&e, signer)?;
+        EscrowsBySpdr { escrow }.publish(&e);
+        Ok(())
     }
 }
