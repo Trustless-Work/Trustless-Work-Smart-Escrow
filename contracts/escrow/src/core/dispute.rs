@@ -3,12 +3,11 @@ use soroban_sdk::token::Client as TokenClient;
 
 use crate::core::escrow::EscrowManager;
 use crate::error::ContractError;
-use crate::events::escrows_by_contract_id;
 use crate::modules::{
     fee::{FeeCalculator, FeeCalculatorTrait},
     math::{BasicArithmetic, BasicMath},
 };
-use crate::storage::types::DataKey;
+use crate::storage::types::{DataKey, Escrow};
 
 use super::validators::dispute::{
     validate_dispute_flag_change_conditions, validate_dispute_resolution_conditions,
@@ -23,7 +22,7 @@ impl DisputeManager {
         trustless_work_address: Address,
         approver_funds: i128,
         receiver_funds: i128,
-    ) -> Result<(), ContractError> {
+    ) -> Result<Escrow, ContractError> {
         dispute_resolver.require_auth();
         let mut escrow = EscrowManager::get_escrow(e)?;
         let contract_address = e.current_contract_address();
@@ -64,12 +63,10 @@ impl DisputeManager {
         escrow.flags.disputed = false;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
-        escrows_by_contract_id(&e, escrow.engagement_id.clone(), escrow);
-
-        Ok(())
+        Ok(escrow)
     }
 
-    pub fn dispute_escrow(e: &Env, signer: Address) -> Result<(), ContractError> {
+    pub fn dispute_escrow(e: &Env, signer: Address) -> Result<Escrow, ContractError> {
         signer.require_auth();
         let mut escrow = EscrowManager::get_escrow(e)?;
         validate_dispute_flag_change_conditions(&escrow, &signer)?;
@@ -77,8 +74,6 @@ impl DisputeManager {
         escrow.flags.disputed = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
-        escrows_by_contract_id(&e, escrow.engagement_id.clone(), escrow);
-
-        Ok(())
+        Ok(escrow)
     }
 }
