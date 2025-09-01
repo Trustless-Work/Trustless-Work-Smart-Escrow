@@ -17,7 +17,6 @@ mod core {
 mod error;
 mod events {
     pub mod handler;
-    pub(crate) use handler::escrows_by_contract_id;
 }
 mod modules {
     pub mod math {
