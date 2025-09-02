@@ -11,12 +11,9 @@ use super::validators::escrow::{validate_escrow_property_change_conditions, vali
 pub struct EscrowManager;
 
 impl EscrowManager{
+    #[inline]
     pub fn get_receiver(escrow: &Escrow) -> Address {
-        if escrow.roles.receiver == escrow.roles.service_provider {
-            escrow.roles.service_provider.clone()
-        } else {
-            escrow.roles.receiver.clone()
-        }
+        escrow.roles.receiver.clone()
     }
 
     pub fn initialize_escrow(
