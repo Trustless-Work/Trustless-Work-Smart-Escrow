@@ -47,7 +47,7 @@ impl DisputeManager {
         let fee_result = FeeCalculator::calculate_dispute_fees(
             approver_funds,
             receiver_funds,
-            escrow.platform_fee as i128,
+            escrow.platform_fee,
             total_funds,
         )?;
 
@@ -68,8 +68,9 @@ impl DisputeManager {
         if fee_result.net_approver_funds > 0 {
             token_client.transfer(&contract_address, &escrow.roles.approver, &fee_result.net_approver_funds);
         }
-        if fee_result.net_provider_funds > 0 {
-            token_client.transfer(&contract_address, &escrow.roles.receiver, &fee_result.net_provider_funds);
+
+        if fee_result.net_receiver_funds > 0 {
+            token_client.transfer(&contract_address, &escrow.roles.receiver, &fee_result.net_receiver_funds);
         }
 
         let mut updated_milestones = escrow.milestones.clone();

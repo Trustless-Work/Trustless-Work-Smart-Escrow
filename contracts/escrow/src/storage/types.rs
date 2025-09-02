@@ -7,7 +7,7 @@ pub struct Escrow {
     pub title: String,
     pub description: String,
     pub roles: Roles,
-    pub platform_fee: i128,
+    pub platform_fee: u32,
     pub milestones: Vec<Milestone>,
     pub trustline: Trustline,
     pub receiver_memo: i128,

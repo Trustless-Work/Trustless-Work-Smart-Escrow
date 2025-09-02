@@ -1108,7 +1108,7 @@ fn test_dispute_resolution_process() {
     );
 
     let expected_tw_fee = (total_amount * 30) / 10000; // 0.3%
-    let expected_platform_fee = (total_amount * platform_fee) / 10000;
+    let expected_platform_fee = (total_amount * platform_fee as i128) / 10000;
 
     let expected_approver = approver_amount - (approver_amount * (expected_tw_fee + expected_platform_fee)) / total_amount;
     let expected_provider = provider_amount - (provider_amount * (expected_tw_fee + expected_platform_fee)) / total_amount;
@@ -1200,7 +1200,7 @@ fn test_fund_escrow_successful_deposit() {
 
     let amount_to_deposit: i128 = 100_000_000;
 
-    escrow_approver.fund_escrow(&release_signer_address, &amount_to_deposit);
+    escrow_approver.fund_escrow(&release_signer_address, &escrow_properties, &amount_to_deposit);
 
     let expected_result_amount: i128 = 100_000_000;
 
@@ -1289,7 +1289,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
 
     let amount_to_deposit: i128 = 180_000;
 
-    let result = escrow_approver.try_fund_escrow(&release_signer_address, &amount_to_deposit);
+    let result = escrow_approver.try_fund_escrow(&release_signer_address, &escrow_properties, &amount_to_deposit);
 
     assert!(result.is_err(), "Should fail when the signer has insufficient funds");
 }
@@ -1366,7 +1366,7 @@ fn test_fund_escrow_dispute_flag_error() {
 
     let amount_to_deposit: i128 = 80_000;
 
-    let result = escrow_approver.try_fund_escrow(&release_signer_address, &amount_to_deposit);
+    let result = escrow_approver.try_fund_escrow(&release_signer_address, &escrow_properties, &amount_to_deposit);
 
     assert!(result.is_err(), "Should fail when the dispute approved_flag is true");
 }

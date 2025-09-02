@@ -84,7 +84,7 @@ pub fn validate_initialize_escrow_conditions(
         return Err(ContractError::EscrowAlreadyInitialized);
     }
 
-    let max_bps_percentage: i128 = 99*100;
+    let max_bps_percentage: u32 = 99*100;
     if escrow_properties.platform_fee > max_bps_percentage {
         return Err(ContractError::PlatformFeeTooHigh);
     }
@@ -106,6 +106,23 @@ pub fn validate_initialize_escrow_conditions(
 
     if escrow_properties.milestones.len() > 10 {
         return Err(ContractError::TooManyMilestones);
+    }
+
+    Ok(())
+}
+
+#[inline]
+pub fn validate_fund_escrow_conditions(
+    amount: i128,
+    stored_escrow: &Escrow,
+    expected_escrow: &Escrow,
+) -> Result<(), ContractError> {
+    if amount <= 0 {
+        return Err(ContractError::AmountCannotBeZero);
+    }
+
+    if !stored_escrow.eq(&expected_escrow) {
+        return Err(ContractError::EscrowPropertiesMismatch);
     }
 
     Ok(())

@@ -36,7 +36,7 @@ pub fn validate_dispute_resolution_conditions(
         return Err(ContractError::InsufficientApproverFundsForCommissions);
     }
 
-    if receiver_funds < fee_result.net_provider_funds {
+    if receiver_funds < fee_result.net_receiver_funds {
         return Err(ContractError::InsufficientServiceProviderFundsForCommissions);
     }
 
