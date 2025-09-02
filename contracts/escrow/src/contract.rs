@@ -57,11 +57,12 @@ impl EscrowContract {
     pub fn fund_escrow(
         e: Env, 
         signer: Address, 
-        amount_to_deposit: i128
+        expected_escrow: Escrow,
+        amount: i128
     ) -> Result<(), ContractError> {
-        EscrowManager::fund_escrow(e.clone(), signer.clone(), amount_to_deposit)?;
+        EscrowManager::fund_escrow(e.clone(), signer.clone(), expected_escrow, amount)?;
         e.events()
-            .publish((symbol_short!("fund_esc"),), (signer, amount_to_deposit));
+            .publish((symbol_short!("fund_esc"),), (signer, amount));
 
         Ok(())
     }

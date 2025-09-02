@@ -39,6 +39,7 @@ pub enum ContractError {
     EmptyMilestoneStatus = 33,
     PlatformFeeTooHigh = 34,
     FlagsMustBeFalse = 35,
+    EscrowPropertiesMismatch = 36,
 }
 
 impl fmt::Display for ContractError {
@@ -122,6 +123,9 @@ impl fmt::Display for ContractError {
             },
             ContractError::FlagsMustBeFalse => {
                 write!(f, "All flags (approved, disputed, released) must be false in order to execute this function.")
+            },
+            ContractError::EscrowPropertiesMismatch => {
+                write!(f, "The provided escrow properties do not match the stored escrow.")
             }
         }
     }

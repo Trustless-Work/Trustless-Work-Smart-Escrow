@@ -1,6 +1,7 @@
 use soroban_sdk::{Address, Env, Symbol, Vec};
 use soroban_sdk::token::Client as TokenClient;
 
+use crate::core::validators::escrow::validate_fund_escrow_conditions;
 use crate::modules::fee::{FeeCalculator, FeeCalculatorTrait};
 use crate::storage::types::{Escrow, DataKey, AddressBalance, Milestone};
 use crate::error::ContractError;
@@ -33,14 +34,17 @@ impl EscrowManager{
     pub fn fund_escrow(
         e: Env, 
         signer: Address, 
-        amount_to_deposit: i128
+        expected_escrow: Escrow,
+        amount: i128
     ) -> Result<(), ContractError> {
+        let stored_escrow: Escrow = Self::get_escrow(e.clone())?;
+        validate_fund_escrow_conditions(amount, &stored_escrow, &expected_escrow)?;
         signer.require_auth();
 
         let escrow = EscrowManager::get_escrow(e.clone())?;
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
 
-        token_client.transfer(&signer, &e.current_contract_address(), &amount_to_deposit);
+        token_client.transfer(&signer, &e.current_contract_address(), &amount);
     
         e.storage().instance().set(&DataKey::Escrow, &escrow);
     
@@ -81,7 +85,7 @@ impl EscrowManager{
     
             let fee_result = FeeCalculator::calculate_standard_fees(
                 milestone.amount as i128, 
-                escrow.platform_fee as i128
+                escrow.platform_fee
             )?;
             let platform_address = escrow.roles.platform_address.clone();
     
