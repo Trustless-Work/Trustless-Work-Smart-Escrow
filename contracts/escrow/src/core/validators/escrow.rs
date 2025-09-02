@@ -46,21 +46,24 @@ pub fn validate_escrow_property_change_conditions(
     contract_balance: i128,
     milestones: Vec<Milestone>,
 ) -> Result<(), ContractError> {
-    if !milestones.is_empty() {
-        for (_, milestone) in milestones.iter().enumerate() {
-            if milestone.flags.disputed
-                || milestone.flags.released
-                || milestone.flags.resolved
-                || milestone.flags.approved
-            {
-                return Err(ContractError::FlagsMustBeFalse);
-            }
-            if milestone.flags.disputed {
-                return Err(ContractError::MilestoneOpenedForDisputeResolution);
-            }
-            if milestone.flags.approved {
-                return Err(ContractError::MilestoneApprovedCantChangeEscrowProperties);
-            }
+
+    if existing_escrow.milestones.is_empty() {
+        return Err(ContractError::NoMileStoneDefined);
+    }
+
+    for (_, milestone) in milestones.iter().enumerate() {
+        if milestone.flags.disputed
+            || milestone.flags.released
+            || milestone.flags.resolved
+            || milestone.flags.approved
+        {
+            return Err(ContractError::FlagsMustBeFalse);
+        }
+        if milestone.flags.disputed {
+            return Err(ContractError::MilestoneOpenedForDisputeResolution);
+        }
+        if milestone.flags.approved {
+            return Err(ContractError::MilestoneApprovedCantChangeEscrowProperties);
         }
     }
 
@@ -89,18 +92,20 @@ pub fn validate_initialize_escrow_conditions(
         return Err(ContractError::PlatformFeeTooHigh);
     }
 
-    if !escrow_properties.milestones.is_empty() {
-        for (_, milestone) in escrow_properties.milestones.iter().enumerate() {
-            if milestone.flags.disputed
-                || milestone.flags.released
-                || milestone.flags.resolved
-                || milestone.flags.approved
-            {
-                return Err(ContractError::FlagsMustBeFalse);
-            }
-            if milestone.amount == 0 {
-                return Err(ContractError::AmountCannotBeZero);
-            }
+    if escrow_properties.milestones.is_empty() {
+        return Err(ContractError::NoMileStoneDefined);
+    }
+
+    for (_, milestone) in escrow_properties.milestones.iter().enumerate() {
+        if milestone.flags.disputed
+            || milestone.flags.released
+            || milestone.flags.resolved
+            || milestone.flags.approved
+        {
+            return Err(ContractError::FlagsMustBeFalse);
+        }
+        if milestone.amount == 0 {
+            return Err(ContractError::AmountCannotBeZero);
         }
     }
 

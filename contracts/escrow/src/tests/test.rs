@@ -9,7 +9,6 @@ use crate::contract::EscrowContractClient;
 use soroban_sdk::{ testutils::Address as _, vec, Address, Env, String, token };
 use token::Client as TokenClient;
 use token::StellarAssetClient as TokenAdminClient;
-// use test_token::token::{Token, TokenClient};
 
 fn create_usdc_token<'a>(e: &Env, admin: &Address) -> (TokenClient<'a>, TokenAdminClient<'a>) {
     let sac = e.register_stellar_asset_contract_v2(admin.clone());
@@ -419,20 +418,8 @@ fn test_change_milestone_status_and_approved_flag() {
     let test_data = create_escrow_contract(&env);
     let new_escrow_approver = test_data.client;
 
-    new_escrow_approver.initialize_escrow(&escrow_properties_v2);
-
-    // Test for `change_status` on escrow with no milestones
-    let result = new_escrow_approver.try_change_milestone_status(
-        &(0),
-        &new_status,
-        &new_evidence,
-        &service_provider_address
-    );
-    assert!(result.is_err());
-
-    // Test for `change_approved_flag` on escrow with no milestones
-    let result = new_escrow_approver.try_approve_milestone(&(0 ), &true, &approver_address);
-    assert!(result.is_err());
+    let init_result = new_escrow_approver.try_initialize_escrow(&escrow_properties_v2);
+    assert!(init_result.is_err(), "Initialization should fail when no milestones are defined");
 }
 
 #[test]
@@ -604,19 +591,8 @@ fn test_release_milestone_funds_no_milestones() {
     let test_data = create_escrow_contract(&env);
     let escrow_approver = test_data.client;
 
-    escrow_approver.initialize_escrow(&escrow_properties);
-
-    // Try to claim earnings with no milestones (should fail)
-    let result = escrow_approver.try_release_milestone_funds(
-        &release_signer_address,
-        &platform_address,
-        &(0)
-    );
-    assert!(
-        result.is_err(),
-        "Should fail when no milestones are defined"
-    );
-    assert!(result.is_err(), "Should fail when no milestones are defined");
+    let init_result = escrow_approver.try_initialize_escrow(&escrow_properties);
+    assert!(init_result.is_err(), "Initialization should fail when no milestones are defined");
 }
 
 // // // Scenario 2: Milestones incomplete
