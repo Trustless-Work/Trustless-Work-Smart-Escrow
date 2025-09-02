@@ -80,7 +80,7 @@ pub fn validate_escrow_property_change_conditions(
 
 #[inline]
 pub fn validate_initialize_escrow_conditions(
-    e: Env,
+    e: &Env,
     escrow_properties: Escrow,
 ) -> Result<(), ContractError> {
     if e.storage().instance().has(&DataKey::Escrow) {

@@ -20,11 +20,11 @@ impl EscrowManager{
     }
 
     pub fn initialize_escrow(
-        e: Env,
+        e: &Env,
         escrow_properties: Escrow
     ) -> Result<Escrow, ContractError> {
 
-        validate_initialize_escrow_conditions(e.clone(), escrow_properties.clone())?;
+        validate_initialize_escrow_conditions(e, escrow_properties.clone())?;
         
         e.storage().instance().set(&DataKey::Escrow, &escrow_properties);
 

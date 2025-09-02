@@ -42,11 +42,11 @@ impl EscrowContract {
     ////////////////////////
 
     pub fn initialize_escrow(
-        e: Env,
+        e: &Env,
         escrow_properties: Escrow
     ) -> Result<Escrow, ContractError> {
         let initialized_escrow =
-            EscrowManager::initialize_escrow(e.clone(), escrow_properties)?;
+            EscrowManager::initialize_escrow(e, escrow_properties)?;
         e.events().publish((symbol_short!("init_esc"),), ());
 
         Ok(initialized_escrow)
@@ -109,7 +109,7 @@ impl EscrowContract {
     }
 
     pub fn get_escrow_by_contract_id(
-        e: Env,
+        e: &Env,
         contract_id: Address,
     ) -> Result<Escrow, ContractError> {
         EscrowManager::get_escrow_by_contract_id(&e, &contract_id)
