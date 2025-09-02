@@ -39,8 +39,9 @@ impl DisputeManager {
             }
         };
 
+        let current_balance = token_client.balance(&contract_address);
         let total_funds = BasicMath::safe_add(approver_funds, receiver_funds)?;
-        if token_client.balance(&contract_address) < total_funds {
+        if current_balance < total_funds {
             return Err(ContractError::InsufficientFundsForResolution);
         }
 
