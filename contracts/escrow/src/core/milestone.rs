@@ -10,7 +10,7 @@ pub struct MilestoneManager;
 
 impl MilestoneManager {
     pub fn change_milestone_status(
-        e: Env,
+        e: &Env,
         milestone_index: i128,
         new_status: String,
         new_evidence: Option<String>,
@@ -18,7 +18,7 @@ impl MilestoneManager {
     ) -> Result<(), ContractError> {
         service_provider.require_auth();
 
-        let mut escrow = EscrowManager::get_escrow(e.clone())?;
+        let mut escrow = EscrowManager::get_escrow(e)?;
 
         validate_milestone_status_change_conditions(
             &escrow,
@@ -51,14 +51,14 @@ impl MilestoneManager {
     }
     
     pub fn change_milestone_approved_flag(
-        e: Env,
+        e: &Env,
         milestone_index: i128,
         new_flag: bool,
         approver: Address,
     ) -> Result<(), ContractError> {
         approver.require_auth();
         
-        let mut escrow = EscrowManager::get_escrow(e.clone())?;
+        let mut escrow = EscrowManager::get_escrow(e)?;
     
         
         let mut milestone_to_update = escrow

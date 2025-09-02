@@ -17,7 +17,7 @@ pub struct DisputeManager;
 impl DisputeManager {
 
     pub fn resolve_milestone_dispute(
-        e: Env,
+        e: &Env,
         dispute_resolver: Address,
         milestone_index: u32,
         approver_funds: i128,
@@ -26,7 +26,7 @@ impl DisputeManager {
     ) -> Result<(), ContractError> {
         dispute_resolver.require_auth();
 
-        let mut escrow = EscrowManager::get_escrow(e.clone())?;
+        let mut escrow = EscrowManager::get_escrow(e)?;
         let contract_address = e.current_contract_address();
 
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
@@ -97,13 +97,13 @@ impl DisputeManager {
     }
 
     pub fn dispute_milestone(
-        e: Env,
+        e: &Env,
         milestone_index: i128,
         signer: Address,
     ) -> Result<(), ContractError> {
         signer.require_auth();
         
-        let escrow = EscrowManager::get_escrow(e.clone())?;
+        let escrow = EscrowManager::get_escrow(e)?;
 
         validate_dispute_flag_change_conditions(
             &escrow,

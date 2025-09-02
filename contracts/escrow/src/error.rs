@@ -40,6 +40,7 @@ pub enum ContractError {
     PlatformFeeTooHigh = 34,
     FlagsMustBeFalse = 35,
     EscrowPropertiesMismatch = 36,
+    IncompatibleEscrowWasmHash = 37,
 }
 
 impl fmt::Display for ContractError {
@@ -126,6 +127,9 @@ impl fmt::Display for ContractError {
             },
             ContractError::EscrowPropertiesMismatch => {
                 write!(f, "The provided escrow properties do not match the stored escrow.")
+            },
+            ContractError::IncompatibleEscrowWasmHash => {
+                write!(f, "The provided contract address is not an instance of this escrow contract.")
             }
         }
     }

@@ -32,16 +32,16 @@ impl EscrowManager{
     }
 
     pub fn fund_escrow(
-        e: Env, 
+        e: &Env, 
         signer: Address, 
         expected_escrow: Escrow,
         amount: i128
     ) -> Result<(), ContractError> {
-        let stored_escrow: Escrow = Self::get_escrow(e.clone())?;
+        let stored_escrow: Escrow = Self::get_escrow(e)?;
         validate_fund_escrow_conditions(amount, &stored_escrow, &expected_escrow)?;
         signer.require_auth();
 
-        let escrow = EscrowManager::get_escrow(e.clone())?;
+        let escrow = EscrowManager::get_escrow(e)?;
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
 
         token_client.transfer(&signer, &e.current_contract_address(), &amount);
@@ -52,14 +52,14 @@ impl EscrowManager{
     }
 
     pub fn release_milestone_funds(
-        e: Env, 
+        e: &Env, 
         release_signer: Address, 
         trustless_work_address: Address,
         milestone_index: u32
     ) -> Result<(), ContractError> {      
         release_signer.require_auth();
           
-        let mut escrow = EscrowManager::get_escrow(e.clone())?;
+        let mut escrow = EscrowManager::get_escrow(e)?;
         
         if let Some(milestone) = escrow.milestones.get(milestone_index) {
             validate_release_conditions(&escrow, &milestone, &release_signer, milestone_index)?;
@@ -116,13 +116,13 @@ impl EscrowManager{
     }
 
     pub fn change_escrow_properties(
-        e: Env,
+        e: &Env,
         platform_address: Address,
         escrow_properties: Escrow
     ) -> Result<Escrow, ContractError> {
         platform_address.require_auth();
 
-        let escrow = EscrowManager::get_escrow(e.clone())?;
+        let escrow = EscrowManager::get_escrow(e)?;
 
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
         let contract_balance = token_client.balance(&e.current_contract_address());
@@ -142,20 +142,18 @@ impl EscrowManager{
     }
 
     pub fn get_multiple_escrow_balances(
-        e: Env,
-        signer: Address,
+        e: &Env,
         addresses: Vec<Address>
     ) -> Result<Vec<AddressBalance>, ContractError> {
-        signer.require_auth();
-        
         const MAX_ESCROWS: u32 = 20;
         if addresses.len() > MAX_ESCROWS {
             return Err(ContractError::TooManyEscrowsRequested);
         }
 
         let mut balances: Vec<AddressBalance> = Vec::new(&e);
+        let self_addr = e.current_contract_address();
         for address in addresses.iter() {
-            let escrow = Self::get_escrow_by_contract_id(e.clone(), &address)?;
+            let escrow = if address == self_addr { Self::get_escrow(e)? } else { Self::get_escrow_by_contract_id(e, &address)? };
 
             let token_client = TokenClient::new(&e, &escrow.trustline.address);
             let balance = token_client.balance(&address);
@@ -170,11 +168,11 @@ impl EscrowManager{
         Ok(balances)
     }
     
-    pub fn get_escrow_by_contract_id(e: Env, contract_id: &Address) -> Result<Escrow, ContractError> {
+    pub fn get_escrow_by_contract_id(e: &Env, contract_id: &Address) -> Result<Escrow, ContractError> {
         Ok(e.invoke_contract::<Escrow>(contract_id, &Symbol::new(&e, "get_escrow"), Vec::new(&e)))
     }
 
-    pub fn get_escrow(e: Env) -> Result<Escrow, ContractError> {
+    pub fn get_escrow(e: &Env) -> Result<Escrow, ContractError> {
         e.storage()
         .instance()
         .get(&DataKey::Escrow)

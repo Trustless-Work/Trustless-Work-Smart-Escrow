@@ -55,12 +55,12 @@ impl EscrowContract {
     }
     
     pub fn fund_escrow(
-        e: Env, 
+        e: &Env, 
         signer: Address, 
         expected_escrow: Escrow,
         amount: i128
     ) -> Result<(), ContractError> {
-        EscrowManager::fund_escrow(e.clone(), signer.clone(), expected_escrow, amount)?;
+        EscrowManager::fund_escrow(e, signer.clone(), expected_escrow, amount)?;
         e.events()
             .publish((symbol_short!("fund_esc"),), (signer, amount));
 
@@ -68,13 +68,13 @@ impl EscrowContract {
     }
 
     pub fn release_milestone_funds(
-        e: Env, 
+        e: &Env, 
         release_signer: Address, 
         trustless_work_address: Address,
         milestone_index: u32
     ) -> Result<(), ContractError> {
         EscrowManager::release_milestone_funds(
-            e.clone(), 
+            e, 
             release_signer.clone(), 
             trustless_work_address.clone(),
             milestone_index
@@ -89,12 +89,12 @@ impl EscrowContract {
     }
 
     pub fn update_escrow(
-        e: Env,
+        e: &Env,
         plataform_address: Address,
         escrow_properties: Escrow
     ) -> Result<Escrow, ContractError> {
         let updated_escrow = EscrowManager::change_escrow_properties(
-            e.clone(),
+            e,
             plataform_address.clone(),
             escrow_properties.clone(),
         )?;
@@ -106,7 +106,7 @@ impl EscrowContract {
         Ok(updated_escrow)
     }
 
-    pub fn get_escrow(e: Env) -> Result<Escrow, ContractError> {
+    pub fn get_escrow(e: &Env) -> Result<Escrow, ContractError> {
         EscrowManager::get_escrow(e)
     }
 
@@ -114,11 +114,11 @@ impl EscrowContract {
         e: Env,
         contract_id: Address,
     ) -> Result<Escrow, ContractError> {
-        EscrowManager::get_escrow_by_contract_id(e, &contract_id)
+        EscrowManager::get_escrow_by_contract_id(&e, &contract_id)
     }
 
-    pub fn get_multiple_escrow_balances(e: Env, signer: Address, addresses: Vec<Address>) -> Result<Vec<AddressBalance>, ContractError> {
-        EscrowManager::get_multiple_escrow_balances(e, signer, addresses)
+    pub fn get_multiple_escrow_balances(e: &Env, addresses: Vec<Address>) -> Result<Vec<AddressBalance>, ContractError> {
+        EscrowManager::get_multiple_escrow_balances(&e, addresses)
     }
 
     ////////////////////////
@@ -126,7 +126,7 @@ impl EscrowContract {
     ////////////////////////
 
     pub fn change_milestone_status(
-        e: Env,
+        e: &Env,
         milestone_index: i128,
         new_status: String,
         new_evidence: Option<String>,
@@ -142,7 +142,7 @@ impl EscrowContract {
     }
     
     pub fn approve_milestone(
-        e: Env,
+        e: &Env,
         milestone_index: i128,
         new_flag: bool,
         approver: Address,
@@ -160,7 +160,7 @@ impl EscrowContract {
     ////////////////////////
 
     pub fn resolve_milestone_dispute(
-        e: Env,
+        e: &Env,
         dispute_resolver: Address,
         milestone_index: u32,
         approver_funds: i128,
@@ -178,7 +178,7 @@ impl EscrowContract {
     }
     
     pub fn dispute_milestone(
-        e: Env,
+        e: &Env,
         milestone_index: i128,
         signer: Address
     ) -> Result<(), ContractError> {
