@@ -24,14 +24,11 @@ struct TestData<'a> {
 
 fn create_escrow_contract<'a>(env: &Env) -> TestData {
     env.mock_all_auths();
-    let admin = Address::generate(env);
     let client = EscrowContractClient::new(
         env,
         &env.register(
             EscrowContract {},
-            (
-                admin.clone(),
-            )
+            ()
         ),
     );
 
