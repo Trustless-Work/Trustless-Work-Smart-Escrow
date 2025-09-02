@@ -51,7 +51,7 @@ fn test_initialize_escrow() {
     let service_provider_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
-    let platform_fee = 3;
+    let platform_fee = 3*100;
 
     let usdc_token = create_usdc_token(&env, &admin);
     let engagement_id = String::from_str(&env, "41431");
@@ -140,7 +140,7 @@ fn test_update_escrow() {
     let _receiver_address = Address::generate(&env);
 
     let amount: i128 = 100_000_000;
-    let platform_fee = (0.3 * 10i128.pow(18) as f64) as i128;
+    let platform_fee = 3*100;
     let usdc_token = create_usdc_token(&env, &admin);
 
     let roles: Roles = Roles {
@@ -281,7 +281,7 @@ fn test_change_milestone_status_and_approved_flag() {
     let platform_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
-    let platform_fee = (0.3 * ((10i128).pow(18) as f64)) as i128;
+    let platform_fee = 3*100;
 
     let usdc_token = create_usdc_token(&env, &admin);
 
@@ -453,7 +453,7 @@ fn test_release_milestone_funds_successful() {
     let amount: i128 = 100_000_000;
     usdc_token.1.mint(&approver_address, &(amount as i128));
 
-    let platform_fee = 500;
+    let platform_fee = 3*100;
     let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "41431");
@@ -470,7 +470,7 @@ fn test_release_milestone_funds_successful() {
         disputed: false,
         released: false,
         resolved: false,
-        approved: true,
+        approved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -516,6 +516,8 @@ fn test_release_milestone_funds_successful() {
 
     let initial_contract_balance = usdc_token.0.balance(&escrow_approver.address);
     
+    // Approve the milestone before releasing funds
+    escrow_approver.approve_milestone(&0, &true, &approver_address);
     escrow_approver.release_milestone_funds(
         &release_signer_address,
         &trustless_work_address,
@@ -568,7 +570,7 @@ fn test_release_milestone_funds_no_milestones() {
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
 
-    let platform_fee = 30;
+    let platform_fee = 3*100;
 
     let usdc_token = create_usdc_token(&env, &admin);
 
@@ -629,7 +631,7 @@ fn test_release_milestone_funds_milestones_incomplete() {
     let platform_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
-    let platform_fee = (0.3 * ((10i128).pow(18) as f64)) as i128;
+    let platform_fee = 3*100;
 
     let usdc_token = create_usdc_token(&env, &admin);
     let engagement_id = String::from_str(&env, "41431");
@@ -722,7 +724,7 @@ fn test_release_milestone_funds_same_receiver_as_provider() {
     let amount: i128 = 100_000_000;
     usdc_token.1.mint(&approver_address, &(amount as i128));
 
-    let platform_fee = 500;
+    let platform_fee = 3*100;
 
     let roles: Roles = Roles {
         approver: approver_address.clone(),
@@ -737,7 +739,7 @@ fn test_release_milestone_funds_same_receiver_as_provider() {
         disputed: false,
         released: false,
         resolved: false,
-        approved: true,
+        approved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -775,6 +777,8 @@ fn test_release_milestone_funds_same_receiver_as_provider() {
 
     usdc_token.1.mint(&escrow_approver.address, &(amount as i128));
 
+    // Approve before release
+    escrow_approver.approve_milestone(&0, &true, &approver_address);
     escrow_approver.release_milestone_funds(&release_signer_address, &trustless_work_address, &0);
 
     let total_amount = amount as i128;
@@ -829,7 +833,7 @@ fn test_release_funds_invalid_receiver_fallback() {
     let amount: i128 = 100_000_000;
     usdc_token.1.mint(&approver_address, &(amount as i128));
 
-    let platform_fee = 500;
+    let platform_fee = 3*100;
 
     let roles: Roles = Roles {
         approver: approver_address.clone(),
@@ -844,7 +848,7 @@ fn test_release_funds_invalid_receiver_fallback() {
         disputed: false,
         released: false,
         resolved: false,
-        approved: true,
+        approved: false,
     };
 
     let trustline: Trustline = Trustline {
@@ -883,6 +887,8 @@ fn test_release_funds_invalid_receiver_fallback() {
 
     usdc_token.1.mint(&escrow_approver.address, &(amount as i128));
 
+    // Approve before release
+    escrow_approver.approve_milestone(&0, &true, &approver_address);
     escrow_approver.release_milestone_funds(&release_signer_address, &trustless_work_address, &0);
 
     let total_amount = amount as i128;
@@ -939,7 +945,7 @@ fn test_dispute_management() {
     let usdc_token = create_usdc_token(&env, &admin);
     let engagement_id = String::from_str(&env, "test_dispute");
     let amount: i128 = 100_000_000;
-    let platform_fee = 30;
+    let platform_fee = 3*100;
 
     let roles: Roles = Roles {
         approver: approver_address.clone(),
@@ -1021,7 +1027,7 @@ fn test_dispute_resolution_process() {
     let dispute_resolver_address = Address::generate(&env);
     let trustless_work_address = Address::generate(&env);
     let amount: i128 = 100_000_000;
-    let platform_fee = 30;
+    let platform_fee = 3*100;
     let usdc_token = create_usdc_token(&env, &admin);
     let engagement_id = String::from_str(&env, "41431");
 
@@ -1130,7 +1136,7 @@ fn test_fund_escrow_successful_deposit() {
     let service_provider_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
-    let platform_fee = 30;
+    let platform_fee = 3*100;
     let usdc_token = create_usdc_token(&env, &admin);
 
     let engagement_id = String::from_str(&env, "41431");
@@ -1217,7 +1223,7 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
     let service_provider_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
-    let platform_fee = 30;
+    let platform_fee = 3*100;
     let usdc_token = create_usdc_token(&env, &admin);
     let engagement_id = String::from_str(&env, "41431");
 
@@ -1299,7 +1305,7 @@ fn test_fund_escrow_dispute_flag_error() {
     let service_provider_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
-    let platform_fee = 30;
+    let platform_fee = 3*100;
     let usdc_token = create_usdc_token(&env, &admin);
     let engagement_id = String::from_str(&env, "41431");
 
@@ -1376,7 +1382,7 @@ fn test_dispute_milestone() {
     let platform_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
-    let platform_fee = 30;
+    let platform_fee = 3*100;
     let usdc_token = create_usdc_token(&env, &admin);
     let engagement_id = String::from_str(&env, "41431");
 

@@ -38,6 +38,7 @@ pub enum ContractError {
     MilestoneHasAlreadyBeenApproved = 32,
     EmptyMilestoneStatus = 33,
     PlatformFeeTooHigh = 34,
+    FlagsMustBeFalse = 35,
 }
 
 impl fmt::Display for ContractError {
@@ -118,6 +119,9 @@ impl fmt::Display for ContractError {
             },
             ContractError::PlatformFeeTooHigh => {
                 write!(f, "The platform fee cannot exceed 99%")
+            },
+            ContractError::FlagsMustBeFalse => {
+                write!(f, "All flags (approved, disputed, released) must be false in order to execute this function.")
             }
         }
     }

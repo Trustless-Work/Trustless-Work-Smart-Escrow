@@ -1,8 +1,8 @@
 use soroban_sdk::{Address, Env, Vec};
 
 use crate::{
-    error::ContractError, 
-    storage::types::{DataKey, Escrow, Milestone}
+    error::ContractError,
+    storage::types::{DataKey, Escrow, Milestone},
 };
 
 #[inline]
@@ -24,7 +24,7 @@ pub fn validate_release_conditions(
         return Err(ContractError::NoMileStoneDefined);
     }
 
-    if !milestone.flags.approved{
+    if !milestone.flags.approved {
         return Err(ContractError::MilestoneNotCompleted);
     }
 
@@ -48,6 +48,13 @@ pub fn validate_escrow_property_change_conditions(
 ) -> Result<(), ContractError> {
     if !milestones.is_empty() {
         for (_, milestone) in milestones.iter().enumerate() {
+            if milestone.flags.disputed
+                || milestone.flags.released
+                || milestone.flags.resolved
+                || milestone.flags.approved
+            {
+                return Err(ContractError::FlagsMustBeFalse);
+            }
             if milestone.flags.disputed {
                 return Err(ContractError::MilestoneOpenedForDisputeResolution);
             }
@@ -77,12 +84,20 @@ pub fn validate_initialize_escrow_conditions(
         return Err(ContractError::EscrowAlreadyInitialized);
     }
 
-    if escrow_properties.platform_fee > 99 {
+    let max_bps_percentage: i128 = 99*100;
+    if escrow_properties.platform_fee > max_bps_percentage {
         return Err(ContractError::PlatformFeeTooHigh);
     }
 
     if !escrow_properties.milestones.is_empty() {
         for (_, milestone) in escrow_properties.milestones.iter().enumerate() {
+            if milestone.flags.disputed
+                || milestone.flags.released
+                || milestone.flags.resolved
+                || milestone.flags.approved
+            {
+                return Err(ContractError::FlagsMustBeFalse);
+            }
             if milestone.amount == 0 {
                 return Err(ContractError::AmountCannotBeZero);
             }
