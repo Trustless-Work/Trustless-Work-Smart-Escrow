@@ -39,6 +39,7 @@ pub enum ContractError {
     EscrowPropertiesMismatch = 33,
     ApproverOrReceiverFundsLessThanZero = 34,
     EscrowAlreadyReleased = 35,
+    IncompatibleEscrowWasmHash = 36,
 }
 
 impl fmt::Display for ContractError {
@@ -130,7 +131,10 @@ impl fmt::Display for ContractError {
             }
             ContractError::EscrowAlreadyReleased => {
                 write!(f, "The escrow funds have been released.")
-            }        
+            }
+            ContractError::IncompatibleEscrowWasmHash => {
+                write!(f, "The provided contract address is not an instance of this escrow contract.")
+            }
         }
     }
 }

@@ -99,8 +99,9 @@ impl EscrowManager {
         }
 
         let mut balances: Vec<AddressBalance> = Vec::new(e);
+        let self_addr = e.current_contract_address();
         for address in addresses.iter() {
-            let escrow = Self::get_escrow_by_contract_id(e, &address)?;
+            let escrow = if address == self_addr { Self::get_escrow(e)? } else { Self::get_escrow_by_contract_id(e, &address)? };
             let token_client = TokenClient::new(e, &escrow.trustline.address);
             let balance = token_client.balance(&address);
             balances.push_back(AddressBalance {
