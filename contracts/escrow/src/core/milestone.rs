@@ -1,7 +1,6 @@
 use soroban_sdk::{Address, Env, String};
-use crate::storage::types::DataKey;
+use crate::storage::types::{DataKey, Escrow};
 use crate::error::ContractError;
-use crate::events::escrows_by_contract_id;
 use crate::core::escrow::EscrowManager;
 
 use super::validators::milestone::{validate_milestone_flag_change_conditions, validate_milestone_status_change_conditions};
@@ -15,7 +14,7 @@ impl MilestoneManager {
         new_status: String,
         new_evidence: Option<String>,
         service_provider: Address,
-    ) -> Result<(), ContractError> {
+    ) -> Result<Escrow, ContractError> {
         service_provider.require_auth();
 
         let mut escrow = EscrowManager::get_escrow(e)?;
@@ -43,10 +42,9 @@ impl MilestoneManager {
         e.storage()
             .instance()
             .set(&DataKey::Escrow, &escrow);
-            escrows_by_contract_id(&e, escrow.engagement_id.clone(), escrow);
     
     
-        Ok(())
+        Ok(escrow)
     }
     
     pub fn change_milestone_approved_flag(
@@ -54,7 +52,7 @@ impl MilestoneManager {
         milestone_index: i128,
         new_flag: bool,
         approver: Address,
-    ) -> Result<(), ContractError> {
+    ) -> Result<Escrow, ContractError> {
         approver.require_auth();
         
         let mut escrow = EscrowManager::get_escrow(e)?;
@@ -74,9 +72,8 @@ impl MilestoneManager {
         e.storage()
             .instance()
             .set(&DataKey::Escrow, &escrow);
-        escrows_by_contract_id(&e, escrow.engagement_id.clone(), escrow);
 
-        Ok(())
+        Ok(escrow)
     }
 
 }

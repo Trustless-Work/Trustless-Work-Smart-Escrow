@@ -8,7 +8,6 @@ use crate::modules::{
 use crate::storage::types::{DataKey, Milestone, Escrow};
 use crate::error::ContractError;
 use crate::core::escrow::EscrowManager;
-use crate::events::escrows_by_contract_id;
 
 use super::validators::dispute::{validate_dispute_flag_change_conditions, validate_dispute_resolution_conditions};
 
@@ -23,7 +22,7 @@ impl DisputeManager {
         approver_funds: i128,
         receiver_funds: i128,
         trustless_work_address: Address
-    ) -> Result<(), ContractError> {
+    ) -> Result<Escrow, ContractError> {
         dispute_resolver.require_auth();
 
         let mut escrow = EscrowManager::get_escrow(e)?;
@@ -92,16 +91,15 @@ impl DisputeManager {
         escrow.milestones = updated_milestones;
 
         e.storage().instance().set(&DataKey::Escrow, &escrow);
-        escrows_by_contract_id(&e, escrow.engagement_id.clone(), escrow);
 
-        Ok(())
+        Ok(escrow)
     }
 
     pub fn dispute_milestone(
         e: &Env,
         milestone_index: i128,
         signer: Address,
-    ) -> Result<(), ContractError> {
+    ) -> Result<Escrow, ContractError> {
         signer.require_auth();
         
         let escrow = EscrowManager::get_escrow(e)?;
@@ -131,8 +129,6 @@ impl DisputeManager {
             &updated_escrow,
         );
 
-        escrows_by_contract_id(&e, updated_escrow.engagement_id.clone(), updated_escrow);
-
-        Ok(())
+        Ok(updated_escrow)
     }
 }
