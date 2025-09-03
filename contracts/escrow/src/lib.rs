@@ -1,5 +1,6 @@
 #![no_std]
 
+mod contract;
 mod core {
     pub mod dispute;
     pub mod escrow;
@@ -13,9 +14,7 @@ mod core {
         pub mod milestone;
     }
 }
-mod storage {
-    pub mod types;
-}
+mod error;
 mod events {
     pub mod handler;
 }
@@ -34,8 +33,14 @@ mod modules {
         pub use calculator::*;
     }
 }
-mod contract;
-mod error;
-mod tests;
+
+/// This module is currently Work In Progress.
+mod storage {
+    pub mod types;
+}
+mod tests {
+    #[cfg(test)]
+    mod test;
+}
 
 pub use crate::contract::EscrowContract;
