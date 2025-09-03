@@ -26,11 +26,7 @@ pub fn validate_release_conditions(
         return Err(ContractError::NoMilestoneDefined);
     }
 
-    if !escrow
-        .milestones
-        .iter()
-        .all(|milestone| milestone.approved)
-    {
+    if !escrow.milestones.iter().all(|milestone| milestone.approved) {
         return Err(ContractError::EscrowNotCompleted);
     }
 
@@ -48,7 +44,6 @@ pub fn validate_escrow_property_change_conditions(
     platform_address: &Address,
     contract_balance: i128,
 ) -> Result<(), ContractError> {
-
     if existing_escrow.flags.disputed {
         return Err(ContractError::EscrowOpenedForDisputeResolution);
     }
@@ -111,7 +106,7 @@ pub fn validate_initialize_escrow_conditions(
         return Err(ContractError::NoMilestoneDefined);
     }
 
-    let max_bps_percentage: u32 = 99*100;
+    let max_bps_percentage: u32 = 99 * 100;
     if escrow_properties.platform_fee > max_bps_percentage {
         return Err(ContractError::PlatformFeeTooHigh);
     }

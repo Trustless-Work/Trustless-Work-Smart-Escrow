@@ -80,11 +80,8 @@ impl FeeCalculatorTrait for FeeCalculator {
             TRUSTLESS_WORK_FEE_BPS,
             BASIS_POINTS_DENOMINATOR,
         )?;
-        let platform_fee = SafeMath::safe_mul_div(
-            total_funds,
-            platform_fee_bps,
-            BASIS_POINTS_DENOMINATOR,
-        )?;
+        let platform_fee =
+            SafeMath::safe_mul_div(total_funds, platform_fee_bps, BASIS_POINTS_DENOMINATOR)?;
         let total_fees = BasicMath::safe_add(trustless_work_fee, platform_fee)?;
 
         let approver_fee_share =

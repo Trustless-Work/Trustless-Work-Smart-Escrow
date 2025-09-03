@@ -1,6 +1,9 @@
 use soroban_sdk::Address;
 
-use crate::{error::ContractError, storage::types::{Escrow, Milestone}};
+use crate::{
+    error::ContractError,
+    storage::types::{Escrow, Milestone},
+};
 
 #[inline]
 pub fn validate_milestone_status_change_conditions(

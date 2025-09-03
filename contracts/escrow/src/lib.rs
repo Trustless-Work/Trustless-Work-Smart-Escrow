@@ -32,7 +32,6 @@ mod modules {
 
         pub use calculator::*;
     }
-    
 }
 
 /// This module is currently Work In Progress.

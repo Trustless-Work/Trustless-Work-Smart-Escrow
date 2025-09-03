@@ -45,13 +45,14 @@ pub enum ContractError {
 impl fmt::Display for ContractError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ContractError::AmountCannotBeZero => write!(f, "Amount cannot be equal to or less than zero"),
+            ContractError::AmountCannotBeZero => {
+                write!(f, "Amount cannot be equal to or less than zero")
+            }
             ContractError::EscrowAlreadyInitialized => write!(f, "Escrow already initialized"),
             ContractError::EscrowNotFound => write!(f, "Escrow not found"),
-            ContractError::OnlyReleaseSignerCanReleaseEarnings => write!(
-                f,
-                "Only the release signer can release the escrow earnings"
-            ),
+            ContractError::OnlyReleaseSignerCanReleaseEarnings => {
+                write!(f, "Only the release signer can release the escrow earnings")
+            }
             ContractError::EscrowNotCompleted => {
                 write!(f, "The escrow must be completed to release earnings")
             }
@@ -109,14 +110,20 @@ impl fmt::Display for ContractError {
                 write!(f, "Cannot define more than 10 milestones in an escrow")
             }
             ContractError::ReceiverAndApproverFundsNotEqual => {
-                write!(f, "The approver's and receiver's funds must equal the current escrow balance.")
-            },
+                write!(
+                    f,
+                    "The approver's and receiver's funds must equal the current escrow balance."
+                )
+            }
             ContractError::MilestoneHasAlreadyBeenApproved => {
-                write!(f, "You cannot approve a milestone that has already been approved previously")
-            },
+                write!(
+                    f,
+                    "You cannot approve a milestone that has already been approved previously"
+                )
+            }
             ContractError::EmptyMilestoneStatus => {
                 write!(f, "The milestone status cannot be empty")
-            },
+            }
             ContractError::PlatformFeeTooHigh => {
                 write!(f, "The platform fee cannot exceed 99%")
             }
@@ -124,16 +131,25 @@ impl fmt::Display for ContractError {
                 write!(f, "All flags (approved, disputed, released) must be false in order to execute this function.")
             }
             ContractError::EscrowPropertiesMismatch => {
-                write!(f, "The provided escrow properties do not match the stored escrow.")
+                write!(
+                    f,
+                    "The provided escrow properties do not match the stored escrow."
+                )
             }
             ContractError::ApproverOrReceiverFundsLessThanZero => {
-                write!(f, "The funds of the approver or receiver must not be less or equal than 0.")
+                write!(
+                    f,
+                    "The funds of the approver or receiver must not be less or equal than 0."
+                )
             }
             ContractError::EscrowAlreadyReleased => {
                 write!(f, "The escrow funds have been released.")
             }
             ContractError::IncompatibleEscrowWasmHash => {
-                write!(f, "The provided contract address is not an instance of this escrow contract.")
+                write!(
+                    f,
+                    "The provided contract address is not an instance of this escrow contract."
+                )
             }
         }
     }

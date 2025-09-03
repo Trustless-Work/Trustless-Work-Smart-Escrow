@@ -1,8 +1,9 @@
-use soroban_sdk::{Address, Env, Symbol, Vec};
 use soroban_sdk::token::Client as TokenClient;
+use soroban_sdk::{Address, Env, Symbol, Vec};
 
 use crate::core::validators::escrow::{
-    validate_escrow_property_change_conditions, validate_fund_escrow_conditions, validate_initialize_escrow_conditions, validate_release_conditions
+    validate_escrow_property_change_conditions, validate_fund_escrow_conditions,
+    validate_initialize_escrow_conditions, validate_release_conditions,
 };
 use crate::error::ContractError;
 use crate::modules::fee::{FeeCalculator, FeeCalculatorTrait};
@@ -18,7 +19,9 @@ impl EscrowManager {
 
     pub fn initialize_escrow(e: &Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
         validate_initialize_escrow_conditions(e, escrow_properties.clone())?;
-        e.storage().instance().set(&DataKey::Escrow, &escrow_properties);
+        e.storage()
+            .instance()
+            .set(&DataKey::Escrow, &escrow_properties);
         Ok(escrow_properties)
     }
 
@@ -60,8 +63,16 @@ impl EscrowManager {
         let fee_result =
             FeeCalculator::calculate_standard_fees(escrow.amount as i128, escrow.platform_fee)?;
 
-        token_client.transfer(&contract_address, trustless_work_address, &fee_result.trustless_work_fee);
-        token_client.transfer(&contract_address, &escrow.roles.platform_address, &fee_result.platform_fee);
+        token_client.transfer(
+            &contract_address,
+            trustless_work_address,
+            &fee_result.trustless_work_fee,
+        );
+        token_client.transfer(
+            &contract_address,
+            &escrow.roles.platform_address,
+            &fee_result.platform_fee,
+        );
 
         let receiver = Self::get_receiver(&escrow);
         token_client.transfer(&contract_address, &receiver, &fee_result.receiver_amount);
@@ -85,7 +96,9 @@ impl EscrowManager {
             contract_balance,
         )?;
 
-        e.storage().instance().set(&DataKey::Escrow, &escrow_properties);
+        e.storage()
+            .instance()
+            .set(&DataKey::Escrow, &escrow_properties);
         Ok(escrow_properties)
     }
 
@@ -101,7 +114,11 @@ impl EscrowManager {
         let mut balances: Vec<AddressBalance> = Vec::new(e);
         let self_addr = e.current_contract_address();
         for address in addresses.iter() {
-            let escrow = if address == self_addr { Self::get_escrow(e)? } else { Self::get_escrow_by_contract_id(e, &address)? };
+            let escrow = if address == self_addr {
+                Self::get_escrow(e)?
+            } else {
+                Self::get_escrow_by_contract_id(e, &address)?
+            };
             let token_client = TokenClient::new(e, &escrow.trustline.address);
             let balance = token_client.balance(&address);
             balances.push_back(AddressBalance {
@@ -121,11 +138,9 @@ impl EscrowManager {
     }
 
     pub fn get_escrow(e: &Env) -> Result<Escrow, ContractError> {
-        Ok(
-            e.storage()
-                .instance()
-                .get(&DataKey::Escrow)
-                .ok_or(ContractError::EscrowNotFound)?
-        )
+        Ok(e.storage()
+            .instance()
+            .get(&DataKey::Escrow)
+            .ok_or(ContractError::EscrowNotFound)?)
     }
 }

@@ -1,8 +1,8 @@
 use soroban_sdk::{contract, contractimpl, Address, BytesN, Env, String, Symbol, Val, Vec};
 
 use crate::core::{DisputeManager, EscrowManager, MilestoneManager};
-use crate::events::handler::{ChgEsc, DisEsc, FundEsc, InitEsc, EscrowsBySpdr};
 use crate::error::ContractError;
+use crate::events::handler::{ChgEsc, DisEsc, EscrowsBySpdr, FundEsc, InitEsc};
 use crate::storage::types::{AddressBalance, Escrow};
 
 #[contract]
@@ -39,8 +39,11 @@ impl EscrowContract {
     ////////////////////////
 
     pub fn initialize_escrow(e: &Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
-    let initialized_escrow = EscrowManager::initialize_escrow(e, escrow_properties)?;
-        InitEsc { escrow: initialized_escrow.clone() }.publish(e);
+        let initialized_escrow = EscrowManager::initialize_escrow(e, escrow_properties)?;
+        InitEsc {
+            escrow: initialized_escrow.clone(),
+        }
+        .publish(e);
         Ok(initialized_escrow)
     }
 
@@ -60,11 +63,7 @@ impl EscrowContract {
         release_signer: Address,
         trustless_work_address: Address,
     ) -> Result<(), ContractError> {
-        EscrowManager::release_funds(
-            e,
-            &release_signer,
-            &trustless_work_address,
-        )?;
+        EscrowManager::release_funds(e, &release_signer, &trustless_work_address)?;
         DisEsc { release_signer }.publish(e);
         Ok(())
     }
@@ -79,7 +78,11 @@ impl EscrowContract {
             &plataform_address,
             escrow_properties.clone(),
         )?;
-        ChgEsc { platform: plataform_address, engagement_id: escrow_properties.engagement_id.clone() }.publish(e);
+        ChgEsc {
+            platform: plataform_address,
+            engagement_id: escrow_properties.engagement_id.clone(),
+        }
+        .publish(e);
         Ok(updated_escrow)
     }
 
@@ -128,7 +131,8 @@ impl EscrowContract {
         milestone_index: i128,
         approver: Address,
     ) -> Result<(), ContractError> {
-        let escrow = MilestoneManager::change_milestone_approved_flag(&e, milestone_index, approver)?;
+        let escrow =
+            MilestoneManager::change_milestone_approved_flag(&e, milestone_index, approver)?;
         EscrowsBySpdr { escrow }.publish(&e);
         Ok(())
     }

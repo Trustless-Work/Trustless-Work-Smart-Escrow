@@ -1,5 +1,5 @@
-use soroban_sdk::{Address, Env};
 use soroban_sdk::token::Client as TokenClient;
+use soroban_sdk::{Address, Env};
 
 use crate::core::escrow::EscrowManager;
 use crate::error::ContractError;
@@ -26,7 +26,7 @@ impl DisputeManager {
         dispute_resolver.require_auth();
         let mut escrow = EscrowManager::get_escrow(e)?;
         let contract_address = e.current_contract_address();
-        
+
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
         let current_balance = token_client.balance(&contract_address);
         let total_funds = BasicMath::safe_add(approver_funds, receiver_funds)?;
@@ -35,7 +35,7 @@ impl DisputeManager {
             approver_funds,
             receiver_funds,
             escrow.platform_fee,
-            total_funds
+            total_funds,
         )?;
 
         validate_dispute_resolution_conditions(
@@ -47,11 +47,23 @@ impl DisputeManager {
             current_balance,
         )?;
 
-        token_client.transfer(&contract_address, &trustless_work_address, &fee_result.trustless_work_fee);
-        token_client.transfer(&contract_address, &escrow.roles.platform_address, &fee_result.platform_fee);
+        token_client.transfer(
+            &contract_address,
+            &trustless_work_address,
+            &fee_result.trustless_work_fee,
+        );
+        token_client.transfer(
+            &contract_address,
+            &escrow.roles.platform_address,
+            &fee_result.platform_fee,
+        );
 
         if fee_result.net_approver_funds > 0 {
-            token_client.transfer(&contract_address, &escrow.roles.approver, &fee_result.net_approver_funds);
+            token_client.transfer(
+                &contract_address,
+                &escrow.roles.approver,
+                &fee_result.net_approver_funds,
+            );
         }
 
         if fee_result.net_receiver_funds > 0 {

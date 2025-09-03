@@ -1,6 +1,6 @@
-use crate::{core::escrow::EscrowManager, storage::types::Escrow};
 use crate::error::ContractError;
 use crate::storage::types::DataKey;
+use crate::{core::escrow::EscrowManager, storage::types::Escrow};
 use soroban_sdk::{Address, Env, String};
 
 use super::validators::milestone::{
@@ -20,10 +20,7 @@ impl MilestoneManager {
         service_provider.require_auth();
         let mut existing_escrow = EscrowManager::get_escrow(e)?;
 
-        validate_milestone_status_change_conditions(
-            &existing_escrow,
-            &service_provider,
-        )?;
+        validate_milestone_status_change_conditions(&existing_escrow, &service_provider)?;
 
         let mut milestone_to_update = existing_escrow
             .milestones
@@ -33,7 +30,7 @@ impl MilestoneManager {
         if let Some(evidence) = new_evidence {
             milestone_to_update.evidence = evidence;
         }
-        
+
         milestone_to_update.status = new_status;
 
         existing_escrow
@@ -54,13 +51,16 @@ impl MilestoneManager {
         approver.require_auth();
         let mut existing_escrow = EscrowManager::get_escrow(e)?;
 
-        
         let mut milestone_to_update = existing_escrow
-        .milestones
-        .get(milestone_index as u32)
-        .ok_or(ContractError::InvalidMileStoneIndex)?;
-    
-        validate_milestone_flag_change_conditions(&existing_escrow, &milestone_to_update, &approver)?;
+            .milestones
+            .get(milestone_index as u32)
+            .ok_or(ContractError::InvalidMileStoneIndex)?;
+
+        validate_milestone_flag_change_conditions(
+            &existing_escrow,
+            &milestone_to_update,
+            &approver,
+        )?;
         milestone_to_update.approved = true;
 
         existing_escrow
