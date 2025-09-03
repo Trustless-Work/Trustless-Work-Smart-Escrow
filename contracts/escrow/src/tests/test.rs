@@ -70,7 +70,6 @@ fn test_initialize_escrow() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let milestones = vec![
@@ -157,7 +156,6 @@ fn test_update_escrow() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let initial_milestones = vec![
@@ -301,7 +299,6 @@ fn test_change_milestone_status_and_approved_flag() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let milestones = vec![
@@ -459,7 +456,6 @@ fn test_release_milestone_funds_successful() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let milestones = vec![
@@ -571,7 +567,6 @@ fn test_release_milestone_funds_no_milestones() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let escrow_properties: Escrow = Escrow {
@@ -627,7 +622,6 @@ fn test_release_milestone_funds_milestones_incomplete() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let milestones = vec![
@@ -717,7 +711,6 @@ fn test_release_milestone_funds_same_receiver_as_provider() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let milestones = vec![
@@ -826,7 +819,6 @@ fn test_release_funds_invalid_receiver_fallback() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let milestones = vec![
@@ -938,7 +930,6 @@ fn test_dispute_management() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let milestones = vec![
@@ -1022,7 +1013,6 @@ fn test_dispute_resolution_process() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let milestones = vec![
@@ -1132,7 +1122,6 @@ fn test_fund_escrow_successful_deposit() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let milestones = vec![
@@ -1218,7 +1207,6 @@ fn test_fund_escrow_signer_insufficient_funds_error() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let milestones = vec![
@@ -1300,7 +1288,6 @@ fn test_fund_escrow_dispute_flag_error() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let milestones = vec![
@@ -1377,7 +1364,6 @@ fn test_dispute_milestone() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let milestones = vec![
@@ -1465,7 +1451,6 @@ fn test_change_dispute_flag_authorized_and_unauthorized() {
 
     let trustline: Trustline = Trustline {
         address: usdc_token.0.address.clone(),
-        decimals: 10_000_000,
     };
 
     let milestones = vec![

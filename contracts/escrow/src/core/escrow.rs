@@ -158,7 +158,7 @@ impl EscrowManager{
             balances.push_back(AddressBalance {
                 address: address.clone(),
                 balance,
-                trustline_decimals: escrow.trustline.decimals,
+                trustline_decimals: token_client.decimals(),
             })
         }
 
