@@ -42,7 +42,8 @@ pub enum ContractError {
     EscrowPropertiesMismatch = 36,
     IncompatibleEscrowWasmHash = 37,
     ApproverOrReceiverFundsLessThanZero = 38,
-    TotalDisputeFundsMustNotExceedTheMilestoneAmount = 39
+    TotalDisputeFundsMustNotExceedTheMilestoneAmount = 39,
+    EscrowAlreadyResolved = 40
 }
 
 impl fmt::Display for ContractError {
@@ -138,6 +139,9 @@ impl fmt::Display for ContractError {
             },
             ContractError::TotalDisputeFundsMustNotExceedTheMilestoneAmount => {
                 write!(f, "The total funds to resolve the dispute must not exceed the amount defined for this milestone.")
+            },
+            ContractError::EscrowAlreadyResolved => {
+                write!(f, "This escrow is already resolved.")
             }
         }
     }

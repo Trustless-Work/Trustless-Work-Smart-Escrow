@@ -16,6 +16,10 @@ pub fn validate_release_conditions(
         return Err(ContractError::MilestoneAlreadyReleased);
     }
 
+    if milestone.flags.resolved {
+        return Err(ContractError::EscrowAlreadyResolved);
+    }
+
     if release_signer != &escrow.roles.release_signer {
         return Err(ContractError::OnlyReleaseSignerCanReleaseEarnings);
     }
