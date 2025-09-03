@@ -2,7 +2,6 @@ use soroban_sdk::Address;
 
 use crate::{
     error::ContractError,
-    modules::fee::DisputeFeeResult,
     storage::types::{Escrow, Milestone, Roles},
 };
 
@@ -13,8 +12,8 @@ pub fn validate_dispute_resolution_conditions(
     dispute_resolver: &Address,
     approver_funds: i128,
     receiver_funds: i128,
-    fee_result: &DisputeFeeResult,
     total_funds: i128,
+    current_balance: i128,
 ) -> Result<(), ContractError> {
     if dispute_resolver != &escrow.roles.dispute_resolver {
         return Err(ContractError::OnlyDisputeResolverCanExecuteThisFunction);
@@ -25,19 +24,19 @@ pub fn validate_dispute_resolution_conditions(
     }
 
     if total_funds > milestone.amount {
-        return Err(ContractError::InsufficientFundsForResolution);
+        return Err(ContractError::TotalDisputeFundsMustNotExceedTheMilestoneAmount);
+    }
+
+    if approver_funds <= 0 || receiver_funds <= 0 {
+        return Err(ContractError::ApproverOrReceiverFundsLessThanZero);
     }
 
     if !milestone.flags.disputed {
         return Err(ContractError::MilestoneNotInDispute);
     }
 
-    if approver_funds < fee_result.net_approver_funds {
-        return Err(ContractError::InsufficientApproverFundsForCommissions);
-    }
-
-    if receiver_funds < fee_result.net_receiver_funds {
-        return Err(ContractError::InsufficientServiceProviderFundsForCommissions);
+    if current_balance < total_funds {
+        return Err(ContractError::InsufficientFundsForResolution);
     }
 
     Ok(())

@@ -41,6 +41,8 @@ pub enum ContractError {
     FlagsMustBeFalse = 35,
     EscrowPropertiesMismatch = 36,
     IncompatibleEscrowWasmHash = 37,
+    ApproverOrReceiverFundsLessThanZero = 38,
+    TotalDisputeFundsMustNotExceedTheMilestoneAmount = 39
 }
 
 impl fmt::Display for ContractError {
@@ -130,6 +132,12 @@ impl fmt::Display for ContractError {
             },
             ContractError::IncompatibleEscrowWasmHash => {
                 write!(f, "The provided contract address is not an instance of this escrow contract.")
+            },
+            ContractError::ApproverOrReceiverFundsLessThanZero => {
+                write!(f, "The funds of the approver or receiver must not be less or equal than 0.")
+            },
+            ContractError::TotalDisputeFundsMustNotExceedTheMilestoneAmount => {
+                write!(f, "The total funds to resolve the dispute must not exceed the amount defined for this milestone.")
             }
         }
     }

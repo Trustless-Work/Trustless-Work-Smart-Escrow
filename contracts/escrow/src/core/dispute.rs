@@ -58,8 +58,8 @@ impl DisputeManager {
             &dispute_resolver,
             approver_funds,
             receiver_funds,
-            &fee_result,
             total_funds,
+            current_balance,
         )?;
 
         token_client.transfer(&contract_address, &trustless_work_address, &fee_result.trustless_work_fee);
