@@ -56,9 +56,11 @@ pub fn validate_dispute_flag_change_conditions(
         return Err(ContractError::InvalidMileStoneIndex);
     }
 
-    let milestone = escrow.milestones.get(milestone_index as u32)
+    let milestone = escrow
+        .milestones
+        .get(milestone_index as u32)
         .ok_or(ContractError::InvalidMileStoneIndex)?;
-    
+
     if milestone.flags.disputed {
         return Err(ContractError::MilestoneAlreadyInDispute);
     }

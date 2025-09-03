@@ -1,38 +1,39 @@
-use soroban_sdk::{Address, Env, Symbol, Vec};
 use soroban_sdk::token::Client as TokenClient;
+use soroban_sdk::{Address, Env, Symbol, Vec};
 
 use crate::core::validators::escrow::validate_fund_escrow_conditions;
-use crate::modules::fee::{FeeCalculator, FeeCalculatorTrait};
-use crate::storage::types::{Escrow, DataKey, AddressBalance, Milestone};
 use crate::error::ContractError;
+use crate::modules::fee::{FeeCalculator, FeeCalculatorTrait};
+use crate::storage::types::{AddressBalance, DataKey, Escrow, Milestone};
 
-use super::validators::escrow::{validate_escrow_property_change_conditions, validate_initialize_escrow_conditions, validate_release_conditions};
+use super::validators::escrow::{
+    validate_escrow_property_change_conditions, validate_initialize_escrow_conditions,
+    validate_release_conditions,
+};
 
 pub struct EscrowManager;
 
-impl EscrowManager{
+impl EscrowManager {
     #[inline]
     pub fn get_receiver(escrow: &Escrow) -> Address {
         escrow.roles.receiver.clone()
     }
 
-    pub fn initialize_escrow(
-        e: &Env,
-        escrow_properties: Escrow
-    ) -> Result<Escrow, ContractError> {
-
+    pub fn initialize_escrow(e: &Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
         validate_initialize_escrow_conditions(e, escrow_properties.clone())?;
-        
-        e.storage().instance().set(&DataKey::Escrow, &escrow_properties);
+
+        e.storage()
+            .instance()
+            .set(&DataKey::Escrow, &escrow_properties);
 
         Ok(escrow_properties)
     }
 
     pub fn fund_escrow(
-        e: &Env, 
-        signer: Address, 
+        e: &Env,
+        signer: Address,
         expected_escrow: Escrow,
-        amount: i128
+        amount: i128,
     ) -> Result<(), ContractError> {
         let stored_escrow: Escrow = Self::get_escrow(e)?;
         validate_fund_escrow_conditions(amount, &stored_escrow, &expected_escrow)?;
@@ -42,25 +43,25 @@ impl EscrowManager{
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
 
         token_client.transfer(&signer, &e.current_contract_address(), &amount);
-    
+
         e.storage().instance().set(&DataKey::Escrow, &escrow);
-    
+
         Ok(())
     }
 
     pub fn release_milestone_funds(
-        e: &Env, 
-        release_signer: Address, 
+        e: &Env,
+        release_signer: Address,
         trustless_work_address: Address,
-        milestone_index: u32
-    ) -> Result<(), ContractError> {      
+        milestone_index: u32,
+    ) -> Result<(), ContractError> {
         release_signer.require_auth();
-          
+
         let mut escrow = EscrowManager::get_escrow(e)?;
-        
+
         if let Some(milestone) = escrow.milestones.get(milestone_index) {
             validate_release_conditions(&escrow, &milestone, &release_signer, milestone_index)?;
-    
+
             let mut updated_milestones = Vec::<Milestone>::new(&e);
             for (index, milestone) in escrow.milestones.iter().enumerate() {
                 let mut new_milestone = milestone.clone();
@@ -69,9 +70,9 @@ impl EscrowManager{
                 }
                 updated_milestones.push_back(new_milestone);
             }
-    
+
             escrow.milestones = updated_milestones;
-    
+
             e.storage().instance().set(&DataKey::Escrow, &escrow);
 
             let contract_address = e.current_contract_address();
@@ -79,32 +80,28 @@ impl EscrowManager{
             if token_client.balance(&contract_address) < milestone.amount {
                 return Err(ContractError::EscrowBalanceNotEnoughToSendEarnings);
             }
-    
+
             let fee_result = FeeCalculator::calculate_standard_fees(
-                milestone.amount as i128, 
-                escrow.platform_fee
+                milestone.amount as i128,
+                escrow.platform_fee,
             )?;
             let platform_address = escrow.roles.platform_address.clone();
-    
+
             token_client.transfer(
                 &contract_address,
-                &trustless_work_address, 
-                &fee_result.trustless_work_fee
+                &trustless_work_address,
+                &fee_result.trustless_work_fee,
             );
-    
+
             token_client.transfer(
                 &contract_address,
-                &platform_address, 
-                &fee_result.platform_fee
+                &platform_address,
+                &fee_result.platform_fee,
             );
-    
+
             let receiver = Self::get_receiver(&escrow);
-    
-            token_client.transfer(
-                &contract_address,
-                &receiver, 
-                &fee_result.receiver_amount
-            );
+
+            token_client.transfer(&contract_address, &receiver, &fee_result.receiver_amount);
         } else {
             return Err(ContractError::MilestoneNotFound);
         }
@@ -115,7 +112,7 @@ impl EscrowManager{
     pub fn change_escrow_properties(
         e: &Env,
         platform_address: Address,
-        escrow_properties: Escrow
+        escrow_properties: Escrow,
     ) -> Result<Escrow, ContractError> {
         platform_address.require_auth();
 
@@ -140,7 +137,7 @@ impl EscrowManager{
 
     pub fn get_multiple_escrow_balances(
         e: &Env,
-        addresses: Vec<Address>
+        addresses: Vec<Address>,
     ) -> Result<Vec<AddressBalance>, ContractError> {
         const MAX_ESCROWS: u32 = 20;
         if addresses.len() > MAX_ESCROWS {
@@ -150,7 +147,11 @@ impl EscrowManager{
         let mut balances: Vec<AddressBalance> = Vec::new(&e);
         let self_addr = e.current_contract_address();
         for address in addresses.iter() {
-            let escrow = if address == self_addr { Self::get_escrow(e)? } else { Self::get_escrow_by_contract_id(e, &address)? };
+            let escrow = if address == self_addr {
+                Self::get_escrow(e)?
+            } else {
+                Self::get_escrow_by_contract_id(e, &address)?
+            };
 
             let token_client = TokenClient::new(&e, &escrow.trustline.address);
             let balance = token_client.balance(&address);
@@ -164,15 +165,18 @@ impl EscrowManager{
 
         Ok(balances)
     }
-    
-    pub fn get_escrow_by_contract_id(e: &Env, contract_id: &Address) -> Result<Escrow, ContractError> {
+
+    pub fn get_escrow_by_contract_id(
+        e: &Env,
+        contract_id: &Address,
+    ) -> Result<Escrow, ContractError> {
         Ok(e.invoke_contract::<Escrow>(contract_id, &Symbol::new(&e, "get_escrow"), Vec::new(&e)))
     }
 
     pub fn get_escrow(e: &Env) -> Result<Escrow, ContractError> {
         e.storage()
-        .instance()
-        .get(&DataKey::Escrow)
-        .ok_or(ContractError::EscrowNotFound)?
+            .instance()
+            .get(&DataKey::Escrow)
+            .ok_or(ContractError::EscrowNotFound)?
     }
 }

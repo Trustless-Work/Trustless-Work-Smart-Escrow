@@ -1,27 +1,28 @@
-use soroban_sdk::{ Address, Env, String, Vec };
 use soroban_sdk::token::Client as TokenClient;
+use soroban_sdk::{Address, Env, String, Vec};
 
-use crate::modules::{
-    math::{BasicArithmetic, BasicMath}, 
-    fee::{FeeCalculator, FeeCalculatorTrait}
-};
-use crate::storage::types::{DataKey, Milestone, Escrow};
-use crate::error::ContractError;
 use crate::core::escrow::EscrowManager;
+use crate::error::ContractError;
+use crate::modules::{
+    fee::{FeeCalculator, FeeCalculatorTrait},
+    math::{BasicArithmetic, BasicMath},
+};
+use crate::storage::types::{DataKey, Escrow, Milestone};
 
-use super::validators::dispute::{validate_dispute_flag_change_conditions, validate_dispute_resolution_conditions};
+use super::validators::dispute::{
+    validate_dispute_flag_change_conditions, validate_dispute_resolution_conditions,
+};
 
 pub struct DisputeManager;
 
 impl DisputeManager {
-
     pub fn resolve_milestone_dispute(
         e: &Env,
         dispute_resolver: Address,
         milestone_index: u32,
         approver_funds: i128,
         receiver_funds: i128,
-        trustless_work_address: Address
+        trustless_work_address: Address,
     ) -> Result<Escrow, ContractError> {
         dispute_resolver.require_auth();
 
@@ -61,16 +62,32 @@ impl DisputeManager {
             current_balance,
         )?;
 
-        token_client.transfer(&contract_address, &trustless_work_address, &fee_result.trustless_work_fee);
+        token_client.transfer(
+            &contract_address,
+            &trustless_work_address,
+            &fee_result.trustless_work_fee,
+        );
 
-        token_client.transfer(&contract_address, &escrow.roles.platform_address, &fee_result.platform_fee);
+        token_client.transfer(
+            &contract_address,
+            &escrow.roles.platform_address,
+            &fee_result.platform_fee,
+        );
 
         if fee_result.net_approver_funds > 0 {
-            token_client.transfer(&contract_address, &escrow.roles.approver, &fee_result.net_approver_funds);
+            token_client.transfer(
+                &contract_address,
+                &escrow.roles.approver,
+                &fee_result.net_approver_funds,
+            );
         }
 
         if fee_result.net_receiver_funds > 0 {
-            token_client.transfer(&contract_address, &escrow.roles.receiver, &fee_result.net_receiver_funds);
+            token_client.transfer(
+                &contract_address,
+                &escrow.roles.receiver,
+                &fee_result.net_receiver_funds,
+            );
         }
 
         let mut updated_milestones = escrow.milestones.clone();
@@ -78,14 +95,14 @@ impl DisputeManager {
         let mut new_flags = milestone.flags.clone();
         new_flags.resolved = true;
         new_flags.disputed = false;
-        
+
         updated_milestones.set(
             milestone_index,
             Milestone {
                 status: String::from_str(&e, "resolved"),
                 flags: new_flags,
                 ..milestone.clone()
-            }
+            },
         );
 
         escrow.milestones = updated_milestones;
@@ -101,14 +118,10 @@ impl DisputeManager {
         signer: Address,
     ) -> Result<Escrow, ContractError> {
         signer.require_auth();
-        
+
         let escrow = EscrowManager::get_escrow(e)?;
 
-        validate_dispute_flag_change_conditions(
-            &escrow,
-            milestone_index,
-            &signer,
-        )?;
+        validate_dispute_flag_change_conditions(&escrow, milestone_index, &signer)?;
 
         let mut updated_milestones = Vec::new(&e);
         for (index, milestone) in escrow.milestones.iter().enumerate() {
@@ -124,10 +137,9 @@ impl DisputeManager {
             ..escrow
         };
 
-        e.storage().instance().set(
-            &DataKey::Escrow,
-            &updated_escrow,
-        );
+        e.storage()
+            .instance()
+            .set(&DataKey::Escrow, &updated_escrow);
 
         Ok(updated_escrow)
     }

@@ -43,7 +43,7 @@ pub enum ContractError {
     IncompatibleEscrowWasmHash = 37,
     ApproverOrReceiverFundsLessThanZero = 38,
     TotalDisputeFundsMustNotExceedTheMilestoneAmount = 39,
-    EscrowAlreadyResolved = 40
+    EscrowAlreadyResolved = 40,
 }
 
 impl fmt::Display for ContractError {
@@ -53,10 +53,9 @@ impl fmt::Display for ContractError {
             ContractError::AmountCannotBeZero => write!(f, "Amount cannot be zero"),
             ContractError::EscrowAlreadyInitialized => write!(f, "Escrow already initialized"),
             ContractError::EscrowNotFound => write!(f, "Escrow not found"),
-            ContractError::OnlyReleaseSignerCanReleaseEarnings => write!(
-                f,
-                "Only the release signer can release the escrow funds"
-            ),
+            ContractError::OnlyReleaseSignerCanReleaseEarnings => {
+                write!(f, "Only the release signer can release the escrow funds")
+            }
             ContractError::MilestoneNotCompleted => {
                 write!(f, "The milestone must be completed to release funds")
             }
@@ -103,7 +102,9 @@ impl fmt::Display for ContractError {
             ContractError::Overflow => write!(f, "This operation can cause an Overflow"),
             ContractError::Underflow => write!(f, "This operation can cause an Underflow"),
             ContractError::DivisionError => write!(f, "This operation can cause Division error"),
-            ContractError::MilestoneAlreadyResolved => write!(f, "This milestone is already resolved"),
+            ContractError::MilestoneAlreadyResolved => {
+                write!(f, "This milestone is already resolved")
+            }
             ContractError::TooManyEscrowsRequested => {
                 write!(f, "You have requested too many escrows")
             }
@@ -112,34 +113,50 @@ impl fmt::Display for ContractError {
             }
             ContractError::TooManyMilestones => {
                 write!(f, "Cannot define more than 10 milestones in an escrow")
-            },
-            ContractError::CantReleaseAMilestoneInDispute => write!(f, "You cannot launch a milestone in dispute"),
-            ContractError::MilestoneAlreadyReleased => write!(f, "This milestone is already released"),
+            }
+            ContractError::CantReleaseAMilestoneInDispute => {
+                write!(f, "You cannot launch a milestone in dispute")
+            }
+            ContractError::MilestoneAlreadyReleased => {
+                write!(f, "This milestone is already released")
+            }
             ContractError::MilestoneNotFound => write!(f, "Milestone not found"),
             ContractError::MilestoneHasAlreadyBeenApproved => {
-                write!(f, "You cannot approve a milestone that has already been approved previously")
-            },
+                write!(
+                    f,
+                    "You cannot approve a milestone that has already been approved previously"
+                )
+            }
             ContractError::EmptyMilestoneStatus => {
                 write!(f, "The milestone status cannot be empty")
-            },
+            }
             ContractError::PlatformFeeTooHigh => {
                 write!(f, "The platform fee cannot exceed 99%")
-            },
+            }
             ContractError::FlagsMustBeFalse => {
                 write!(f, "All flags (approved, disputed, released) must be false in order to execute this function.")
-            },
+            }
             ContractError::EscrowPropertiesMismatch => {
-                write!(f, "The provided escrow properties do not match the stored escrow.")
-            },
+                write!(
+                    f,
+                    "The provided escrow properties do not match the stored escrow."
+                )
+            }
             ContractError::IncompatibleEscrowWasmHash => {
-                write!(f, "The provided contract address is not an instance of this escrow contract.")
-            },
+                write!(
+                    f,
+                    "The provided contract address is not an instance of this escrow contract."
+                )
+            }
             ContractError::ApproverOrReceiverFundsLessThanZero => {
-                write!(f, "The funds of the approver or receiver must not be less or equal than 0.")
-            },
+                write!(
+                    f,
+                    "The funds of the approver or receiver must not be less or equal than 0."
+                )
+            }
             ContractError::TotalDisputeFundsMustNotExceedTheMilestoneAmount => {
                 write!(f, "The total funds to resolve the dispute must not exceed the amount defined for this milestone.")
-            },
+            }
             ContractError::EscrowAlreadyResolved => {
                 write!(f, "This escrow is already resolved.")
             }

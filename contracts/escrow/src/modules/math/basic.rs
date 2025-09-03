@@ -1,4 +1,3 @@
-
 use crate::error::ContractError;
 
 pub struct BasicMath;

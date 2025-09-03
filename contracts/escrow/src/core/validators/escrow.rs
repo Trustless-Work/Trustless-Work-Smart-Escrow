@@ -50,7 +50,6 @@ pub fn validate_escrow_property_change_conditions(
     contract_balance: i128,
     milestones: Vec<Milestone>,
 ) -> Result<(), ContractError> {
-
     if existing_escrow.milestones.is_empty() {
         return Err(ContractError::NoMileStoneDefined);
     }
@@ -91,7 +90,7 @@ pub fn validate_initialize_escrow_conditions(
         return Err(ContractError::EscrowAlreadyInitialized);
     }
 
-    let max_bps_percentage: u32 = 99*100;
+    let max_bps_percentage: u32 = 99 * 100;
     if escrow_properties.platform_fee > max_bps_percentage {
         return Err(ContractError::PlatformFeeTooHigh);
     }

@@ -34,8 +34,8 @@ mod modules {
         pub use calculator::*;
     }
 }
-mod error;
 mod contract;
+mod error;
 mod tests;
 
 pub use crate::contract::EscrowContract;
