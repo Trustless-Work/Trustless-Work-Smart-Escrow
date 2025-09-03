@@ -34,7 +34,7 @@ pub trait FeeCalculatorTrait {
         approver_funds: i128,
         receiver_funds: i128,
         platform_fee_bps: u32,
-        total_resolved_funds: i128,
+        total_funds: i128,
     ) -> Result<DisputeFeeResult, ContractError>;
 }
 
@@ -68,35 +68,32 @@ impl FeeCalculatorTrait for FeeCalculator {
         approver_funds: i128,
         receiver_funds: i128,
         platform_fee_bps: u32,
-        total_resolved_funds: i128,
+        total_funds: i128,
     ) -> Result<DisputeFeeResult, ContractError> {
+        let computed_total = BasicMath::safe_add(approver_funds, receiver_funds)?;
+        if computed_total <= 0 {
+            return Err(ContractError::DivisionError);
+        }
+
         let trustless_work_fee = SafeMath::safe_mul_div(
-            total_resolved_funds,
+            total_funds,
             TRUSTLESS_WORK_FEE_BPS,
             BASIS_POINTS_DENOMINATOR,
         )?;
         let platform_fee = SafeMath::safe_mul_div(
-            total_resolved_funds,
+            total_funds,
             platform_fee_bps,
             BASIS_POINTS_DENOMINATOR,
         )?;
         let total_fees = BasicMath::safe_add(trustless_work_fee, platform_fee)?;
 
-        let net_approver_funds = if total_resolved_funds > 0 {
-            let approver_fee_share =
-                SafeMath::safe_mul_div(approver_funds, total_fees as u32, total_resolved_funds)?;
-            BasicMath::safe_sub(approver_funds, approver_fee_share)?
-        } else {
-            0
-        };
+        let approver_fee_share =
+            SafeMath::safe_mul_div(approver_funds, total_fees as u32, total_funds)?;
+        let net_approver_funds = BasicMath::safe_sub(approver_funds, approver_fee_share)?;
 
-        let net_receiver_funds = if total_resolved_funds > 0 {
-            let receiver_fee_share =
-                SafeMath::safe_mul_div(receiver_funds, total_fees as u32, total_resolved_funds)?;
-            BasicMath::safe_sub(receiver_funds, receiver_fee_share)?
-        } else {
-            0
-        };
+        let receiver_fee_share =
+            SafeMath::safe_mul_div(receiver_funds, total_fees as u32, total_funds)?;
+        let net_receiver_funds = BasicMath::safe_sub(receiver_funds, receiver_fee_share)?;
 
         Ok(DisputeFeeResult {
             trustless_work_fee,
