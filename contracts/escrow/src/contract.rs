@@ -161,7 +161,7 @@ impl EscrowContract {
         dispute_resolver: Address,
         milestone_index: u32,
         approver_funds: i128,
-        service_provider_funds: i128,
+        receiver_funds: i128,
         trustless_work_address: Address,
     ) -> Result<(), ContractError> {
         let escrow = DisputeManager::resolve_milestone_dispute(
@@ -169,7 +169,7 @@ impl EscrowContract {
             dispute_resolver,
             milestone_index,
             approver_funds,
-            service_provider_funds,
+            receiver_funds,
             trustless_work_address,
         )?;
         EscrowsBySpdr { escrow }.publish(&e);
