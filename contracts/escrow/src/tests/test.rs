@@ -2,12 +2,12 @@
 
 extern crate std;
 
-use crate::storage::types::{ Escrow, Flags, Milestone, Roles, Trustline };
 use crate::contract::EscrowContract;
 use crate::contract::EscrowContractClient;
+use crate::storage::types::{Escrow, Flags, Milestone, Roles, Trustline};
 
 use soroban_sdk::Vec;
-use soroban_sdk::{ testutils::Address as _, vec, Address, Env, String, token };
+use soroban_sdk::{testutils::Address as _, token, vec, Address, Env, String};
 use token::Client as TokenClient;
 use token::StellarAssetClient as TokenAdminClient;
 // use test_token::token::{Token, TokenClient};
@@ -21,22 +21,14 @@ fn create_usdc_token<'a>(e: &Env, admin: &Address) -> (TokenClient<'a>, TokenAdm
 }
 
 struct TestData<'a> {
-    client:  EscrowContractClient<'a>,
+    client: EscrowContractClient<'a>,
 }
 
 fn create_escrow_contract<'a>(env: &Env) -> TestData {
     env.mock_all_auths();
-    let client = EscrowContractClient::new(
-        env,
-        &env.register(
-            EscrowContract {},
-            ()
-        ),
-    );
+    let client = EscrowContractClient::new(env, &env.register(EscrowContract {}, ()));
 
-    TestData {
-        client,
-    }
+    TestData { client }
 }
 
 #[test]
@@ -280,8 +272,8 @@ fn test_update_escrow() {
 
     // Try to update escrow properties without platform address (should fail)
     let non_platform_address = Address::generate(&env);
-    let result = escrow_approver
-        .try_update_escrow(&non_platform_address, &updated_escrow_properties);
+    let result =
+        escrow_approver.try_update_escrow(&non_platform_address, &updated_escrow_properties);
     assert!(result.is_err());
 }
 
@@ -390,8 +382,7 @@ fn test_change_milestone_status_and_approved() {
     );
     assert!(result.is_err());
 
-    let result =
-        escrow_approver.try_approve_milestone(&invalid_index, &true, &approver_address);
+    let result = escrow_approver.try_approve_milestone(&invalid_index, &true, &approver_address);
     assert!(result.is_err());
 
     let unauthorized_address = Address::generate(&env);
@@ -406,8 +397,7 @@ fn test_change_milestone_status_and_approved() {
     assert!(result.is_err());
 
     // Test for `change_approved` by invalid approver
-    let result =
-        escrow_approver.try_approve_milestone(&(0 as i128), &true, &unauthorized_address);
+    let result = escrow_approver.try_approve_milestone(&(0 as i128), &true, &unauthorized_address);
     assert!(result.is_err());
 
     let test_data = create_escrow_contract(&env);
@@ -438,8 +428,7 @@ fn test_change_milestone_status_and_approved() {
     );
     assert!(result.is_err());
 
-    let result =
-        new_escrow_approver.try_approve_milestone(&(0 as i128), &true, &approver_address);
+    let result = new_escrow_approver.try_approve_milestone(&(0 as i128), &true, &approver_address);
     assert!(result.is_err());
 }
 
@@ -519,7 +508,9 @@ fn test_release_funds_successful_flow() {
 
     escrow_approver.initialize_escrow(&escrow_properties);
 
-    usdc_token.1.mint(&escrow_approver.address, &(amount as i128));
+    usdc_token
+        .1
+        .mint(&escrow_approver.address, &(amount as i128));
 
     escrow_approver.release_funds(&release_signer_address, &trustless_work_address);
 
@@ -619,7 +610,9 @@ fn test_release_funds_no_milestones() {
 
     escrow_approver.initialize_escrow(&escrow_properties);
 
-    usdc_token.1.mint(&escrow_approver.address, &(amount as i128));
+    usdc_token
+        .1
+        .mint(&escrow_approver.address, &(amount as i128));
 
     // Try to claim earnings with no milestones (should fail)
     let result = escrow_approver.try_release_funds(&release_signer_address, &platform_address);
@@ -701,7 +694,9 @@ fn test_release_funds_milestones_incomplete() {
 
     escrow_approver.initialize_escrow(&escrow_properties);
 
-    usdc_token.1.mint(&escrow_approver.address, &(amount as i128));
+    usdc_token
+        .1
+        .mint(&escrow_approver.address, &(amount as i128));
 
     // Try to distribute earnings with incomplete milestones (should fail)
     let result = escrow_approver.try_release_funds(&release_signer_address, &platform_address);
@@ -779,7 +774,9 @@ fn test_release_funds_same_receiver_as_provider() {
 
     escrow_approver.initialize_escrow(&escrow_properties);
 
-    usdc_token.1.mint(&escrow_approver.address, &(amount as i128));
+    usdc_token
+        .1
+        .mint(&escrow_approver.address, &(amount as i128));
 
     escrow_approver.release_funds(&release_signer_address, &trustless_work_address);
 
@@ -886,7 +883,9 @@ fn test_release_funds_invalid_receiver_fallback() {
 
     escrow_approver.initialize_escrow(&escrow_properties);
 
-    usdc_token.1.mint(&escrow_approver.address, &(amount as i128));
+    usdc_token
+        .1
+        .mint(&escrow_approver.address, &(amount as i128));
 
     escrow_approver.release_funds(&release_signer_address, &trustless_work_address);
 
@@ -942,7 +941,6 @@ fn test_dispute_management() {
     let dispute_resolver_address = Address::generate(&env);
 
     let usdc_token = create_usdc_token(&env, &admin);
-
 
     let engagement_id = String::from_str(&env, "test_dispute");
     let amount: i128 = 100_000_000;
@@ -1084,7 +1082,9 @@ fn test_dispute_resolution_process() {
 
     escrow_approver.initialize_escrow(&escrow_properties);
 
-    usdc_token.0.transfer(&approver_address, &escrow_approver.address, &amount);
+    usdc_token
+        .0
+        .transfer(&approver_address, &escrow_approver.address, &amount);
 
     escrow_approver.dispute_escrow(&approver_address);
 
@@ -1234,7 +1234,7 @@ fn test_fund_escrow_successful_deposit() {
 
     // Check initial balances
     assert_eq!(usdc_token.0.balance(&approver_address), amount);
-    assert_eq!(usdc_token.0.balance(&escrow_approver.address ), 0);
+    assert_eq!(usdc_token.0.balance(&escrow_approver.address), 0);
 
     let deposit_amount = amount / 2;
     escrow_approver.fund_escrow(&approver_address, &deposit_amount);
@@ -1244,7 +1244,10 @@ fn test_fund_escrow_successful_deposit() {
         usdc_token.0.balance(&approver_address),
         amount - deposit_amount
     );
-    assert_eq!(usdc_token.0.balance(&escrow_approver.address), deposit_amount);
+    assert_eq!(
+        usdc_token.0.balance(&escrow_approver.address),
+        deposit_amount
+    );
 
     // Deposit remaining amount
     escrow_approver.fund_escrow(&approver_address, &deposit_amount);

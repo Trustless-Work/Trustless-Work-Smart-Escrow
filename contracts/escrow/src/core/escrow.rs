@@ -1,5 +1,5 @@
+use crate::reflector::{Asset as ReflectorAsset, ReflectorClient};
 use soroban_sdk::token::Client as TokenClient;
-use crate::reflector::{ReflectorClient, Asset as ReflectorAsset};
 use soroban_sdk::{Address, Env, Symbol, Vec};
 
 use crate::core::validators::escrow::{
@@ -51,7 +51,7 @@ impl EscrowManager {
         let mut escrow = Self::get_escrow(e.clone())?;
         validate_release_conditions(&escrow, &release_signer)?;
 
-    // Mark released and persist
+        // Mark released and persist
         escrow.flags.released = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
@@ -87,9 +87,8 @@ impl EscrowManager {
             "CAVLP5DH2GJPZMVO7IJY4CVOD5MWEFTJFVPD2YY2FQXOQHRGHK4D6HLP",
         );
         let reflector_client = ReflectorClient::new(&e, &oracle_address);
-        let ticker = ReflectorAsset::Stellar(Address::from_string(
-            &escrow.trustline.address.to_string(),
-        ));
+        let ticker =
+            ReflectorAsset::Stellar(Address::from_string(&escrow.trustline.address.to_string()));
         let recent = reflector_client.lastprice(&ticker);
         if recent.is_none() {
             return Err(ContractError::TokenPriceItsNotAvailable);

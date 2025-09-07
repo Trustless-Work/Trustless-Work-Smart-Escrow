@@ -158,7 +158,7 @@ impl fmt::Display for ContractError {
                     f,
                     "The approver's and receiver's funds must equal the current escrow balance."
                 )
-            },
+            }
             ContractError::TokenPriceItsNotAvailable => {
                 write!(f, "The token price is not available from the oracle")
             }

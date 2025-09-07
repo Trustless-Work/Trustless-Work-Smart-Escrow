@@ -13,7 +13,7 @@ pub struct Escrow {
     pub flags: Flags,
     pub trustline: Trustline,
     pub receiver_memo: i128,
-    pub record_price_at_release: i128
+    pub record_price_at_release: i128,
 }
 
 #[contracttype]
