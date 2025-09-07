@@ -13,6 +13,7 @@ pub struct Escrow {
     pub flags: Flags,
     pub trustline: Trustline,
     pub receiver_memo: i128,
+    pub record_price_at_release: i128
 }
 
 #[contracttype]
@@ -47,7 +48,6 @@ pub struct Flags {
 #[derive(Clone, PartialEq, Eq)]
 pub struct Trustline {
     pub address: Address,
-    pub decimals: u32,
 }
 
 #[contracttype]
@@ -61,6 +61,5 @@ pub struct AddressBalance {
 #[derive(Clone)]
 #[contracttype]
 pub enum DataKey {
-    Admin,
     Escrow,
 }
