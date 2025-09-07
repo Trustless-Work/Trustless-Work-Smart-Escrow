@@ -49,6 +49,7 @@ pub enum ContractError {
     ArgumentConversionFailed = 43,
     TooManyMilestones = 44,
     ReceiverAndApproverFundsNotEqual = 45,
+    TokenPriceItsNotAvailable = 46,
 }
 
 impl fmt::Display for ContractError {
@@ -81,10 +82,9 @@ impl fmt::Display for ContractError {
                 write!(f, "The contract has no balance to repay")
             }
             ContractError::EscrowNotFound => write!(f, "Escrow not found"),
-            ContractError::OnlyReleaseSignerCanReleaseEarnings => write!(
-                f,
-                "Only the release signer can release the escrow earnings"
-            ),
+            ContractError::OnlyReleaseSignerCanReleaseEarnings => {
+                write!(f, "Only the release signer can release the escrow earnings")
+            }
             ContractError::EscrowNotCompleted => {
                 write!(f, "The escrow must be completed to release earnings")
             }
@@ -154,7 +154,13 @@ impl fmt::Display for ContractError {
                 write!(f, "Cannot define more than 10 milestones in an escrow")
             }
             ContractError::ReceiverAndApproverFundsNotEqual => {
-                write!(f, "The approver's and receiver's funds must equal the current escrow balance.")
+                write!(
+                    f,
+                    "The approver's and receiver's funds must equal the current escrow balance."
+                )
+            },
+            ContractError::TokenPriceItsNotAvailable => {
+                write!(f, "The token price is not available from the oracle")
             }
         }
     }
