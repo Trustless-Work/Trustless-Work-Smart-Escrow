@@ -22,11 +22,7 @@ pub fn validate_release_conditions(
         return Err(ContractError::NoMileStoneDefined);
     }
 
-    if !escrow
-        .milestones
-        .iter()
-        .all(|milestone| milestone.approved)
-    {
+    if !escrow.milestones.iter().all(|milestone| milestone.approved) {
         return Err(ContractError::EscrowNotCompleted);
     }
 
@@ -43,7 +39,6 @@ pub fn validate_escrow_property_change_conditions(
     platform_address: &Address,
     contract_balance: i128,
 ) -> Result<(), ContractError> {
-
     if platform_address != &existing_escrow.roles.platform_address {
         return Err(ContractError::OnlyPlatformAddressExecuteThisFunction);
     }

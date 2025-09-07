@@ -1,13 +1,34 @@
 use crate::storage::types::Escrow;
-use soroban_sdk::{symbol_short, vec, Env, IntoVal, String, Val};
+use soroban_sdk::{contractevent, String};
 
-// ------ Escrows
-pub fn escrows_by_contract_id(e: &Env, escrow_id: String, escrow: Escrow) {
-    let topics = (symbol_short!("p_by_spdr"),);
+#[contractevent]
+#[derive(Clone)]
+pub struct InitEsc {
+    pub escrow: Escrow,
+}
 
-    let escrow_id_val: Val = escrow_id.into_val(e);
-    let escrow_val: Val = escrow.into_val(e);
+#[contractevent(data_format = "vec")]
+#[derive(Clone)]
+pub struct FundEsc {
+    pub signer: soroban_sdk::Address,
+    pub amount: i128,
+}
 
-    let event_payload = vec![e, escrow_id_val, escrow_val];
-    e.events().publish(topics, event_payload);
+#[contractevent(data_format = "single-value")]
+#[derive(Clone)]
+pub struct DisEsc {
+    pub release_signer: soroban_sdk::Address,
+}
+
+#[contractevent(data_format = "vec")]
+#[derive(Clone)]
+pub struct ChgEsc {
+    pub platform: soroban_sdk::Address,
+    pub engagement_id: String,
+}
+
+#[contractevent(topics = ["p_by_spdr"], data_format = "vec")]
+#[derive(Clone)]
+pub struct EscrowsBySpdr {
+    pub escrow: Escrow,
 }

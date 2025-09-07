@@ -1,9 +1,10 @@
-use soroban_sdk::{Address, Env, Symbol, Vec};
 use soroban_sdk::token::Client as TokenClient;
+use crate::reflector::{ReflectorClient, Asset as ReflectorAsset};
+use soroban_sdk::{Address, Env, Symbol, Vec};
 
 use crate::core::validators::escrow::{
-    validate_escrow_property_change_conditions,
-    validate_initialize_escrow_conditions, validate_release_conditions,
+    validate_escrow_property_change_conditions, validate_initialize_escrow_conditions,
+    validate_release_conditions,
 };
 use crate::error::ContractError;
 use crate::modules::fee::{FeeCalculator, FeeCalculatorTrait};
@@ -21,7 +22,7 @@ impl EscrowManager {
         }
     }
 
-     pub fn initialize_escrow(e: Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
+    pub fn initialize_escrow(e: Env, escrow_properties: Escrow) -> Result<Escrow, ContractError> {
         validate_initialize_escrow_conditions(e.clone(), escrow_properties.clone())?;
         e.storage()
             .instance()
@@ -50,6 +51,7 @@ impl EscrowManager {
         let mut escrow = Self::get_escrow(e.clone())?;
         validate_release_conditions(&escrow, &release_signer)?;
 
+    // Mark released and persist
         escrow.flags.released = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
@@ -60,14 +62,41 @@ impl EscrowManager {
             return Err(ContractError::EscrowBalanceNotEnoughToSendEarnings);
         }
 
-        let fee_result =
-            FeeCalculator::calculate_standard_fees(escrow.amount as i128, escrow.platform_fee as i128)?;
+        let fee_result = FeeCalculator::calculate_standard_fees(
+            escrow.amount as i128,
+            escrow.platform_fee as i128,
+        )?;
 
-        token_client.transfer(&contract_address, &trustless_work_address, &fee_result.trustless_work_fee);
-        token_client.transfer(&contract_address, &escrow.roles.platform_address, &fee_result.platform_fee);
+        token_client.transfer(
+            &contract_address,
+            &trustless_work_address,
+            &fee_result.trustless_work_fee,
+        );
+        token_client.transfer(
+            &contract_address,
+            &escrow.roles.platform_address,
+            &fee_result.platform_fee,
+        );
 
         let receiver = Self::get_receiver(&escrow);
         token_client.transfer(&contract_address, &receiver, &fee_result.receiver_amount);
+
+        // Query oracle price after funds flow, fail if not available
+        let oracle_address = Address::from_str(
+            &e,
+            "CAVLP5DH2GJPZMVO7IJY4CVOD5MWEFTJFVPD2YY2FQXOQHRGHK4D6HLP",
+        );
+        let reflector_client = ReflectorClient::new(&e, &oracle_address);
+        let ticker = ReflectorAsset::Stellar(Address::from_string(
+            &escrow.trustline.address.to_string(),
+        ));
+        let recent = reflector_client.lastprice(&ticker);
+        if recent.is_none() {
+            return Err(ContractError::TokenPriceItsNotAvailable);
+        }
+        let price = recent.unwrap().price;
+        escrow.record_price_at_release = price;
+        e.storage().instance().set(&DataKey::Escrow, &escrow);
 
         Ok(())
     }
@@ -113,7 +142,7 @@ impl EscrowManager {
             balances.push_back(AddressBalance {
                 address: address.clone(),
                 balance,
-                trustline_decimals: escrow.trustline.decimals,
+                trustline_decimals: token_client.decimals(),
             });
         }
         Ok(balances)
