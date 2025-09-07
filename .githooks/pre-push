@@ -1,0 +1,25 @@
+#!/bin/sh
+# Git pre-push hook: format Rust code before pushing
+# Fails the push if formatting changes are needed.
+
+# Redirect output to stderr for hook visibility
+exec 1>&2
+
+# Ensure cargo fmt is available
+if ! command -v cargo >/dev/null 2>&1; then
+  echo "pre-push: cargo not found. Install Rust toolchain and rustfmt (rustup component add rustfmt)."
+  exit 1
+fi
+
+# Run formatter
+echo "pre-push: running cargo fmt --all"
+cargo fmt --all
+
+# Check if formatting introduced changes
+if ! git diff --quiet -- . ':!target' ; then
+  echo "pre-push: code was reformatted. Please review and commit the changes before pushing."
+  git --no-pager diff --stat -- . ':!target'
+  exit 1
+fi
+
+exit 0
