@@ -85,8 +85,8 @@ impl EscrowManager {
             "CCYOZJCOPG34LLQQ7N24YXBM7LL62R7ONMZ3G6WZAAYPB5OYKOMJRN63",
         );
 
-        let aqua_sym = Symbol::new(&e, &("USDC"));
-        let symbol_ticker = ReflectorAsset::Other(aqua_sym.clone());
+        let usdc_sym = Symbol::new(&e, &("USDC"));
+        let symbol_ticker = ReflectorAsset::Other(usdc_sym.clone());
         let address_ticker = ReflectorAsset::Stellar(escrow.trustline.address.clone());
 
         let assets_sym = Symbol::new(&e, "assets");
@@ -98,7 +98,7 @@ impl EscrowManager {
         let mut chosen_ticker: Option<ReflectorAsset> = None;
         if let Ok(Ok(list)) = assets_res {
             let supported_by_symbol = list.iter().any(|a| match a {
-                ReflectorAsset::Other(s) => s.clone() == aqua_sym,
+                ReflectorAsset::Other(s) => s.clone() == usdc_sym,
                 _ => false,
             });
             if supported_by_symbol {
