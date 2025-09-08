@@ -21,7 +21,12 @@ pub trait Contract {
     // Quotes the cross price for the pair of assets at specific timestamp
     fn x_price(e: Env, base_asset: Asset, quote_asset: Asset, timestamp: u64) -> Option<PriceData>;
     // Quotes last N cross price records of for the pair of assets
-    fn x_prices(e: Env, base_asset: Asset, quote_asset: Asset, records: u32) -> Option<Vec<PriceData>>;
+    fn x_prices(
+        e: Env,
+        base_asset: Asset,
+        quote_asset: Asset,
+        records: u32,
+    ) -> Option<Vec<PriceData>>;
     // Quotes the time-weighted average price for the given asset over N recent records
     fn twap(e: Env, asset: Asset, records: u32) -> Option<i128>;
     // Quotes the time-weighted average cross price for the given asset pair over N recent records
@@ -44,15 +49,15 @@ pub trait Contract {
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Asset {
     Stellar(Address), // for Stellar Classic and Soroban assets
-    Other(Symbol)     // for any external currencies/tokens/assets/symbols
+    Other(Symbol),    // for any external currencies/tokens/assets/symbols
 }
 
 // Price record definition
 #[contracttype(export = false)]
 #[derive(Debug, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct PriceData {
-    pub price: i128,   // asset price at given point in time
-    pub timestamp: u64 // record timestamp
+    pub price: i128,    // asset price at given point in time
+    pub timestamp: u64, // record timestamp
 }
 
 // Possible runtime errors
@@ -66,5 +71,5 @@ pub enum Error {
     InvalidConfigVersion = 4,
     InvalidTimestamp = 5,
     InvalidUpdateLength = 6,
-    AssetLimitExceeded = 7
+    AssetLimitExceeded = 7,
 }

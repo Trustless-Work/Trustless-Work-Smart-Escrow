@@ -1,6 +1,6 @@
-use soroban_sdk::token::Client as TokenClient;
 use crate::reflector::{Asset as ReflectorAsset, PriceData};
-use soroban_sdk::{Address, Env, Symbol, Vec, Val, IntoVal};
+use soroban_sdk::token::Client as TokenClient;
+use soroban_sdk::{Address, Env, IntoVal, Symbol, Val, Vec};
 
 use crate::core::validators::escrow::{
     validate_escrow_property_change_conditions, validate_initialize_escrow_conditions,
@@ -90,7 +90,11 @@ impl EscrowManager {
         let address_ticker = ReflectorAsset::Stellar(escrow.trustline.address.clone());
 
         let assets_sym = Symbol::new(&e, "assets");
-        let assets_res = e.try_invoke_contract::<Vec<ReflectorAsset>, Val>(&oracle_address, &assets_sym, Vec::new(&e));
+        let assets_res = e.try_invoke_contract::<Vec<ReflectorAsset>, Val>(
+            &oracle_address,
+            &assets_sym,
+            Vec::new(&e),
+        );
         let mut chosen_ticker: Option<ReflectorAsset> = None;
         if let Ok(Ok(list)) = assets_res {
             let supported_by_symbol = list.iter().any(|a| match a {
@@ -114,16 +118,21 @@ impl EscrowManager {
         if let Some(ticker) = chosen_ticker {
             let mut args: Vec<Val> = Vec::new(&e);
             args.push_back(ticker.into_val(&e));
-            let price_res = e.try_invoke_contract::<Option<PriceData>, Val>(&oracle_address, &fn_sym, args);
+            let price_res =
+                e.try_invoke_contract::<Option<PriceData>, Val>(&oracle_address, &fn_sym, args);
             if let Ok(Ok(maybe_pd)) = price_res {
                 if let Some(pd) = maybe_pd {
                     // Optional staleness validation using oracle resolution
                     let res_sym = Symbol::new(&e, "resolution");
                     let mut fresh = true;
-                    if let Ok(Ok(resolution)) = e.try_invoke_contract::<u32, Val>(&oracle_address, &res_sym, Vec::new(&e)) {
+                    if let Ok(Ok(resolution)) =
+                        e.try_invoke_contract::<u32, Val>(&oracle_address, &res_sym, Vec::new(&e))
+                    {
                         let now = e.ledger().timestamp();
                         let max_age = (resolution as u64) * 3; // allow up to 3 ticks
-                        if now < pd.timestamp || now - pd.timestamp > max_age { fresh = false; }
+                        if now < pd.timestamp || now - pd.timestamp > max_age {
+                            fresh = false;
+                        }
                     }
                     if fresh {
                         let mut esc = escrow.clone();
