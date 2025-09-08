@@ -1,6 +1,6 @@
-use crate::reflector::{Asset as ReflectorAsset, ReflectorClient};
 use soroban_sdk::token::Client as TokenClient;
-use soroban_sdk::{Address, Env, Symbol, Vec};
+use crate::reflector::{Asset as ReflectorAsset, PriceData};
+use soroban_sdk::{Address, Env, Symbol, Vec, Val, IntoVal};
 
 use crate::core::validators::escrow::{
     validate_escrow_property_change_conditions, validate_initialize_escrow_conditions,
@@ -51,7 +51,6 @@ impl EscrowManager {
         let mut escrow = Self::get_escrow(e.clone())?;
         validate_release_conditions(&escrow, &release_signer)?;
 
-        // Mark released and persist
         escrow.flags.released = true;
         e.storage().instance().set(&DataKey::Escrow, &escrow);
 
@@ -81,21 +80,59 @@ impl EscrowManager {
         let receiver = Self::get_receiver(&escrow);
         token_client.transfer(&contract_address, &receiver, &fee_result.receiver_amount);
 
-        // Query oracle price after funds flow, fail if not available
         let oracle_address = Address::from_str(
             &e,
-            "CAVLP5DH2GJPZMVO7IJY4CVOD5MWEFTJFVPD2YY2FQXOQHRGHK4D6HLP",
+            "CCYOZJCOPG34LLQQ7N24YXBM7LL62R7ONMZ3G6WZAAYPB5OYKOMJRN63",
         );
-        let reflector_client = ReflectorClient::new(&e, &oracle_address);
-        let ticker =
-            ReflectorAsset::Stellar(Address::from_string(&escrow.trustline.address.to_string()));
-        let recent = reflector_client.lastprice(&ticker);
-        if recent.is_none() {
-            return Err(ContractError::TokenPriceItsNotAvailable);
+
+        let aqua_sym = Symbol::new(&e, &("USDC"));
+        let symbol_ticker = ReflectorAsset::Other(aqua_sym.clone());
+        let address_ticker = ReflectorAsset::Stellar(escrow.trustline.address.clone());
+
+        let assets_sym = Symbol::new(&e, "assets");
+        let assets_res = e.try_invoke_contract::<Vec<ReflectorAsset>, Val>(&oracle_address, &assets_sym, Vec::new(&e));
+        let mut chosen_ticker: Option<ReflectorAsset> = None;
+        if let Ok(Ok(list)) = assets_res {
+            let supported_by_symbol = list.iter().any(|a| match a {
+                ReflectorAsset::Other(s) => s.clone() == aqua_sym,
+                _ => false,
+            });
+            if supported_by_symbol {
+                chosen_ticker = Some(symbol_ticker);
+            } else {
+                let supported_by_address = list.iter().any(|a| match a {
+                    ReflectorAsset::Stellar(addr) => addr == escrow.trustline.address,
+                    _ => false,
+                });
+                if supported_by_address {
+                    chosen_ticker = Some(address_ticker);
+                }
+            }
         }
-        let price = recent.unwrap().price;
-        escrow.record_price_at_release = price;
-        e.storage().instance().set(&DataKey::Escrow, &escrow);
+
+        let fn_sym = Symbol::new(&e, "lastprice");
+        if let Some(ticker) = chosen_ticker {
+            let mut args: Vec<Val> = Vec::new(&e);
+            args.push_back(ticker.into_val(&e));
+            let price_res = e.try_invoke_contract::<Option<PriceData>, Val>(&oracle_address, &fn_sym, args);
+            if let Ok(Ok(maybe_pd)) = price_res {
+                if let Some(pd) = maybe_pd {
+                    // Optional staleness validation using oracle resolution
+                    let res_sym = Symbol::new(&e, "resolution");
+                    let mut fresh = true;
+                    if let Ok(Ok(resolution)) = e.try_invoke_contract::<u32, Val>(&oracle_address, &res_sym, Vec::new(&e)) {
+                        let now = e.ledger().timestamp();
+                        let max_age = (resolution as u64) * 3; // allow up to 3 ticks
+                        if now < pd.timestamp || now - pd.timestamp > max_age { fresh = false; }
+                    }
+                    if fresh {
+                        let mut esc = escrow.clone();
+                        esc.record_price_at_release = pd.price;
+                        e.storage().instance().set(&DataKey::Escrow, &esc);
+                    }
+                }
+            }
+        }
 
         Ok(())
     }
