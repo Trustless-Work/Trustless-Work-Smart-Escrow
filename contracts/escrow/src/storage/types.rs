@@ -64,4 +64,5 @@ pub struct AddressBalance {
 pub enum DataKey {
     Admin,
     Escrow,
+    VaultAddr,
 }
