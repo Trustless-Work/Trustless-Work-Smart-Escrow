@@ -164,4 +164,8 @@ impl EscrowContract {
     pub fn dispute_escrow(e: Env, signer: Address) -> Result<(), ContractError> {
         DisputeManager::dispute_escrow(e, signer)
     }
+
+    pub fn send_to_vault(e: Env) -> Result<(), ContractError> {
+        EscrowManager::send_to_vault(e)
+    }
 }
