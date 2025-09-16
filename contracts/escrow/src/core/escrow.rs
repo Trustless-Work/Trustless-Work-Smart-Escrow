@@ -148,12 +148,12 @@ impl EscrowManager {
         let escrow_address = e.current_contract_address();
         let mut amounts_desired: Vec<i128> = vec![&e];
         amounts_desired.push_back(amount_balance);
-        let vault_address = Address::from_string(&String::from_str(&e, "CAQCFVLOBK5GIULPNZRGATJJMIZL5BSP7X5YJVMGCPTUEPFM4AVSRCJU"));
+        let vault_address = Address::from_string(&String::from_str(&e, "CBLXUUHUL7TA3LF3U5G6ZTU7EACBBOSJLR4AYOM5YJKJ4APZ7O547R5T"));
         // If using the Soroban SDK
         let mut deposit_args: Vec<Val> = vec![&e];
         deposit_args.push_back(amounts_desired.to_val());
         deposit_args.push_back(amounts_min.to_val());
-        deposit_args.push_back(escrow_address.to_val());
+        deposit_args.push_back(escrow_address.into_val(&e));
         deposit_args.push_back(false.into_val(&e));
 
         e.invoke_contract::<Val>(&vault_address, &Symbol::new(&e, "deposit"), deposit_args);
