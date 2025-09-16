@@ -1,4 +1,4 @@
-use soroban_sdk::{Address, Env, Symbol, Vec};
+use soroban_sdk::{Address, Env, Symbol, Val, Vec, String, vec, IntoVal};
 use soroban_sdk::token::Client as TokenClient;
 
 use crate::core::validators::escrow::{
@@ -9,6 +9,7 @@ use crate::error::ContractError;
 use crate::modules::fee::{FeeCalculator, FeeCalculatorTrait};
 use crate::storage::types::{AddressBalance, DataKey, Escrow};
 
+use core::result::Result;
 pub struct EscrowManager;
 
 impl EscrowManager {
@@ -131,5 +132,31 @@ impl EscrowManager {
             .instance()
             .get(&DataKey::Escrow)
             .ok_or(ContractError::EscrowNotFound)?
+    }
+
+    pub fn send_to_vault(
+        e: Env,
+    ) -> Result<(), ContractError> {
+        let amounts_min: Vec<i128> = vec![&e];
+        let escrow_result = Self::get_escrow(e.clone());
+        let escrow = match escrow_result {
+            Ok(esc) => esc,
+            Err(err) => return Err(err),
+        };
+        let token_client = TokenClient::new(&e, &escrow.trustline.address);
+        let amount_balance = token_client.balance(&e.current_contract_address());
+        let escrow_address = e.current_contract_address();
+        let mut amounts_desired: Vec<i128> = vec![&e];
+        amounts_desired.push_back(amount_balance);
+        let vault_address = Address::from_string(&String::from_str(&e, "CAQCFVLOBK5GIULPNZRGATJJMIZL5BSP7X5YJVMGCPTUEPFM4AVSRCJU"));
+        // If using the Soroban SDK
+        let mut deposit_args: Vec<Val> = vec![&e];
+        deposit_args.push_back(amounts_desired.to_val());
+        deposit_args.push_back(amounts_min.to_val());
+        deposit_args.push_back(escrow_address.to_val());
+        deposit_args.push_back(false.into_val(&e));
+
+        e.invoke_contract::<Val>(&vault_address, &Symbol::new(&e, "deposit"), deposit_args);
+        Ok(())
     }
 }
