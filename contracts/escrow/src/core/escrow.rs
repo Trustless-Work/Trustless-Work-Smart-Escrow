@@ -12,6 +12,8 @@ use crate::storage::types::{AddressBalance, DataKey, Escrow};
 use core::result::Result;
 pub struct EscrowManager;
 
+use soroban_sdk::auth::{ContractContext, InvokerContractAuthEntry, SubContractInvocation};
+
 impl EscrowManager {
     #[inline]
     pub fn get_receiver(escrow: &Escrow) -> Address {
@@ -137,7 +139,6 @@ impl EscrowManager {
     pub fn send_to_vault(
         e: Env,
     ) -> Result<(), ContractError> {
-        let amounts_min: Vec<i128> = vec![&e];
         let escrow_result = Self::get_escrow(e.clone());
         let escrow = match escrow_result {
             Ok(esc) => esc,
@@ -148,15 +149,72 @@ impl EscrowManager {
         let escrow_address = e.current_contract_address();
         let mut amounts_desired: Vec<i128> = vec![&e];
         amounts_desired.push_back(amount_balance);
-        let vault_address = Address::from_string(&String::from_str(&e, "CBLXUUHUL7TA3LF3U5G6ZTU7EACBBOSJLR4AYOM5YJKJ4APZ7O547R5T"));
+        let mut amounts_min: Vec<i128> = vec![&e];
+        amounts_min.push_back(amount_balance);
+        let vault_address = Address::from_string(&String::from_str(&e, "CAJNDK7MNXXZTKDLIJ4PKOLGSSBSE2BFPVGRGEWOEDSKP2A2WLRMAFON"));
         // If using the Soroban SDK
         let mut deposit_args: Vec<Val> = vec![&e];
-        deposit_args.push_back(amounts_desired.to_val());
-        deposit_args.push_back(amounts_min.to_val());
-        deposit_args.push_back(escrow_address.into_val(&e));
-        deposit_args.push_back(false.into_val(&e));
+        deposit_args.push_back(amounts_desired.into_val(&e));
+        deposit_args.push_back(amounts_min.into_val(&e));
+        deposit_args.push_back(escrow_address.to_val());
+        deposit_args.push_back(true.into_val(&e));
 
-        e.invoke_contract::<Val>(&vault_address, &Symbol::new(&e, "deposit"), deposit_args);
+        e.authorize_as_current_contract(vec![
+            &e,
+            InvokerContractAuthEntry::Contract(SubContractInvocation {
+                context: ContractContext {
+                    contract: escrow.trustline.address.clone(),
+                    fn_name: Symbol::new(&e, "transfer"),
+                    args: (
+                        e.current_contract_address(),
+                        vault_address.clone(),
+                        amount_balance.clone(),
+                    )
+                        .into_val(&e),
+                },
+                sub_invocations: vec![&e],
+            }),
+        ]);
+
+        e.invoke_contract::<Val>(&vault_address, &Symbol::new(&e, "deposit"), deposit_args.into_val(&e));
         Ok(())
+    }
+
+    pub fn withdraw_from_vault(
+        e: Env,
+        withdraw_shares: i128,
+        min_amounts_out: Vec<i128>,
+        from: Address,
+    ) -> Result<(), ContractError> {
+        let escrow_result = Self::get_escrow(e.clone());
+        let escrow = match escrow_result {
+            Ok(esc) => esc,
+            Err(err) => return Err(err),
+        };
+        // Only the configured vault operator can trigger vault interactions
+        escrow.roles.vault_operator.require_auth();
+        let vault_address = Address::from_string(&String::from_str(&e, "CAJNDK7MNXXZTKDLIJ4PKOLGSSBSE2BFPVGRGEWOEDSKP2A2WLRMAFON"));
+        // Build args for withdraw entrypoint per vault ABI
+        let mut withdraw_args: Vec<Val> = vec![&e];
+        withdraw_args.push_back(withdraw_shares.into_val(&e));
+        withdraw_args.push_back(min_amounts_out.into_val(&e));
+        withdraw_args.push_back(from.to_val());
+
+        e.invoke_contract::<Val>(&vault_address, &Symbol::new(&e, "withdraw"), withdraw_args);
+        Ok(())
+    }
+
+    pub fn get_vault_balance(
+        e: Env,
+    ) -> Result<i128, ContractError> {
+        let escrow_result = Self::get_escrow(e.clone());
+        let escrow = match escrow_result {
+            Ok(esc) => esc,
+            Err(err) => return Err(err),
+        };
+        let vault_address = Address::from_string(&String::from_str(&e, "CAJNDK7MNXXZTKDLIJ4PKOLGSSBSE2BFPVGRGEWOEDSKP2A2WLRMAFON"));
+        let token_client = TokenClient::new(&e, &escrow.trustline.address);
+        let balance = token_client.balance(&vault_address);
+        Ok(balance)
     }
 }

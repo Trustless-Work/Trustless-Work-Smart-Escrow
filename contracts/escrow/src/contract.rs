@@ -1,5 +1,5 @@
 use soroban_sdk::{
-    contract, contractimpl, symbol_short, Address, BytesN, Env, String, Symbol, Val, Vec, IntoVal,
+    contract, contractimpl, symbol_short, Address, BytesN, Env, String, Symbol, Val, Vec,
 };
 
 use crate::core::{DisputeManager, EscrowManager, MilestoneManager};
@@ -168,94 +168,18 @@ impl EscrowContract {
     pub fn send_to_vault(e: Env) -> Result<(), ContractError> {
         EscrowManager::send_to_vault(e)
     }
-
-    ////////////////////////
-    // Vault Integration (Option 1) /////
-    ////////////////////////
-
-    // Operator-gated helper that lets a user deposit directly into a DeFindex vault.
-    // - The `vault_operator` authorizes running this flow.
-    // - The `user` must authorize because DeFindex's vault.deposit requires `from.require_auth()`.
-    // - Funds are pulled by the vault from `user`; escrow only coordinates.
-    // - We intentionally ignore the return to keep ABI simple; frontends can query the vault if needed.
-    pub fn deposit_via_vault(
+    
+    pub fn withdraw_from_vault(
         e: Env,
-        operator: Address,
-        user: Address,
-        vault_address: Address,
-        amounts_desired: Vec<i128>,
-        amounts_min: Vec<i128>,
-        invest: bool,
+        withdraw_shares: i128,
+        min_amounts_out: Vec<i128>,
+        from: Address,
     ) -> Result<(), ContractError> {
-        // Auth: operator must be the configured vault_operator for this escrow instance
-        let escrow = EscrowManager::get_escrow(e.clone())?;
-        if operator != escrow.roles.vault_operator {
-            return Err(ContractError::OnlyPlatformAddressExecuteThisFunction);
-        }
-        operator.require_auth();
-
-        // Auth: user must authorize so the vault can pull funds from the user's balance
-        user.require_auth();
-
-        // Build args for DeFindex vault.deposit(amounts_desired, amounts_min, from, invest)
-        let mut args: Vec<Val> = Vec::new(&e);
-        args.push_back(amounts_desired.to_val());
-        args.push_back(amounts_min.to_val());
-        args.push_back(user.to_val());
-        args.push_back(invest.into_val(&e));
-
-        // Invoke vault. We don't rely on its concrete return type here.
-        let _res: Val = e.invoke_contract(&vault_address, &Symbol::new(&e, "deposit"), args);
-
-        e.events().publish((symbol_short!("dep_vlt"),), (operator, user, vault_address));
-        Ok(())
+        EscrowManager::withdraw_from_vault(e, withdraw_shares, min_amounts_out, from)
+    }
+    
+    pub fn get_vault_balance(e: Env) -> Result<i128, ContractError> {
+        EscrowManager::get_vault_balance(e)
     }
 
-    // Set the persistent vault address. Only platform_address can set it.
-    pub fn set_vault_address(e: Env, platform_address: Address, vault_address: Address) -> Result<(), ContractError> {
-        let escrow = EscrowManager::get_escrow(e.clone())?;
-        if platform_address != escrow.roles.platform_address {
-            return Err(ContractError::OnlyPlatformAddressExecuteThisFunction);
-        }
-        platform_address.require_auth();
-        e.storage().instance().set(&DataKey::VaultAddr, &vault_address);
-        e.events().publish((symbol_short!("set_vlt"),), (platform_address, vault_address));
-        Ok(())
-    }
-
-    // Get the stored vault address.
-    pub fn get_vault_address(e: Env) -> Result<Address, ContractError> {
-        let addr: Option<Address> = e.storage().instance().get(&DataKey::VaultAddr);
-        match addr {
-            Some(a) => Ok(a),
-            None => Err(ContractError::AdminNotFound),
-        }
-    }
-
-    // Returns the address of the vault share token. In DeFindex vault, the token
-    // interface is implemented by the same contract, so this equals the vault address.
-    pub fn get_vault_share_token_address(e: Env) -> Result<Address, ContractError> {
-        Self::get_vault_address(e)
-    }
-
-    // Same as deposit_via_vault but reads the stored vault address.
-    pub fn deposit_via_vault_stored(
-        e: Env,
-        operator: Address,
-        user: Address,
-        amounts_desired: Vec<i128>,
-        amounts_min: Vec<i128>,
-        invest: bool,
-    ) -> Result<(), ContractError> {
-        let vault_address = Self::get_vault_address(e.clone())?;
-        Self::deposit_via_vault(
-            e,
-            operator,
-            user,
-            vault_address,
-            amounts_desired,
-            amounts_min,
-            invest,
-        )
-    }
 }
