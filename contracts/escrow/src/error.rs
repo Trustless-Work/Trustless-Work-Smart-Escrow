@@ -32,6 +32,8 @@ pub enum ContractError {
     UnauthorizedToChangeDisputeFlag = 26,
     TooManyMilestones = 27,
     ReceiverAndApproverFundsNotEqual = 28,
+    AmountsToBeTransferredShouldBePositive = 38,
+    DistributionsMustEqualEscrowBalance = 39,
     MilestoneHasAlreadyBeenApproved = 29,
     EmptyMilestoneStatus = 30,
     PlatformFeeTooHigh = 31,
@@ -115,6 +117,12 @@ impl fmt::Display for ContractError {
                     f,
                     "The approver's and receiver's funds must equal the current escrow balance."
                 )
+            }
+            ContractError::AmountsToBeTransferredShouldBePositive => {
+                write!(f, "None of the amounts to be transferred should be less than 0.")
+            }
+            ContractError::DistributionsMustEqualEscrowBalance => {
+                write!(f, "The sum of distributions must equal the current escrow balance when resolving an escrow dispute.")
             }
             ContractError::MilestoneHasAlreadyBeenApproved => {
                 write!(

@@ -21,11 +21,10 @@ pub fn validate_dispute_resolution_conditions(
         return Err(ContractError::EscrowNotInDispute);
     }
 
-    // Validate distributions are non-negative and compute total
     let mut total: i128 = 0;
     for (_addr, amount) in distributions.iter() {
         if amount < 0 {
-            return Err(ContractError::ApproverOrReceiverFundsLessThanZero);
+            return Err(ContractError::AmountsToBeTransferredShouldBePositive);
         }
         total = BasicMath::safe_add(total, amount)?;
     }
@@ -36,7 +35,7 @@ pub fn validate_dispute_resolution_conditions(
         return Err(ContractError::InsufficientFundsForResolution);
     }
     if total != current_balance {
-        return Err(ContractError::ReceiverAndApproverFundsNotEqual);
+        return Err(ContractError::DistributionsMustEqualEscrowBalance);
     }
 
     Ok(())
