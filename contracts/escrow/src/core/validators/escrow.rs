@@ -46,6 +46,7 @@ pub fn validate_release_conditions(
 #[inline]
 pub fn validate_escrow_property_change_conditions(
     existing_escrow: &Escrow,
+    new_escrow: &Escrow,
     platform_address: &Address,
     contract_balance: i128,
     milestones: Vec<Milestone>,
@@ -68,6 +69,10 @@ pub fn validate_escrow_property_change_conditions(
         if milestone.flags.approved {
             return Err(ContractError::MilestoneApprovedCantChangeEscrowProperties);
         }
+    }
+
+    if existing_escrow.roles.platform_address != new_escrow.roles.platform_address {
+        return Err(ContractError::PlatformAddressCannotBeChanged);
     }
 
     if platform_address != &existing_escrow.roles.platform_address {

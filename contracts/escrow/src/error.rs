@@ -47,6 +47,7 @@ pub enum ContractError {
     EscrowNotFullyProcessed = 41,
     AmountsToBeTransferredShouldBePositive = 42,
     InsufficientFundsForRefund = 43,
+    PlatformAddressCannotBeChanged = 44,
 }
 
 impl fmt::Display for ContractError {
@@ -172,6 +173,9 @@ impl fmt::Display for ContractError {
             ContractError::InsufficientFundsForRefund => {
                 write!(f, "Insufficient funds to refund the remaining funds from the escrow account.")
             }
+            ContractError::PlatformAddressCannotBeChanged => {
+                write!(f, "The platform address of the escrow cannot be changed.")
+            } 
         }
     }
 }

@@ -123,6 +123,7 @@ impl EscrowManager {
 
         validate_escrow_property_change_conditions(
             &escrow,
+            &escrow_properties,
             &platform_address,
             contract_balance,
             escrow.milestones.clone(),
