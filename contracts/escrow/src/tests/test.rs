@@ -1125,6 +1125,82 @@ fn test_dispute_resolution_process() {
 }
 
 #[test]
+fn test_cannot_release_after_dispute_resolved() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let admin = Address::generate(&env);
+    let approver = Address::generate(&env);
+    let service_provider = Address::generate(&env);
+    let platform = Address::generate(&env);
+    let release_signer = Address::generate(&env);
+    let dispute_resolver = Address::generate(&env);
+    let trustless_work_address = Address::generate(&env);
+    let usdc = create_usdc_token(&env, &admin);
+
+    // Setup escrow with one milestone
+    let amount: i128 = 100_000_000;
+    let platform_fee = 3 * 100;
+    let roles = Roles { approver: approver.clone(), service_provider: service_provider.clone(), platform_address: platform.clone(), release_signer: release_signer.clone(), dispute_resolver: dispute_resolver.clone(), receiver: service_provider.clone() };
+    let flags = Flags { disputed: false, released: false, resolved: false, approved: false };
+    let trustline = Trustline { address: usdc.0.address.clone() };
+    let milestones = vec![&env, Milestone { description: String::from_str(&env, "m1"), status: String::from_str(&env, "Pending"), flags: flags.clone(), amount, evidence: String::from_str(&env, "e") }];
+    let esc = Escrow { engagement_id: String::from_str(&env, "eng"), title: String::from_str(&env, "t"), description: String::from_str(&env, "d"), roles: roles.clone(), platform_fee, milestones, trustline, receiver_memo: 0 };
+    let test = create_escrow_contract(&env);
+    let client = test.client;
+    client.initialize_escrow(&esc);
+
+    // Fund and open dispute then resolve
+    usdc.1.mint(&client.address, &amount);
+    client.dispute_milestone(&0, &approver);
+    client.resolve_milestone_dispute(&dispute_resolver, &0, &40_000_000, &60_000_000, &trustless_work_address);
+
+    // Try to release after resolved - should fail
+    let bal_before = usdc.0.balance(&client.address);
+    let res = client.try_release_milestone_funds(&release_signer, &platform, &0);
+    assert!(res.is_err(), "Should not allow release after dispute-resolved");
+    assert_eq!(usdc.0.balance(&client.address), bal_before, "No funds should move on failed precondition");
+}
+
+#[test]
+fn test_cannot_dispute_resolve_after_released() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let admin = Address::generate(&env);
+    let approver = Address::generate(&env);
+    let service_provider = Address::generate(&env);
+    let platform = Address::generate(&env);
+    let release_signer = Address::generate(&env);
+    let dispute_resolver = Address::generate(&env);
+    let trustless_work_address = Address::generate(&env);
+    let usdc = create_usdc_token(&env, &admin);
+
+    // Setup escrow with one milestone
+    let amount: i128 = 100_000_000;
+    let platform_fee = 3 * 100;
+    let roles = Roles { approver: approver.clone(), service_provider: service_provider.clone(), platform_address: platform.clone(), release_signer: release_signer.clone(), dispute_resolver: dispute_resolver.clone(), receiver: service_provider.clone() };
+    let flags = Flags { disputed: false, released: false, resolved: false, approved: false };
+    let trustline = Trustline { address: usdc.0.address.clone() };
+    let milestones = vec![&env, Milestone { description: String::from_str(&env, "m1"), status: String::from_str(&env, "Pending"), flags: flags.clone(), amount, evidence: String::from_str(&env, "e") }];
+    let esc = Escrow { engagement_id: String::from_str(&env, "eng"), title: String::from_str(&env, "t"), description: String::from_str(&env, "d"), roles: roles.clone(), platform_fee, milestones, trustline, receiver_memo: 0 };
+    let test = create_escrow_contract(&env);
+    let client = test.client;
+    client.initialize_escrow(&esc);
+
+    // Fund and mark approved then release
+    usdc.1.mint(&client.address, &amount);
+    client.approve_milestone(&0, &true, &approver);
+    client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
+
+    // Try to dispute-resolve after released - should fail
+    let bal_before = usdc.0.balance(&client.address);
+    let res = client.try_resolve_milestone_dispute(&dispute_resolver, &0, &40_000_000, &60_000_000, &trustless_work_address);
+    assert!(res.is_err(), "Should not allow dispute-resolution after release");
+    assert_eq!(usdc.0.balance(&client.address), bal_before, "No funds should move on failed precondition");
+}
+
+#[test]
 fn test_fund_escrow_successful_deposit() {
     let env = Env::default();
     env.mock_all_auths();
