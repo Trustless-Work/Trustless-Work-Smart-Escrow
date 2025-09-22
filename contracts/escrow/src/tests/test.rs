@@ -1085,12 +1085,14 @@ fn test_dispute_resolution_process() {
     let provider_amount: i128 = 60_000_000;
     let total_amount = approver_amount + provider_amount;
 
+    let mut dist = Map::new(&env);
+    dist.set(approver_address.clone(), approver_amount);
+    dist.set(service_provider_address.clone(), provider_amount);
     escrow_approver.resolve_milestone_dispute(
         &dispute_resolver_address,
         &0, // milestone_index
-        &approver_amount,
-        &provider_amount,
         &trustless_work_address,
+        &dist,
     );
 
     let expected_tw_fee = (total_amount * 30) / 10000; // 0.3%
@@ -1153,7 +1155,10 @@ fn test_cannot_release_after_dispute_resolved() {
     // Fund and open dispute then resolve
     usdc.1.mint(&client.address, &amount);
     client.dispute_milestone(&0, &approver);
-    client.resolve_milestone_dispute(&dispute_resolver, &0, &40_000_000, &60_000_000, &trustless_work_address);
+    let mut dist = Map::new(&env);
+    dist.set(approver.clone(), 40_000_000);
+    dist.set(service_provider.clone(), 60_000_000);
+    client.resolve_milestone_dispute(&dispute_resolver, &0, &trustless_work_address, &dist);
 
     // Try to release after resolved - should fail
     let bal_before = usdc.0.balance(&client.address);
@@ -1195,7 +1200,10 @@ fn test_cannot_dispute_resolve_after_released() {
 
     // Try to dispute-resolve after released - should fail
     let bal_before = usdc.0.balance(&client.address);
-    let res = client.try_resolve_milestone_dispute(&dispute_resolver, &0, &40_000_000, &60_000_000, &trustless_work_address);
+    let mut dist = Map::new(&env);
+    dist.set(approver.clone(), 40_000_000);
+    dist.set(service_provider.clone(), 60_000_000);
+    let res = client.try_resolve_milestone_dispute(&dispute_resolver, &0, &trustless_work_address, &dist);
     assert!(res.is_err(), "Should not allow dispute-resolution after release");
     assert_eq!(usdc.0.balance(&client.address), bal_before, "No funds should move on failed precondition");
 }
