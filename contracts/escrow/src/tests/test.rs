@@ -6,7 +6,7 @@ use crate::contract::EscrowContract;
 use crate::contract::EscrowContractClient;
 use crate::storage::types::{Escrow, Flags, Milestone, Roles, Trustline};
 
-use soroban_sdk::{testutils::Address as _, token, vec, Address, Env, String};
+use soroban_sdk::{testutils::Address as _, token, vec, Address, Env, Map, String};
 use token::Client as TokenClient;
 use token::StellarAssetClient as TokenAdminClient;
 // use test_token::token::{Token, TokenClient};
@@ -989,31 +989,35 @@ fn test_dispute_resolution_process() {
     assert!(escrow_with_dispute.flags.disputed);
 
     // Try to resolve dispute with incorrect dispute resolver (should fail)
+    let mut wrong_dist = Map::new(&env);
+    wrong_dist.set(approver_address.clone(), 50_000_000);
+    wrong_dist.set(service_provider_address.clone(), 50_000_000);
     let result = escrow_approver.try_resolve_dispute(
         &approver_address,
         &trustless_work_address,
-        &(50_000_000 as i128),
-        &(50_000_000 as i128),
+        &wrong_dist,
     );
     assert!(result.is_err());
 
     let approver_funds: i128 = 50_000_000;
     let insufficient_receiver_funds: i128 = 40_000_000;
 
+    let mut incorrect_dist = Map::new(&env);
+    incorrect_dist.set(approver_address.clone(), approver_funds);
+    incorrect_dist.set(service_provider_address.clone(), insufficient_receiver_funds);
     let incorrect_dispute_resolution_result = escrow_approver.try_resolve_dispute(
         &dispute_resolver_address,
         &trustless_work_address,
-        &approver_funds,
-        &insufficient_receiver_funds,
+        &incorrect_dist,
     );
 
     assert!(incorrect_dispute_resolution_result.is_err());
 
+    let empty_dist = Map::new(&env);
     let dispute_resolution_with_incorrect_funds = escrow_approver.try_resolve_dispute(
         &dispute_resolver_address,
         &trustless_work_address,
-        &0,
-        &0,
+        &empty_dist,
     );
 
     assert!(dispute_resolution_with_incorrect_funds.is_err());
@@ -1021,11 +1025,13 @@ fn test_dispute_resolution_process() {
     // Resolve dispute with correct dispute resolver (50/50 split)
     let receiver_funds: i128 = 50_000_000;
 
+    let mut ok_dist = Map::new(&env);
+    ok_dist.set(approver_address.clone(), approver_funds);
+    ok_dist.set(service_provider_address.clone(), receiver_funds);
     escrow_approver.resolve_dispute(
         &dispute_resolver_address,
         &trustless_work_address,
-        &approver_funds,
-        &receiver_funds,
+        &ok_dist,
     );
 
     // Verify dispute was resolved
