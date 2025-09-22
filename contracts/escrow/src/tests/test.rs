@@ -6,7 +6,7 @@ use crate::contract::EscrowContract;
 use crate::contract::EscrowContractClient;
 use crate::storage::types::{Escrow, Flags, Milestone, Roles, Trustline};
 
-use soroban_sdk::{testutils::Address as _, token, vec, Address, Env, String};
+use soroban_sdk::{testutils::Address as _, token, vec, Address, Env, Map, String};
 use token::Client as TokenClient;
 use token::StellarAssetClient as TokenAdminClient;
 
@@ -1576,4 +1576,210 @@ fn test_change_dispute_flag_authorized_and_unauthorized() {
         result.is_err(),
         "Unauthorized user should not be able to change dispute flag"
     );
+}
+
+#[test]
+fn test_withdraw_remaining_funds_success() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let admin = Address::generate(&env);
+    let approver = Address::generate(&env);
+    let service_provider = Address::generate(&env);
+    let platform = Address::generate(&env);
+    let release_signer = Address::generate(&env);
+    let dispute_resolver = Address::generate(&env);
+    let trustless_work_address = Address::generate(&env);
+
+    let usdc = create_usdc_token(&env, &admin);
+
+    let platform_fee = 3 * 100; // 3%
+    let roles = Roles {
+        approver: approver.clone(),
+        service_provider: service_provider.clone(),
+        platform_address: platform.clone(),
+        release_signer: release_signer.clone(),
+        dispute_resolver: dispute_resolver.clone(),
+        receiver: service_provider.clone(),
+    };
+
+    let flags = Flags { disputed: false, released: false, resolved: false, approved: false };
+    let trustline = Trustline { address: usdc.0.address.clone() };
+    let milestones = vec![
+        &env,
+        Milestone { description: String::from_str(&env, "m1"), status: String::from_str(&env, "Pending"), evidence: String::from_str(&env, "e"), amount: 100_000, flags: flags.clone() },
+        Milestone { description: String::from_str(&env, "m2"), status: String::from_str(&env, "Pending"), evidence: String::from_str(&env, "e"), amount: 100_000, flags: flags.clone() },
+    ];
+
+    let esc = Escrow {
+        engagement_id: String::from_str(&env, "eng"),
+        title: String::from_str(&env, "t"),
+        description: String::from_str(&env, "d"),
+        roles: roles.clone(),
+        platform_fee,
+        milestones: milestones.clone(),
+        trustline,
+        receiver_memo: 0,
+    };
+
+    let test = create_escrow_contract(&env);
+    let client = test.client;
+    client.initialize_escrow(&esc);
+
+    // Fund contract with 250_000 so after releasing 2x100_000 there are 50_000 remaining
+    usdc.1.mint(&client.address, &250_000);
+
+    // Approve and release both milestones
+    client.approve_milestone(&0, &true, &approver);
+    client.approve_milestone(&1, &true, &approver);
+    client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
+    client.release_milestone_funds(&release_signer, &trustless_work_address, &1);
+
+    // Sanity: contract balance should be 50_000 now
+    let contract_balance_before = usdc.0.balance(&client.address);
+    assert_eq!(contract_balance_before, 50_000);
+
+    // Build distributions below remaining balance so fees also fit:
+    // send 10k to TW, 5k to platform, 33k to receiver => total = 48,000
+    let mut dist: Map<Address, i128> = Map::new(&env);
+    dist.set(trustless_work_address.clone(), 10_000);
+    dist.set(platform.clone(), 5_000);
+    dist.set(service_provider.clone(), 33_000);
+
+    // Capture balances before
+    let tw_before = usdc.0.balance(&trustless_work_address);
+    let platform_before = usdc.0.balance(&platform);
+    let receiver_before = usdc.0.balance(&service_provider);
+
+    client.withdraw_remaining_funds(&dispute_resolver, &trustless_work_address, &dist);
+
+    // Fees are computed over the total distribution (48,000)
+    let expected_tw_fee = (48_000i128 * 30) / 10000; // 0.3% => 144
+    let expected_platform_fee = (48_000i128 * platform_fee as i128) / 10000; // 3% => 1440
+    let expected_leftover = 50_000 - (48_000 + expected_tw_fee + expected_platform_fee);
+
+    assert_eq!(usdc.0.balance(&client.address), expected_leftover);
+    assert_eq!(usdc.0.balance(&trustless_work_address), tw_before + 10_000 + expected_tw_fee);
+    assert_eq!(usdc.0.balance(&platform), platform_before + 5_000 + expected_platform_fee);
+    assert_eq!(usdc.0.balance(&service_provider), receiver_before + 33_000);
+}
+
+#[test]
+fn test_withdraw_remaining_funds_unauthorized() {
+    let env = Env::default();
+    env.mock_all_auths();
+    let admin = Address::generate(&env);
+    let approver = Address::generate(&env);
+    let service_provider = Address::generate(&env);
+    let platform = Address::generate(&env);
+    let release_signer = Address::generate(&env);
+    let dispute_resolver = Address::generate(&env);
+    let attacker = Address::generate(&env);
+    let trustless_work_address = Address::generate(&env);
+    let usdc = create_usdc_token(&env, &admin);
+
+    let platform_fee = 3 * 100;
+    let roles = Roles { approver: approver.clone(), service_provider: service_provider.clone(), platform_address: platform.clone(), release_signer: release_signer.clone(), dispute_resolver: dispute_resolver.clone(), receiver: service_provider.clone() };
+    let flags = Flags { disputed: false, released: false, resolved: false, approved: false };
+    let trustline = Trustline { address: usdc.0.address.clone() };
+    let milestones = vec![
+        &env,
+        Milestone { description: String::from_str(&env, "m1"), status: String::from_str(&env, "Pending"), evidence: String::from_str(&env, "e"), amount: 100_000, flags: flags.clone() },
+    ];
+    let esc = Escrow { engagement_id: String::from_str(&env, "eng"), title: String::from_str(&env, "t"), description: String::from_str(&env, "d"), roles: roles.clone(), platform_fee, milestones: milestones.clone(), trustline, receiver_memo: 0 };
+    let test = create_escrow_contract(&env);
+    let client = test.client;
+    client.initialize_escrow(&esc);
+
+    // Process the single milestone fully and leave leftover of 10_000
+    usdc.1.mint(&client.address, &110_000);
+    client.approve_milestone(&0, &true, &approver);
+    client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
+
+    // Attacker provides any distributions but is not resolver
+    let mut dist: Map<Address, i128> = Map::new(&env);
+    dist.set(service_provider.clone(), 10_000);
+    let res = client.try_withdraw_remaining_funds(&attacker, &trustless_work_address, &dist);
+    assert!(res.is_err(), "Only dispute_resolver should be allowed");
+}
+
+#[test]
+fn test_withdraw_remaining_funds_not_fully_processed() {
+    let env = Env::default();
+    env.mock_all_auths();
+    let admin = Address::generate(&env);
+    let approver = Address::generate(&env);
+    let service_provider = Address::generate(&env);
+    let platform = Address::generate(&env);
+    let release_signer = Address::generate(&env);
+    let dispute_resolver = Address::generate(&env);
+    let trustless_work_address = Address::generate(&env);
+    let usdc = create_usdc_token(&env, &admin);
+
+    let platform_fee = 3 * 100;
+    let roles = Roles { approver: approver.clone(), service_provider: service_provider.clone(), platform_address: platform.clone(), release_signer: release_signer.clone(), dispute_resolver: dispute_resolver.clone(), receiver: service_provider.clone() };
+    let flags = Flags { disputed: false, released: false, resolved: false, approved: false };
+    let trustline = Trustline { address: usdc.0.address.clone() };
+    let milestones = vec![
+        &env,
+        Milestone { description: String::from_str(&env, "m1"), status: String::from_str(&env, "Pending"), evidence: String::from_str(&env, "e"), amount: 100_000, flags: flags.clone() },
+        Milestone { description: String::from_str(&env, "m2"), status: String::from_str(&env, "Pending"), evidence: String::from_str(&env, "e"), amount: 100_000, flags: flags.clone() },
+    ];
+    let esc = Escrow { engagement_id: String::from_str(&env, "eng"), title: String::from_str(&env, "t"), description: String::from_str(&env, "d"), roles: roles.clone(), platform_fee, milestones: milestones.clone(), trustline, receiver_memo: 0 };
+    let test = create_escrow_contract(&env);
+    let client = test.client;
+    client.initialize_escrow(&esc);
+
+    usdc.1.mint(&client.address, &220_000);
+    // Process only first milestone; second remains pending
+    client.approve_milestone(&0, &true, &approver);
+    client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
+
+    // Try withdraw while second milestone not processed
+    let mut dist: Map<Address, i128> = Map::new(&env);
+    dist.set(service_provider.clone(), 10_000);
+    let res = client.try_withdraw_remaining_funds(&dispute_resolver, &trustless_work_address, &dist);
+    assert!(res.is_err(), "Should fail when not all milestones are processed");
+}
+
+#[test]
+fn test_withdraw_remaining_funds_zero_balance_ok() {
+    let env = Env::default();
+    env.mock_all_auths();
+    let admin = Address::generate(&env);
+    let approver = Address::generate(&env);
+    let service_provider = Address::generate(&env);
+    let platform = Address::generate(&env);
+    let release_signer = Address::generate(&env);
+    let dispute_resolver = Address::generate(&env);
+    let trustless_work_address = Address::generate(&env);
+    let usdc = create_usdc_token(&env, &admin);
+
+    let platform_fee = 3 * 100;
+    let roles = Roles { approver: approver.clone(), service_provider: service_provider.clone(), platform_address: platform.clone(), release_signer: release_signer.clone(), dispute_resolver: dispute_resolver.clone(), receiver: service_provider.clone() };
+    let flags = Flags { disputed: false, released: false, resolved: false, approved: false };
+    let trustline = Trustline { address: usdc.0.address.clone() };
+    let milestones = vec![
+        &env,
+        Milestone { description: String::from_str(&env, "m1"), status: String::from_str(&env, "Pending"), evidence: String::from_str(&env, "e"), amount: 100_000, flags: flags.clone() },
+        Milestone { description: String::from_str(&env, "m2"), status: String::from_str(&env, "Pending"), evidence: String::from_str(&env, "e"), amount: 100_000, flags: flags.clone() },
+    ];
+    let esc = Escrow { engagement_id: String::from_str(&env, "eng"), title: String::from_str(&env, "t"), description: String::from_str(&env, "d"), roles: roles.clone(), platform_fee, milestones: milestones.clone(), trustline, receiver_memo: 0 };
+    let test = create_escrow_contract(&env);
+    let client = test.client;
+    client.initialize_escrow(&esc);
+
+    // Fund exactly the total milestones 200_000; after releases, no leftover
+    usdc.1.mint(&client.address, &200_000);
+    client.approve_milestone(&0, &true, &approver);
+    client.approve_milestone(&1, &true, &approver);
+    client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
+    client.release_milestone_funds(&release_signer, &trustless_work_address, &1);
+
+    assert_eq!(usdc.0.balance(&client.address), 0);
+
+    // Should not error and keep balances unchanged
+    let dist: Map<Address, i128> = Map::new(&env);
+    client.withdraw_remaining_funds(&dispute_resolver, &trustless_work_address, &dist);
+    assert_eq!(usdc.0.balance(&client.address), 0);
 }

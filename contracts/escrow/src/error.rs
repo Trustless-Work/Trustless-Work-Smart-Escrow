@@ -44,6 +44,9 @@ pub enum ContractError {
     ApproverOrReceiverFundsLessThanZero = 38,
     TotalDisputeFundsMustNotExceedTheMilestoneAmount = 39,
     EscrowAlreadyResolved = 40,
+    EscrowNotFullyProcessed = 41,
+    AmountsToBeTransferredShouldBePositive = 42,
+    InsufficientFundsForRefund = 43,
 }
 
 impl fmt::Display for ContractError {
@@ -159,6 +162,15 @@ impl fmt::Display for ContractError {
             }
             ContractError::EscrowAlreadyResolved => {
                 write!(f, "This escrow is already resolved.")
+            }
+            ContractError::EscrowNotFullyProcessed => {
+                write!(f, "All milestones must be released or dispute-resolved before withdrawing remaining funds")
+            }
+            ContractError::AmountsToBeTransferredShouldBePositive => {
+                write!(f, "None of the amounts to be transferred should be less than 0.")
+            }
+            ContractError::InsufficientFundsForRefund => {
+                write!(f, "Insufficient funds to refund the remaining funds from the escrow account.")
             }
         }
     }
