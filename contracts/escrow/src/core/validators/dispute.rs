@@ -1,17 +1,16 @@
-use soroban_sdk::Address;
+use soroban_sdk::{Address, Map};
 
 use crate::{
     error::ContractError,
     storage::types::{Escrow, Roles},
 };
+use crate::modules::math::{BasicArithmetic, BasicMath};
 
 #[inline]
 pub fn validate_dispute_resolution_conditions(
     escrow: &Escrow,
     dispute_resolver: &Address,
-    approver_funds: i128,
-    receiver_funds: i128,
-    total_funds: i128,
+    distributions: &Map<Address, i128>,
     current_balance: i128,
 ) -> Result<(), ContractError> {
     if dispute_resolver != &escrow.roles.dispute_resolver {
@@ -22,15 +21,21 @@ pub fn validate_dispute_resolution_conditions(
         return Err(ContractError::EscrowNotInDispute);
     }
 
-    if approver_funds <= 0 || receiver_funds <= 0 {
-        return Err(ContractError::ApproverOrReceiverFundsLessThanZero);
+    // Validate distributions are non-negative and compute total
+    let mut total: i128 = 0;
+    for (_addr, amount) in distributions.iter() {
+        if amount < 0 {
+            return Err(ContractError::ApproverOrReceiverFundsLessThanZero);
+        }
+        total = BasicMath::safe_add(total, amount)?;
     }
-
-    if current_balance < total_funds {
+    if total <= 0 {
+        return Err(ContractError::AmountCannotBeZero);
+    }
+    if current_balance < total {
         return Err(ContractError::InsufficientFundsForResolution);
     }
-
-    if total_funds != current_balance {
+    if total != current_balance {
         return Err(ContractError::ReceiverAndApproverFundsNotEqual);
     }
 
