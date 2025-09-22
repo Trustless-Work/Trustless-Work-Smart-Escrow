@@ -48,7 +48,7 @@ impl DisputeManager {
         let remaining_balance = token_client.balance(&contract_address);
 
         if remaining_balance <= 0 {
-            return Ok(escrow);
+            return Err(ContractError::InsufficientEscrowFundsToMakeTheRefund)
         }
 
         let mut total: i128 = 0;
