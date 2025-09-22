@@ -40,6 +40,7 @@ pub enum ContractError {
     ApproverOrReceiverFundsLessThanZero = 34,
     EscrowAlreadyReleased = 35,
     IncompatibleEscrowWasmHash = 36,
+    PlatformAddressCannotBeChanged = 37,
 }
 
 impl fmt::Display for ContractError {
@@ -151,6 +152,9 @@ impl fmt::Display for ContractError {
                     "The provided contract address is not an instance of this escrow contract."
                 )
             }
+            ContractError::PlatformAddressCannotBeChanged => {
+                write!(f, "The platform address of the escrow cannot be changed.")
+            }   
         }
     }
 }

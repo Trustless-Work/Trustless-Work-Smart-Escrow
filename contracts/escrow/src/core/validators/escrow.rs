@@ -48,6 +48,10 @@ pub fn validate_escrow_property_change_conditions(
         return Err(ContractError::EscrowOpenedForDisputeResolution);
     }
 
+    if existing_escrow.roles.platform_address != new_escrow.roles.platform_address {
+        return Err(ContractError::PlatformAddressCannotBeChanged);
+    }
+
     for milestone in existing_escrow.milestones.iter() {
         if milestone.approved {
             return Err(ContractError::MilestoneApprovedCantChangeEscrowProperties);
