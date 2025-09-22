@@ -119,7 +119,10 @@ impl fmt::Display for ContractError {
                 )
             }
             ContractError::AmountsToBeTransferredShouldBePositive => {
-                write!(f, "None of the amounts to be transferred should be less than 0.")
+                write!(
+                    f,
+                    "None of the amounts to be transferred should be less than 0."
+                )
             }
             ContractError::DistributionsMustEqualEscrowBalance => {
                 write!(f, "The sum of distributions must equal the current escrow balance when resolving an escrow dispute.")
@@ -162,7 +165,7 @@ impl fmt::Display for ContractError {
             }
             ContractError::PlatformAddressCannotBeChanged => {
                 write!(f, "The platform address of the escrow cannot be changed.")
-            }   
+            }
         }
     }
 }

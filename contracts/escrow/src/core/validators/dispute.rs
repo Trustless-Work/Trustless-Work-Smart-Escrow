@@ -1,10 +1,10 @@
 use soroban_sdk::{Address, Map};
 
+use crate::modules::math::{BasicArithmetic, BasicMath};
 use crate::{
     error::ContractError,
     storage::types::{Escrow, Roles},
 };
-use crate::modules::math::{BasicArithmetic, BasicMath};
 
 #[inline]
 pub fn validate_dispute_resolution_conditions(

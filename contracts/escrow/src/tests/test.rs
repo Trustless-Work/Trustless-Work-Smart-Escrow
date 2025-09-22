@@ -1004,7 +1004,10 @@ fn test_dispute_resolution_process() {
 
     let mut incorrect_dist = Map::new(&env);
     incorrect_dist.set(approver_address.clone(), approver_funds);
-    incorrect_dist.set(service_provider_address.clone(), insufficient_receiver_funds);
+    incorrect_dist.set(
+        service_provider_address.clone(),
+        insufficient_receiver_funds,
+    );
     let incorrect_dispute_resolution_result = escrow_approver.try_resolve_dispute(
         &dispute_resolver_address,
         &trustless_work_address,
@@ -1028,11 +1031,7 @@ fn test_dispute_resolution_process() {
     let mut ok_dist = Map::new(&env);
     ok_dist.set(approver_address.clone(), approver_funds);
     ok_dist.set(service_provider_address.clone(), receiver_funds);
-    escrow_approver.resolve_dispute(
-        &dispute_resolver_address,
-        &trustless_work_address,
-        &ok_dist,
-    );
+    escrow_approver.resolve_dispute(&dispute_resolver_address, &trustless_work_address, &ok_dist);
 
     // Verify dispute was resolved
     let escrow_after_resolution = escrow_approver.get_escrow();
