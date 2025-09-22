@@ -1,5 +1,5 @@
 use soroban_sdk::token::Client as TokenClient;
-use soroban_sdk::{Address, Env};
+use soroban_sdk::{Address, Env, Map};
 
 use crate::core::escrow::EscrowManager;
 use crate::error::ContractError;
@@ -20,8 +20,7 @@ impl DisputeManager {
         e: &Env,
         dispute_resolver: Address,
         trustless_work_address: Address,
-        approver_funds: i128,
-        receiver_funds: i128,
+        distributions: Map<Address, i128>,
     ) -> Result<Escrow, ContractError> {
         dispute_resolver.require_auth();
         let mut escrow = EscrowManager::get_escrow(e)?;
@@ -29,46 +28,30 @@ impl DisputeManager {
 
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
         let current_balance = token_client.balance(&contract_address);
-        let total_funds = BasicMath::safe_add(approver_funds, receiver_funds)?;
 
-        let fee_result = FeeCalculator::calculate_dispute_fees(
-            approver_funds,
-            receiver_funds,
-            escrow.platform_fee,
-            total_funds,
-        )?;
+        validate_dispute_resolution_conditions(&escrow, &dispute_resolver, &distributions, current_balance)?;
 
-        validate_dispute_resolution_conditions(
-            &escrow,
-            &dispute_resolver,
-            approver_funds,
-            receiver_funds,
-            total_funds,
-            current_balance,
-        )?;
+        let mut total: i128 = 0;
+        for (_addr, amount) in distributions.iter() {
+            total = BasicMath::safe_add(total, amount)?;
+        }
+        let fee_result = FeeCalculator::calculate_standard_fees(total, escrow.platform_fee)?;
+        let total_fees = BasicMath::safe_add(fee_result.trustless_work_fee, fee_result.platform_fee)?;
 
-        token_client.transfer(
-            &contract_address,
-            &trustless_work_address,
-            &fee_result.trustless_work_fee,
-        );
-        token_client.transfer(
-            &contract_address,
-            &escrow.roles.platform_address,
-            &fee_result.platform_fee,
-        );
-
-        if fee_result.net_approver_funds > 0 {
-            token_client.transfer(
-                &contract_address,
-                &escrow.roles.approver,
-                &fee_result.net_approver_funds,
-            );
+        if fee_result.trustless_work_fee > 0 {
+            token_client.transfer(&contract_address, &trustless_work_address, &fee_result.trustless_work_fee);
+        }
+        if fee_result.platform_fee > 0 {
+            token_client.transfer(&contract_address, &escrow.roles.platform_address, &fee_result.platform_fee);
         }
 
-        if fee_result.net_receiver_funds > 0 {
-            let receiver = EscrowManager::get_receiver(&escrow);
-            token_client.transfer(&contract_address, &receiver, &fee_result.net_receiver_funds);
+        for (addr, amount) in distributions.iter() {
+            if amount <= 0 { continue; }
+            let fee_share = (amount * (total_fees as i128)) / total;
+            let net_amount = amount - fee_share;
+            if net_amount > 0 {
+                token_client.transfer(&contract_address, &addr, &net_amount);
+            }
         }
 
         escrow.flags.resolved = true;
