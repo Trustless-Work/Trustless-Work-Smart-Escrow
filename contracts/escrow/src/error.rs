@@ -169,16 +169,25 @@ impl fmt::Display for ContractError {
                 write!(f, "All milestones must be released or dispute-resolved before withdrawing remaining funds")
             }
             ContractError::AmountsToBeTransferredShouldBePositive => {
-                write!(f, "None of the amounts to be transferred should be less than 0.")
+                write!(
+                    f,
+                    "None of the amounts to be transferred should be less than 0."
+                )
             }
             ContractError::InsufficientFundsForRefund => {
-                write!(f, "Insufficient funds to refund the remaining funds from the escrow account.")
+                write!(
+                    f,
+                    "Insufficient funds to refund the remaining funds from the escrow account."
+                )
             }
             ContractError::PlatformAddressCannotBeChanged => {
                 write!(f, "The platform address of the escrow cannot be changed.")
-            } 
+            }
             ContractError::InsufficientEscrowFundsToMakeTheRefund => {
-                write!(f, "The escrow (contract) does not have sufficient funds to make the refund.")
+                write!(
+                    f,
+                    "The escrow (contract) does not have sufficient funds to make the refund."
+                )
             }
         }
     }

@@ -10,7 +10,9 @@ use crate::modules::{
 };
 use crate::storage::types::{DataKey, Escrow, Milestone};
 
-use super::validators::dispute::{validate_dispute_flag_change_conditions, validate_dispute_resolution_conditions};
+use super::validators::dispute::{
+    validate_dispute_flag_change_conditions, validate_dispute_resolution_conditions,
+};
 
 pub struct DisputeManager;
 
@@ -52,7 +54,10 @@ impl DisputeManager {
         }
 
         let fee_result = FeeCalculator::calculate_standard_fees(total, escrow.platform_fee)?;
-        let required = BasicMath::safe_add(total, BasicMath::safe_add(fee_result.trustless_work_fee, fee_result.platform_fee)?)?;
+        let required = BasicMath::safe_add(
+            total,
+            BasicMath::safe_add(fee_result.trustless_work_fee, fee_result.platform_fee)?,
+        )?;
 
         validate_withdraw_remaining_funds_conditions(
             &escrow,
@@ -61,7 +66,7 @@ impl DisputeManager {
             remaining_balance,
             required,
         )?;
-        
+
         if fee_result.trustless_work_fee > 0 {
             token_client.transfer(
                 &contract_address,
@@ -117,7 +122,8 @@ impl DisputeManager {
 
         let current_balance = token_client.balance(&contract_address);
         let fee_result = FeeCalculator::calculate_standard_fees(total, escrow.platform_fee)?;
-        let total_fees = BasicMath::safe_add(fee_result.trustless_work_fee, fee_result.platform_fee)?;
+        let total_fees =
+            BasicMath::safe_add(fee_result.trustless_work_fee, fee_result.platform_fee)?;
 
         validate_dispute_resolution_conditions(
             &escrow,
@@ -128,10 +134,18 @@ impl DisputeManager {
         )?;
 
         if fee_result.trustless_work_fee > 0 {
-            token_client.transfer(&contract_address, &trustless_work_address, &fee_result.trustless_work_fee);
+            token_client.transfer(
+                &contract_address,
+                &trustless_work_address,
+                &fee_result.trustless_work_fee,
+            );
         }
         if fee_result.platform_fee > 0 {
-            token_client.transfer(&contract_address, &escrow.roles.platform_address, &fee_result.platform_fee);
+            token_client.transfer(
+                &contract_address,
+                &escrow.roles.platform_address,
+                &fee_result.platform_fee,
+            );
         }
 
         for (addr, amount) in distributions.iter() {
@@ -148,7 +162,11 @@ impl DisputeManager {
         new_flags.disputed = false;
         updated_milestones.set(
             milestone_index,
-            Milestone { status: String::from_str(&e, "resolved"), flags: new_flags, ..milestone.clone() },
+            Milestone {
+                status: String::from_str(&e, "resolved"),
+                flags: new_flags,
+                ..milestone.clone()
+            },
         );
         escrow.milestones = updated_milestones;
 
