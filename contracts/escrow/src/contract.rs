@@ -2,7 +2,10 @@ use soroban_sdk::{contract, contractimpl, Address, BytesN, Env, Map, String, Sym
 
 use crate::core::{DisputeManager, EscrowManager, MilestoneManager};
 use crate::error::ContractError;
-use crate::events::handler::{ChgEsc, DisEsc, EscrowsBySpdr, FundEsc, InitEsc};
+use crate::events::handler::{
+    ChgEsc, DisEsc, DisputeResolved, EscrowDisputed, ExtTtlEvt, FundEsc, InitEsc,
+    MilestoneApproved, MilestoneStatusChanged,
+};
 use crate::storage::types::{AddressBalance, Escrow};
 
 #[contract]
@@ -125,6 +128,12 @@ impl EscrowContract {
             .instance()
             .extend_ttl(min_ledgers, ledgers_to_extend);
 
+        ExtTtlEvt {
+            platform: platform_address,
+            ledgers_to_extend,
+        }
+        .publish(e);
+
         Ok(())
     }
 
@@ -146,7 +155,7 @@ impl EscrowContract {
             new_evidence,
             service_provider,
         )?;
-        EscrowsBySpdr { escrow }.publish(&e);
+        MilestoneStatusChanged { escrow }.publish(&e);
         Ok(())
     }
 
@@ -157,7 +166,7 @@ impl EscrowContract {
     ) -> Result<(), ContractError> {
         let escrow =
             MilestoneManager::change_milestone_approved_flag(&e, milestone_index, approver)?;
-        EscrowsBySpdr { escrow }.publish(&e);
+        MilestoneApproved { escrow }.publish(&e);
         Ok(())
     }
 
@@ -177,13 +186,13 @@ impl EscrowContract {
             trustless_work_address,
             distributions,
         )?;
-        EscrowsBySpdr { escrow }.publish(&e);
+        DisputeResolved { escrow }.publish(&e);
         Ok(())
     }
 
     pub fn dispute_escrow(e: Env, signer: Address) -> Result<(), ContractError> {
         let escrow = DisputeManager::dispute_escrow(&e, signer)?;
-        EscrowsBySpdr { escrow }.publish(&e);
+        EscrowDisputed { escrow }.publish(&e);
         Ok(())
     }
 }
