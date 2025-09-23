@@ -66,13 +66,11 @@ impl EscrowContract {
     pub fn release_milestone_funds(
         e: &Env,
         release_signer: Address,
-        trustless_work_address: Address,
         milestone_index: u32,
     ) -> Result<(), ContractError> {
         EscrowManager::release_milestone_funds(
             e,
             release_signer.clone(),
-            trustless_work_address.clone(),
             milestone_index,
         )?;
         DisEsc { release_signer }.publish(e);
@@ -193,14 +191,12 @@ impl EscrowContract {
         e: &Env,
         dispute_resolver: Address,
         milestone_index: u32,
-        trustless_work_address: Address,
         distributions: Map<Address, i128>,
     ) -> Result<(), ContractError> {
         let escrow = DisputeManager::resolve_milestone_dispute(
             e,
             dispute_resolver,
             milestone_index,
-            trustless_work_address,
             distributions,
         )?;
         DisputeResolved { escrow }.publish(&e);
@@ -220,13 +216,11 @@ impl EscrowContract {
     pub fn withdraw_remaining_funds(
         e: &Env,
         dispute_resolver: Address,
-        trustless_work_address: Address,
         distributions: Map<Address, i128>,
     ) -> Result<(), ContractError> {
         let escrow = DisputeManager::withdraw_remaining_funds(
             e,
             dispute_resolver,
-            trustless_work_address,
             distributions,
         )?;
         WithdrawEvt { escrow }.publish(&e);

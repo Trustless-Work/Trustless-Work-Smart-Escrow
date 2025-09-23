@@ -20,10 +20,11 @@ impl DisputeManager {
     pub fn withdraw_remaining_funds(
         e: &Env,
         dispute_resolver: Address,
-        trustless_work_address: Address,
         distributions: Map<Address, i128>,
     ) -> Result<Escrow, ContractError> {
         dispute_resolver.require_auth();
+        let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
+        let trustless_work_address = Address::from_string(&trustless_address_string);
 
         let escrow = EscrowManager::get_escrow(e)?;
 
@@ -97,10 +98,11 @@ impl DisputeManager {
         e: &Env,
         dispute_resolver: Address,
         milestone_index: u32,
-        trustless_work_address: Address,
         distributions: Map<Address, i128>,
     ) -> Result<Escrow, ContractError> {
         dispute_resolver.require_auth();
+        let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
+        let trustless_work_address = Address::from_string(&trustless_address_string);
 
         let mut escrow = EscrowManager::get_escrow(e)?;
         let contract_address = e.current_contract_address();

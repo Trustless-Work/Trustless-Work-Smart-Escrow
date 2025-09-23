@@ -499,7 +499,7 @@ fn test_release_milestone_funds_successful() {
 
     // Approve the milestone before releasing funds
     escrow_approver.approve_milestone(&0, &true, &approver_address);
-    escrow_approver.release_milestone_funds(&release_signer_address, &trustless_work_address, &(0));
+    escrow_approver.release_milestone_funds(&release_signer_address, &(0));
 
     let total_amount = milestones.get(0).unwrap().amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
@@ -661,7 +661,6 @@ fn test_release_milestone_funds_milestones_incomplete() {
     // Try to claim earnings with incomplete milestones (should fail)
     let result = escrow_approver.try_release_milestone_funds(
         &release_signer_address,
-        &platform_address,
         &(0),
     );
     assert!(
@@ -750,7 +749,7 @@ fn test_release_milestone_funds_same_receiver_as_provider() {
 
     // Approve before release
     escrow_approver.approve_milestone(&0, &true, &approver_address);
-    escrow_approver.release_milestone_funds(&release_signer_address, &trustless_work_address, &0);
+    escrow_approver.release_milestone_funds(&release_signer_address, &0);
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
@@ -860,7 +859,7 @@ fn test_release_funds_invalid_receiver_fallback() {
 
     // Approve before release
     escrow_approver.approve_milestone(&0, &true, &approver_address);
-    escrow_approver.release_milestone_funds(&release_signer_address, &trustless_work_address, &0);
+    escrow_approver.release_milestone_funds(&release_signer_address, &0);
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
@@ -983,7 +982,7 @@ fn test_dispute_management() {
     usdc_token.1.mint(&approver_address, &(amount as i128));
     // Test block on distributing earnings during dispute
     let result =
-        escrow_approver.try_release_milestone_funds(&release_signer_address, &platform_address, &0);
+        escrow_approver.try_release_milestone_funds(&release_signer_address, &0);
     assert!(result.is_err());
 
     let _ = escrow_approver.try_dispute_milestone(&0, &dispute_resolver_address);
@@ -1091,7 +1090,6 @@ fn test_dispute_resolution_process() {
     escrow_approver.resolve_milestone_dispute(
         &dispute_resolver_address,
         &0, // milestone_index
-        &trustless_work_address,
         &dist,
     );
 
@@ -1137,7 +1135,6 @@ fn test_cannot_release_after_dispute_resolved() {
     let platform = Address::generate(&env);
     let release_signer = Address::generate(&env);
     let dispute_resolver = Address::generate(&env);
-    let trustless_work_address = Address::generate(&env);
     let usdc = create_usdc_token(&env, &admin);
 
     // Setup escrow with one milestone
@@ -1190,11 +1187,11 @@ fn test_cannot_release_after_dispute_resolved() {
     let mut dist = Map::new(&env);
     dist.set(approver.clone(), 40_000_000);
     dist.set(service_provider.clone(), 60_000_000);
-    client.resolve_milestone_dispute(&dispute_resolver, &0, &trustless_work_address, &dist);
+    client.resolve_milestone_dispute(&dispute_resolver, &0, &dist);
 
     // Try to release after resolved - should fail
     let bal_before = usdc.0.balance(&client.address);
-    let res = client.try_release_milestone_funds(&release_signer, &platform, &0);
+    let res = client.try_release_milestone_funds(&release_signer, &0);
     assert!(
         res.is_err(),
         "Should not allow release after dispute-resolved"
@@ -1217,7 +1214,6 @@ fn test_cannot_dispute_resolve_after_released() {
     let platform = Address::generate(&env);
     let release_signer = Address::generate(&env);
     let dispute_resolver = Address::generate(&env);
-    let trustless_work_address = Address::generate(&env);
     let usdc = create_usdc_token(&env, &admin);
 
     // Setup escrow with one milestone
@@ -1267,7 +1263,7 @@ fn test_cannot_dispute_resolve_after_released() {
     // Fund and mark approved then release
     usdc.1.mint(&client.address, &amount);
     client.approve_milestone(&0, &true, &approver);
-    client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
+    client.release_milestone_funds(&release_signer, &0);
 
     // Try to dispute-resolve after released - should fail
     let bal_before = usdc.0.balance(&client.address);
@@ -1275,7 +1271,7 @@ fn test_cannot_dispute_resolve_after_released() {
     dist.set(approver.clone(), 40_000_000);
     dist.set(service_provider.clone(), 60_000_000);
     let res =
-        client.try_resolve_milestone_dispute(&dispute_resolver, &0, &trustless_work_address, &dist);
+        client.try_resolve_milestone_dispute(&dispute_resolver, &0, &dist);
     assert!(
         res.is_err(),
         "Should not allow dispute-resolution after release"
@@ -1814,8 +1810,8 @@ fn test_withdraw_remaining_funds_success() {
     // Approve and release both milestones
     client.approve_milestone(&0, &true, &approver);
     client.approve_milestone(&1, &true, &approver);
-    client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
-    client.release_milestone_funds(&release_signer, &trustless_work_address, &1);
+    client.release_milestone_funds(&release_signer, &0);
+    client.release_milestone_funds(&release_signer, &1);
 
     // Sanity: contract balance should be 50_000 now
     let contract_balance_before = usdc.0.balance(&client.address);
@@ -1833,7 +1829,7 @@ fn test_withdraw_remaining_funds_success() {
     let platform_before = usdc.0.balance(&platform);
     let receiver_before = usdc.0.balance(&service_provider);
 
-    client.withdraw_remaining_funds(&dispute_resolver, &trustless_work_address, &dist);
+    client.withdraw_remaining_funds(&dispute_resolver, &dist);
 
     // Fees are computed over the total distribution (48,000)
     let expected_tw_fee = (48_000i128 * 30) / 10000; // 0.3% => 144
@@ -1863,7 +1859,6 @@ fn test_withdraw_remaining_funds_unauthorized() {
     let release_signer = Address::generate(&env);
     let dispute_resolver = Address::generate(&env);
     let attacker = Address::generate(&env);
-    let trustless_work_address = Address::generate(&env);
     let usdc = create_usdc_token(&env, &admin);
 
     let platform_fee = 3 * 100;
@@ -1911,12 +1906,12 @@ fn test_withdraw_remaining_funds_unauthorized() {
     // Process the single milestone fully and leave leftover of 10_000
     usdc.1.mint(&client.address, &110_000);
     client.approve_milestone(&0, &true, &approver);
-    client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
+    client.release_milestone_funds(&release_signer, &0);
 
     // Attacker provides any distributions but is not resolver
     let mut dist: Map<Address, i128> = Map::new(&env);
     dist.set(service_provider.clone(), 10_000);
-    let res = client.try_withdraw_remaining_funds(&attacker, &trustless_work_address, &dist);
+    let res = client.try_withdraw_remaining_funds(&attacker, &dist);
     assert!(res.is_err(), "Only dispute_resolver should be allowed");
 }
 
@@ -1930,7 +1925,6 @@ fn test_withdraw_remaining_funds_not_fully_processed() {
     let platform = Address::generate(&env);
     let release_signer = Address::generate(&env);
     let dispute_resolver = Address::generate(&env);
-    let trustless_work_address = Address::generate(&env);
     let usdc = create_usdc_token(&env, &admin);
 
     let platform_fee = 3 * 100;
@@ -1985,13 +1979,13 @@ fn test_withdraw_remaining_funds_not_fully_processed() {
     usdc.1.mint(&client.address, &220_000);
     // Process only first milestone; second remains pending
     client.approve_milestone(&0, &true, &approver);
-    client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
+    client.release_milestone_funds(&release_signer, &0);
 
     // Try withdraw while second milestone not processed
     let mut dist: Map<Address, i128> = Map::new(&env);
     dist.set(service_provider.clone(), 10_000);
     let res =
-        client.try_withdraw_remaining_funds(&dispute_resolver, &trustless_work_address, &dist);
+        client.try_withdraw_remaining_funds(&dispute_resolver, &dist);
     assert!(
         res.is_err(),
         "Should fail when not all milestones are processed"
@@ -2008,7 +2002,6 @@ fn test_withdraw_remaining_funds_zero_balance_ok() {
     let platform = Address::generate(&env);
     let release_signer = Address::generate(&env);
     let dispute_resolver = Address::generate(&env);
-    let trustless_work_address = Address::generate(&env);
     let usdc = create_usdc_token(&env, &admin);
 
     let platform_fee = 3 * 100;
@@ -2064,13 +2057,13 @@ fn test_withdraw_remaining_funds_zero_balance_ok() {
     usdc.1.mint(&client.address, &200_000);
     client.approve_milestone(&0, &true, &approver);
     client.approve_milestone(&1, &true, &approver);
-    client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
-    client.release_milestone_funds(&release_signer, &trustless_work_address, &1);
+    client.release_milestone_funds(&release_signer, &0);
+    client.release_milestone_funds(&release_signer, &1);
 
     assert_eq!(usdc.0.balance(&client.address), 0);
 
     // Should not error and keep balances unchanged
     let dist: Map<Address, i128> = Map::new(&env);
-    client.withdraw_remaining_funds(&dispute_resolver, &trustless_work_address, &dist);
+    client.withdraw_remaining_funds(&dispute_resolver, &dist);
     assert_eq!(usdc.0.balance(&client.address), 0);
 }
