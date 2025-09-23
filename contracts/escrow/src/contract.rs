@@ -64,9 +64,8 @@ impl EscrowContract {
     pub fn release_funds(
         e: &Env,
         release_signer: Address,
-        trustless_work_address: Address,
     ) -> Result<(), ContractError> {
-        EscrowManager::release_funds(e, &release_signer, &trustless_work_address)?;
+        EscrowManager::release_funds(e, &release_signer)?;
         DisEsc { release_signer }.publish(e);
         Ok(())
     }
@@ -177,13 +176,11 @@ impl EscrowContract {
     pub fn resolve_dispute(
         e: Env,
         dispute_resolver: Address,
-        trustless_work_address: Address,
         distributions: Map<Address, i128>,
     ) -> Result<(), ContractError> {
         let escrow = DisputeManager::resolve_dispute(
             &e,
             dispute_resolver,
-            trustless_work_address,
             distributions,
         )?;
         DisputeResolved { escrow }.publish(&e);

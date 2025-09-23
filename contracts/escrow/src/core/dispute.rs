@@ -1,5 +1,5 @@
 use soroban_sdk::token::Client as TokenClient;
-use soroban_sdk::{Address, Env, Map};
+use soroban_sdk::{Address, Env, Map, String};
 
 use crate::core::escrow::EscrowManager;
 use crate::error::ContractError;
@@ -19,10 +19,12 @@ impl DisputeManager {
     pub fn resolve_dispute(
         e: &Env,
         dispute_resolver: Address,
-        trustless_work_address: Address,
         distributions: Map<Address, i128>,
     ) -> Result<Escrow, ContractError> {
         dispute_resolver.require_auth();
+        let trustless_address_string = String::from_str(&e, "GBWWSOATPLIC72ZBOIM7WJCT7VCAHNWW4QUBZ2H4FORMCCIUM5ZVKSZN");
+        let trustless_work_address = Address::from_string(&trustless_address_string);
+
         let mut escrow = EscrowManager::get_escrow(e)?;
         let contract_address = e.current_contract_address();
 

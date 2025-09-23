@@ -477,7 +477,7 @@ fn test_release_funds_successful_flow() {
 
     escrow_approver.approve_milestone(&0, &approver_address);
     escrow_approver.approve_milestone(&1, &approver_address);
-    escrow_approver.release_funds(&release_signer_address, &trustless_work_address);
+    escrow_approver.release_funds(&release_signer_address);
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
@@ -529,7 +529,6 @@ fn test_release_funds_milestones_incomplete() {
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
     let _receiver_address = Address::generate(&env);
-    let trustless_work_address = Address::generate(&env);
 
     let usdc_token = create_usdc_token(&env, &admin);
 
@@ -596,7 +595,7 @@ fn test_release_funds_milestones_incomplete() {
     escrow_approver.approve_milestone(&0, &approver_address);
     // Try to distribute earnings with incomplete milestones (should fail)
     let result =
-        escrow_approver.try_release_funds(&release_signer_address, &trustless_work_address);
+        escrow_approver.try_release_funds(&release_signer_address);
     assert!(result.is_err());
 }
 
@@ -675,7 +674,7 @@ fn test_release_funds_same_receiver_as_provider() {
         .mint(&escrow_approver.address, &(amount as i128));
 
     escrow_approver.approve_milestone(&0, &approver_address);
-    escrow_approver.release_funds(&release_signer_address, &trustless_work_address);
+    escrow_approver.release_funds(&release_signer_address);
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
@@ -784,7 +783,7 @@ fn test_release_funds_invalid_receiver_fallback() {
         .mint(&escrow_approver.address, &(amount as i128));
 
     escrow_approver.approve_milestone(&0, &approver_address);
-    escrow_approver.release_funds(&release_signer_address, &trustless_work_address);
+    escrow_approver.release_funds(&release_signer_address);
 
     let total_amount = amount as i128;
     let trustless_work_commission = ((total_amount * 30) / 10000) as i128;
@@ -836,7 +835,6 @@ fn test_dispute_management() {
     let platform_address = Address::generate(&env);
     let release_signer_address = Address::generate(&env);
     let dispute_resolver_address = Address::generate(&env);
-    let trustless_work_address = Address::generate(&env);
 
     let usdc_token = create_usdc_token(&env, &admin);
 
@@ -902,7 +900,7 @@ fn test_dispute_management() {
     usdc_token.1.mint(&approver_address, &(amount as i128));
     // Test block on distributing earnings during dispute
     let result =
-        escrow_approver.try_release_funds(&release_signer_address, &trustless_work_address);
+        escrow_approver.try_release_funds(&release_signer_address);
     assert!(result.is_err());
 
     let _ = escrow_approver.try_dispute_escrow(&dispute_resolver_address);
@@ -994,7 +992,6 @@ fn test_dispute_resolution_process() {
     wrong_dist.set(service_provider_address.clone(), 50_000_000);
     let result = escrow_approver.try_resolve_dispute(
         &approver_address,
-        &trustless_work_address,
         &wrong_dist,
     );
     assert!(result.is_err());
@@ -1010,7 +1007,6 @@ fn test_dispute_resolution_process() {
     );
     let incorrect_dispute_resolution_result = escrow_approver.try_resolve_dispute(
         &dispute_resolver_address,
-        &trustless_work_address,
         &incorrect_dist,
     );
 
@@ -1019,7 +1015,6 @@ fn test_dispute_resolution_process() {
     let empty_dist = Map::new(&env);
     let dispute_resolution_with_incorrect_funds = escrow_approver.try_resolve_dispute(
         &dispute_resolver_address,
-        &trustless_work_address,
         &empty_dist,
     );
 
@@ -1031,7 +1026,7 @@ fn test_dispute_resolution_process() {
     let mut ok_dist = Map::new(&env);
     ok_dist.set(approver_address.clone(), approver_funds);
     ok_dist.set(service_provider_address.clone(), receiver_funds);
-    escrow_approver.resolve_dispute(&dispute_resolver_address, &trustless_work_address, &ok_dist);
+    escrow_approver.resolve_dispute(&dispute_resolver_address, &ok_dist);
 
     // Verify dispute was resolved
     let escrow_after_resolution = escrow_approver.get_escrow();
