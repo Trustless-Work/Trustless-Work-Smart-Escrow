@@ -7,7 +7,7 @@ pub struct Escrow {
     pub title: String,
     pub description: String,
     pub roles: Roles,
-    pub platform_fee: i128,
+    pub platform_fee: u32,
     pub milestones: Vec<Milestone>,
     pub trustline: Trustline,
     pub receiver_memo: i128,
@@ -47,7 +47,6 @@ pub struct Flags {
 #[derive(Clone, PartialEq, Eq)]
 pub struct Trustline {
     pub address: Address,
-    pub decimals: u32,
 }
 
 #[contracttype]
@@ -61,6 +60,5 @@ pub struct AddressBalance {
 #[derive(Clone)]
 #[contracttype]
 pub enum DataKey {
-    Admin,
     Escrow,
 }
