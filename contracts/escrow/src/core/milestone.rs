@@ -46,7 +46,6 @@ impl MilestoneManager {
     pub fn change_milestone_approved_flag(
         e: &Env,
         milestone_index: i128,
-        new_flag: bool,
         approver: Address,
     ) -> Result<Escrow, ContractError> {
         approver.require_auth();
@@ -59,7 +58,7 @@ impl MilestoneManager {
             .ok_or(ContractError::InvalidMileStoneIndex)?;
 
         validate_milestone_flag_change_conditions(&escrow, &milestone_to_update, &approver)?;
-        milestone_to_update.flags.approved = new_flag;
+        milestone_to_update.flags.approved = true;
 
         escrow
             .milestones

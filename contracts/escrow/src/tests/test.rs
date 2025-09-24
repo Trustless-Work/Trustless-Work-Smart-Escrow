@@ -354,7 +354,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert_eq!(updated_escrow.milestones.get(0).unwrap().status, new_status);
 
     // Change milestone approved_flag (valid case)
-    escrow_approver.approve_milestone(&(0), &true, &approver_address);
+    escrow_approver.approve_milestone(&(0), &approver_address);
 
     // Verify milestone approved_flag change
     let final_escrow = escrow_approver.get_escrow();
@@ -374,7 +374,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert!(result.is_err());
 
     // Test for `change_approved_flag` with invalid index
-    let result = escrow_approver.try_approve_milestone(&invalid_index, &true, &approver_address);
+    let result = escrow_approver.try_approve_milestone(&invalid_index, &approver_address);
     assert!(result.is_err());
 
     // Test only authorized party can perform the function
@@ -390,7 +390,7 @@ fn test_change_milestone_status_and_approved_flag() {
     assert!(result.is_err());
 
     // Test for `change_approved_flag` by invalid approver
-    let result = escrow_approver.try_approve_milestone(&(0), &true, &unauthorized_address);
+    let result = escrow_approver.try_approve_milestone(&(0), &unauthorized_address);
     assert!(result.is_err());
 
     //Escrow Test with no milestone
@@ -498,7 +498,7 @@ fn test_release_milestone_funds_successful() {
     let initial_contract_balance = usdc_token.0.balance(&escrow_approver.address);
 
     // Approve the milestone before releasing funds
-    escrow_approver.approve_milestone(&0, &true, &approver_address);
+    escrow_approver.approve_milestone(&0, &approver_address);
     escrow_approver.release_milestone_funds(&release_signer_address, &trustless_work_address, &(0));
 
     let total_amount = milestones.get(0).unwrap().amount as i128;
@@ -749,7 +749,7 @@ fn test_release_milestone_funds_same_receiver_as_provider() {
         .mint(&escrow_approver.address, &(amount as i128));
 
     // Approve before release
-    escrow_approver.approve_milestone(&0, &true, &approver_address);
+    escrow_approver.approve_milestone(&0, &approver_address);
     escrow_approver.release_milestone_funds(&release_signer_address, &trustless_work_address, &0);
 
     let total_amount = amount as i128;
@@ -859,7 +859,7 @@ fn test_release_funds_invalid_receiver_fallback() {
         .mint(&escrow_approver.address, &(amount as i128));
 
     // Approve before release
-    escrow_approver.approve_milestone(&0, &true, &approver_address);
+    escrow_approver.approve_milestone(&0, &approver_address);
     escrow_approver.release_milestone_funds(&release_signer_address, &trustless_work_address, &0);
 
     let total_amount = amount as i128;
@@ -1266,7 +1266,7 @@ fn test_cannot_dispute_resolve_after_released() {
 
     // Fund and mark approved then release
     usdc.1.mint(&client.address, &amount);
-    client.approve_milestone(&0, &true, &approver);
+    client.approve_milestone(&0, &approver);
     client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
 
     // Try to dispute-resolve after released - should fail
@@ -1812,8 +1812,8 @@ fn test_withdraw_remaining_funds_success() {
     usdc.1.mint(&client.address, &250_000);
 
     // Approve and release both milestones
-    client.approve_milestone(&0, &true, &approver);
-    client.approve_milestone(&1, &true, &approver);
+    client.approve_milestone(&0, &approver);
+    client.approve_milestone(&1, &approver);
     client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
     client.release_milestone_funds(&release_signer, &trustless_work_address, &1);
 
@@ -1910,7 +1910,7 @@ fn test_withdraw_remaining_funds_unauthorized() {
 
     // Process the single milestone fully and leave leftover of 10_000
     usdc.1.mint(&client.address, &110_000);
-    client.approve_milestone(&0, &true, &approver);
+    client.approve_milestone(&0, &approver);
     client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
 
     // Attacker provides any distributions but is not resolver
@@ -1984,7 +1984,7 @@ fn test_withdraw_remaining_funds_not_fully_processed() {
 
     usdc.1.mint(&client.address, &220_000);
     // Process only first milestone; second remains pending
-    client.approve_milestone(&0, &true, &approver);
+    client.approve_milestone(&0, &approver);
     client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
 
     // Try withdraw while second milestone not processed
@@ -2062,8 +2062,8 @@ fn test_withdraw_remaining_funds_zero_balance_ok() {
 
     // Fund exactly the total milestones 200_000; after releases, no leftover
     usdc.1.mint(&client.address, &200_000);
-    client.approve_milestone(&0, &true, &approver);
-    client.approve_milestone(&1, &true, &approver);
+    client.approve_milestone(&0, &approver);
+    client.approve_milestone(&1, &approver);
     client.release_milestone_funds(&release_signer, &trustless_work_address, &0);
     client.release_milestone_funds(&release_signer, &trustless_work_address, &1);
 
