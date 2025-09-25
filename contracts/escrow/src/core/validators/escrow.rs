@@ -74,15 +74,15 @@ pub fn validate_escrow_property_change_conditions(
         return Err(ContractError::EscrowHasFunds);
     }
 
-    if existing_escrow.amount == 0 {
+    if new_escrow.amount == 0 {
         return Err(ContractError::AmountCannotBeZero);
     }
 
-    if existing_escrow.milestones.len() > 10 {
+    if new_escrow.milestones.len() > 10 {
         return Err(ContractError::TooManyMilestones);
     }
 
-    if existing_escrow.milestones.is_empty() {
+    if new_escrow.milestones.is_empty() {
         return Err(ContractError::NoMilestoneDefined);
     }
 
