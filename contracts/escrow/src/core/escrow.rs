@@ -44,8 +44,6 @@ impl EscrowManager {
 
         token_client.transfer(&signer, &e.current_contract_address(), &amount);
 
-        e.storage().instance().set(&DataKey::Escrow, &escrow);
-
         Ok(())
     }
 
