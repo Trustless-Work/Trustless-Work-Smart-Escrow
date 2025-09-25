@@ -1,5 +1,5 @@
 use soroban_sdk::token::Client as TokenClient;
-use soroban_sdk::{Address, Env, Map, String, Vec};
+use soroban_sdk::{Address, Env, Map, String};
 
 use crate::core::escrow::EscrowManager;
 use crate::core::validators::dispute::validate_withdraw_remaining_funds_conditions;
@@ -107,7 +107,7 @@ impl DisputeManager {
     ) -> Result<Escrow, ContractError> {
         dispute_resolver.require_auth();
 
-        let mut escrow = EscrowManager::get_escrow(e)?;
+    let mut escrow = EscrowManager::get_escrow(e)?;
         let contract_address = e.current_contract_address();
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
 
@@ -187,28 +187,20 @@ impl DisputeManager {
     ) -> Result<Escrow, ContractError> {
         signer.require_auth();
 
-        let escrow = EscrowManager::get_escrow(e)?;
+    let mut escrow = EscrowManager::get_escrow(e)?;
 
         validate_dispute_flag_change_conditions(&escrow, milestone_index, &signer)?;
 
-        let mut updated_milestones = Vec::new(&e);
-        for (index, milestone) in escrow.milestones.iter().enumerate() {
-            let mut new_milestone = milestone.clone();
-            if index as i128 == milestone_index {
-                new_milestone.flags.disputed = true;
-            }
-            updated_milestones.push_back(new_milestone);
-        }
+        let idx = milestone_index as u32;
+        let mut target = escrow
+            .milestones
+            .get(idx)
+            .ok_or(ContractError::InvalidMileStoneIndex)?;
+        target.flags.disputed = true;
+        escrow.milestones.set(idx, target);
 
-        let updated_escrow = Escrow {
-            milestones: updated_milestones,
-            ..escrow
-        };
+        e.storage().instance().set(&DataKey::Escrow, &escrow);
 
-        e.storage()
-            .instance()
-            .set(&DataKey::Escrow, &updated_escrow);
-
-        Ok(updated_escrow)
+        Ok(escrow)
     }
 }

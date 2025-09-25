@@ -4,7 +4,7 @@ use soroban_sdk::{Address, Env, Symbol, Vec};
 use crate::core::validators::escrow::validate_fund_escrow_conditions;
 use crate::error::ContractError;
 use crate::modules::fee::{FeeCalculator, FeeCalculatorTrait};
-use crate::storage::types::{AddressBalance, DataKey, Escrow, Milestone};
+use crate::storage::types::{AddressBalance, DataKey, Escrow};
 
 use super::validators::escrow::{
     validate_escrow_property_change_conditions, validate_initialize_escrow_conditions,
@@ -62,16 +62,9 @@ impl EscrowManager {
         if let Some(milestone) = escrow.milestones.get(milestone_index) {
             validate_release_conditions(&escrow, &milestone, &release_signer, milestone_index)?;
 
-            let mut updated_milestones = Vec::<Milestone>::new(&e);
-            for (index, milestone) in escrow.milestones.iter().enumerate() {
-                let mut new_milestone = milestone.clone();
-                if index as u32 == milestone_index {
-                    new_milestone.flags.released = true;
-                }
-                updated_milestones.push_back(new_milestone);
-            }
-
-            escrow.milestones = updated_milestones;
+            let mut to_update = milestone.clone();
+            to_update.flags.released = true;
+            escrow.milestones.set(milestone_index, to_update);
 
             e.storage().instance().set(&DataKey::Escrow, &escrow);
 
