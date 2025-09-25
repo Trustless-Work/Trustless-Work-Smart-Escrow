@@ -1835,21 +1835,37 @@ fn test_withdraw_remaining_funds_success() {
 
     client.withdraw_remaining_funds(&dispute_resolver, &trustless_work_address, &dist);
 
-    // Fees are computed over the total distribution (48,000)
-    let expected_tw_fee = (48_000i128 * 30) / 10000; // 0.3% => 144
-    let expected_platform_fee = (48_000i128 * platform_fee as i128) / 10000; // 3% => 1440
-    let expected_leftover = 50_000 - (48_000 + expected_tw_fee + expected_platform_fee);
+    // Fees are computed over the total distribution (48,000). Net amounts are distribution - proportional fee share.
+    let total_dist = 48_000i128;
+    let tw_fee = (total_dist * 30) / 10000; // 0.3% => 144
+    let platform_fee_amount = (total_dist * platform_fee as i128) / 10000; // 3% => 1440
+    let total_fees = tw_fee + platform_fee_amount; // 1584
+
+    // Proportional fee share per beneficiary
+    let fee_share_tw = (10_000 * total_fees) / total_dist; // 330
+    let fee_share_platform = (5_000 * total_fees) / total_dist; // 165
+    let fee_share_receiver = (33_000 * total_fees) / total_dist; // 1089
+
+    let net_tw = 10_000 - fee_share_tw; // 9,670 + fee payment 144 => balance increase 9,814 vs original model 10,144
+    let net_platform = 5_000 - fee_share_platform; // 4,835 + platform fee 1440 => 6,275 total increase
+    let net_receiver = 33_000 - fee_share_receiver; // 31,911
+
+    // Contract leftover = 50,000 - total_dist (because fees + nets == total_dist)
+    let expected_leftover = 50_000 - total_dist; // 2,000
 
     assert_eq!(usdc.0.balance(&client.address), expected_leftover);
     assert_eq!(
         usdc.0.balance(&trustless_work_address),
-        tw_before + 10_000 + expected_tw_fee
+        tw_before + net_tw + tw_fee
     );
     assert_eq!(
         usdc.0.balance(&platform),
-        platform_before + 5_000 + expected_platform_fee
+        platform_before + net_platform + platform_fee_amount
     );
-    assert_eq!(usdc.0.balance(&service_provider), receiver_before + 33_000);
+    assert_eq!(
+        usdc.0.balance(&service_provider),
+        receiver_before + net_receiver
+    );
 }
 
 #[test]
