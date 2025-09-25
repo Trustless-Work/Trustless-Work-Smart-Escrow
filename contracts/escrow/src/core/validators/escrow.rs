@@ -8,8 +8,8 @@ use crate::{
 #[inline]
 pub fn validate_release_conditions(
     escrow: &Escrow,
-    milestone: &Milestone,
     release_signer: &Address,
+    milestone: &Milestone,
     milestone_index: u32,
 ) -> Result<(), ContractError> {
     if milestone.flags.released {
@@ -51,8 +51,8 @@ pub fn validate_escrow_property_change_conditions(
     contract_balance: i128,
     milestones: Vec<Milestone>,
 ) -> Result<(), ContractError> {
-    if existing_escrow.milestones.is_empty() {
-        return Err(ContractError::NoMileStoneDefined);
+    if existing_escrow.roles.platform_address != new_escrow.roles.platform_address {
+        return Err(ContractError::PlatformAddressCannotBeChanged);
     }
 
     for milestone in milestones.iter() {
@@ -71,16 +71,26 @@ pub fn validate_escrow_property_change_conditions(
         }
     }
 
-    if existing_escrow.roles.platform_address != new_escrow.roles.platform_address {
-        return Err(ContractError::PlatformAddressCannotBeChanged);
-    }
-
     if platform_address != &existing_escrow.roles.platform_address {
         return Err(ContractError::OnlyPlatformAddressExecuteThisFunction);
     }
 
     if contract_balance > 0 {
         return Err(ContractError::EscrowHasFunds);
+    }
+
+    for m in new_escrow.milestones.iter() {
+        if m.amount == 0 {
+            return Err(ContractError::AmountCannotBeZero);
+        }
+    }
+
+    if new_escrow.milestones.len() > 10 {
+        return Err(ContractError::TooManyMilestones);
+    }
+
+    if new_escrow.milestones.is_empty() {
+        return Err(ContractError::NoMileStoneDefined);
     }
 
     Ok(())
@@ -95,16 +105,6 @@ pub fn validate_initialize_escrow_conditions(
         return Err(ContractError::EscrowAlreadyInitialized);
     }
 
-    let max_bps_percentage: u32 = 99 * 100;
-    if escrow_properties.platform_fee > max_bps_percentage {
-        return Err(ContractError::PlatformFeeTooHigh);
-    }
-
-    if escrow_properties.milestones.is_empty() {
-        return Err(ContractError::NoMileStoneDefined);
-    }
-
-    // Direct iteration (removed enumerate) - index not used
     for milestone in escrow_properties.milestones.iter() {
         if milestone.flags.disputed
             || milestone.flags.released
@@ -116,6 +116,15 @@ pub fn validate_initialize_escrow_conditions(
         if milestone.amount == 0 {
             return Err(ContractError::AmountCannotBeZero);
         }
+    }
+
+    if escrow_properties.milestones.is_empty() {
+        return Err(ContractError::NoMileStoneDefined);
+    }
+
+    let max_bps_percentage: u32 = 99 * 100;
+    if escrow_properties.platform_fee > max_bps_percentage {
+        return Err(ContractError::PlatformFeeTooHigh);
     }
 
     if escrow_properties.milestones.len() > 10 {

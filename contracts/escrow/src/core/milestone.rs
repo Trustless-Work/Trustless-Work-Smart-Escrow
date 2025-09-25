@@ -1,6 +1,6 @@
-use crate::core::escrow::EscrowManager;
 use crate::error::ContractError;
 use crate::storage::types::{DataKey, Escrow};
+use crate::core::escrow::EscrowManager;
 use soroban_sdk::{Address, Env, String};
 
 use super::validators::milestone::{
@@ -18,12 +18,11 @@ impl MilestoneManager {
         service_provider: Address,
     ) -> Result<Escrow, ContractError> {
         service_provider.require_auth();
+        let mut existing_escrow = EscrowManager::get_escrow(e)?;
 
-        let mut escrow = EscrowManager::get_escrow(e)?;
+        validate_milestone_status_change_conditions(&existing_escrow, &service_provider)?;
 
-        validate_milestone_status_change_conditions(&escrow, &service_provider)?;
-
-        let mut milestone_to_update = escrow
+        let mut milestone_to_update = existing_escrow
             .milestones
             .get(milestone_index as u32)
             .ok_or(ContractError::InvalidMileStoneIndex)?;
@@ -34,13 +33,12 @@ impl MilestoneManager {
 
         milestone_to_update.status = new_status;
 
-        escrow
+        existing_escrow
             .milestones
             .set(milestone_index as u32, milestone_to_update);
+        e.storage().instance().set(&DataKey::Escrow, &existing_escrow);
 
-        e.storage().instance().set(&DataKey::Escrow, &escrow);
-
-        Ok(escrow)
+        Ok(existing_escrow)
     }
 
     pub fn change_milestone_approved_flag(
@@ -49,22 +47,25 @@ impl MilestoneManager {
         approver: Address,
     ) -> Result<Escrow, ContractError> {
         approver.require_auth();
+        let mut existing_escrow = EscrowManager::get_escrow(e)?;
 
-        let mut escrow = EscrowManager::get_escrow(e)?;
-
-        let mut milestone_to_update = escrow
+        let mut milestone_to_update = existing_escrow
             .milestones
             .get(milestone_index as u32)
             .ok_or(ContractError::InvalidMileStoneIndex)?;
 
-        validate_milestone_flag_change_conditions(&escrow, &milestone_to_update, &approver)?;
+        validate_milestone_flag_change_conditions(
+            &existing_escrow,
+            &milestone_to_update, 
+            &approver
+        )?;
         milestone_to_update.flags.approved = true;
 
-        escrow
+        existing_escrow
             .milestones
             .set(milestone_index as u32, milestone_to_update);
-        e.storage().instance().set(&DataKey::Escrow, &escrow);
+        e.storage().instance().set(&DataKey::Escrow, &existing_escrow);
 
-        Ok(escrow)
+        Ok(existing_escrow)
     }
 }

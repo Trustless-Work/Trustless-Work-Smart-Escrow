@@ -59,7 +59,6 @@ impl EscrowContract {
     ) -> Result<(), ContractError> {
         EscrowManager::fund_escrow(e, signer.clone(), expected_escrow, amount)?;
         FundEsc { signer, amount }.publish(e);
-
         Ok(())
     }
 
@@ -76,7 +75,6 @@ impl EscrowContract {
             milestone_index,
         )?;
         DisEsc { release_signer }.publish(e);
-
         Ok(())
     }
 
@@ -95,7 +93,6 @@ impl EscrowContract {
             engagement_id: updated_escrow.engagement_id.clone(),
         }
         .publish(e);
-
         Ok(updated_escrow)
     }
 
