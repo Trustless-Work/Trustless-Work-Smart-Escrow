@@ -54,10 +54,7 @@ impl DisputeManager {
         }
 
         let fee_result = FeeCalculator::calculate_standard_fees(total, escrow.platform_fee)?;
-        let required = BasicMath::safe_add(
-            total,
-            BasicMath::safe_add(fee_result.trustless_work_fee, fee_result.platform_fee)?,
-        )?;
+        let required = total;
 
         validate_withdraw_remaining_funds_conditions(
             &escrow,
@@ -82,9 +79,17 @@ impl DisputeManager {
             );
         }
 
+        let total_fees = BasicMath::safe_add(
+            fee_result.trustless_work_fee,
+            fee_result.platform_fee,
+        )?;
         for (addr, amount) in distributions.iter() {
             if amount > 0 {
-                token_client.transfer(&contract_address, &addr, &amount);
+                let fee_share = (amount * total_fees) / total;
+                let net_amount = amount - fee_share;
+                if net_amount > 0 {
+                    token_client.transfer(&contract_address, &addr, &net_amount);
+                }
             }
         }
 
