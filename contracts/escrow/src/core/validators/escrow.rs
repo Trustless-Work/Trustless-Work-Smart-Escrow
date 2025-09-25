@@ -55,7 +55,7 @@ pub fn validate_escrow_property_change_conditions(
         return Err(ContractError::NoMileStoneDefined);
     }
 
-    for (_, milestone) in milestones.iter().enumerate() {
+    for milestone in milestones.iter() {
         if milestone.flags.disputed
             || milestone.flags.released
             || milestone.flags.resolved
@@ -104,7 +104,8 @@ pub fn validate_initialize_escrow_conditions(
         return Err(ContractError::NoMileStoneDefined);
     }
 
-    for (_, milestone) in escrow_properties.milestones.iter().enumerate() {
+    // Direct iteration (removed enumerate) - index not used
+    for milestone in escrow_properties.milestones.iter() {
         if milestone.flags.disputed
             || milestone.flags.released
             || milestone.flags.resolved
