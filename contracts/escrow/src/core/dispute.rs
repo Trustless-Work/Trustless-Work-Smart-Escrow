@@ -30,7 +30,7 @@ impl DisputeManager {
         let mut all_processed = true;
         for m in escrow.milestones.iter() {
             let flags = &m.flags;
-            if !(flags.released || flags.resolved) {
+            if !(flags.released || flags.resolved || flags.disputed) {
                 all_processed = false;
                 break;
             }
