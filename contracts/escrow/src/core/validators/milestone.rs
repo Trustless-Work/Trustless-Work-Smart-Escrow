@@ -36,7 +36,7 @@ pub fn validate_milestone_flag_change_conditions(
     }
 
     if milestone.status.is_empty() {
-        return Err(ContractError::MilestoneHasAlreadyBeenApproved);
+        return Err(ContractError::EmptyMilestoneStatus);
     }
 
     if escrow.milestones.is_empty() {

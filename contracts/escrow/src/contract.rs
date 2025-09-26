@@ -59,7 +59,6 @@ impl EscrowContract {
     ) -> Result<(), ContractError> {
         EscrowManager::fund_escrow(e, signer.clone(), expected_escrow, amount)?;
         FundEsc { signer, amount }.publish(e);
-
         Ok(())
     }
 
@@ -74,7 +73,6 @@ impl EscrowContract {
             milestone_index,
         )?;
         DisEsc { release_signer }.publish(e);
-
         Ok(())
     }
 
@@ -93,7 +91,6 @@ impl EscrowContract {
             engagement_id: updated_escrow.engagement_id.clone(),
         }
         .publish(e);
-
         Ok(updated_escrow)
     }
 
@@ -170,13 +167,11 @@ impl EscrowContract {
     pub fn approve_milestone(
         e: &Env,
         milestone_index: i128,
-        new_flag: bool,
         approver: Address,
     ) -> Result<(), ContractError> {
         let escrow = MilestoneManager::change_milestone_approved_flag(
             e,
             milestone_index,
-            new_flag,
             approver,
         )?;
         MilestoneApproved { escrow }.publish(&e);

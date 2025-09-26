@@ -96,14 +96,12 @@ pub fn validate_dispute_flag_change_conditions(
         .get(milestone_index as u32)
         .ok_or(ContractError::InvalidMileStoneIndex)?;
 
-    // Guardrail: cannot open dispute on a released/resolved milestone
     if milestone.flags.released {
         return Err(ContractError::MilestoneAlreadyReleased);
     }
     if milestone.flags.resolved {
         return Err(ContractError::MilestoneAlreadyResolved);
     }
-
     if milestone.flags.disputed {
         return Err(ContractError::MilestoneAlreadyInDispute);
     }
@@ -126,6 +124,10 @@ pub fn validate_dispute_flag_change_conditions(
 
     if !is_authorized {
         return Err(ContractError::UnauthorizedToChangeDisputeFlag);
+    }
+
+    if signer == dispute_resolver {
+        return Err(ContractError::DisputeResolverCannotDisputeTheMilestone);
     }
 
     Ok(())
