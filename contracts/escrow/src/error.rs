@@ -43,6 +43,7 @@ pub enum ContractError {
     EscrowAlreadyReleased = 35,
     IncompatibleEscrowWasmHash = 36,
     PlatformAddressCannotBeChanged = 37,
+    DisputeResolverCannotDisputeTheEscrow = 40,
 }
 
 impl fmt::Display for ContractError {
@@ -165,6 +166,9 @@ impl fmt::Display for ContractError {
             }
             ContractError::PlatformAddressCannotBeChanged => {
                 write!(f, "The platform address of the escrow cannot be changed.")
+            }
+            ContractError::DisputeResolverCannotDisputeTheEscrow => {
+                write!(f, "The dispute resolver cannot dispute the escrow.")
             }
         }
     }
