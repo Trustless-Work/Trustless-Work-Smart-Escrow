@@ -49,6 +49,7 @@ pub enum ContractError {
     InsufficientFundsForRefund = 43,
     PlatformAddressCannotBeChanged = 44,
     InsufficientEscrowFundsToMakeTheRefund = 45,
+    DisputeResolverCannotDisputeTheMilestone = 46,
 }
 
 impl fmt::Display for ContractError {
@@ -187,6 +188,12 @@ impl fmt::Display for ContractError {
                 write!(
                     f,
                     "The escrow (contract) does not have sufficient funds to make the refund."
+                )
+            }
+            ContractError::DisputeResolverCannotDisputeTheMilestone => {
+                write!(
+                    f,
+                    "The dispute resolver cannot be the one to raise a dispute on a milestone."
                 )
             }
         }

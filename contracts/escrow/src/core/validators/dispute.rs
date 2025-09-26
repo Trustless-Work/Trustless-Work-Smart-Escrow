@@ -126,5 +126,9 @@ pub fn validate_dispute_flag_change_conditions(
         return Err(ContractError::UnauthorizedToChangeDisputeFlag);
     }
 
+    if signer == dispute_resolver {
+        return Err(ContractError::DisputeResolverCannotDisputeTheMilestone);
+    }
+
     Ok(())
 }
