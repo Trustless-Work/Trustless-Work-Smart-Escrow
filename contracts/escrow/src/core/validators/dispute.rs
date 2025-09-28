@@ -23,7 +23,7 @@ pub fn validate_dispute_resolution_conditions(
 
     let mut total: i128 = 0;
     for (_addr, amount) in distributions.iter() {
-        if amount < 0 {
+        if amount <= 0 {
             return Err(ContractError::AmountsToBeTransferredShouldBePositive);
         }
         total = BasicMath::safe_add(total, amount)?;
