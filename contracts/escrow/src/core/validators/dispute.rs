@@ -32,7 +32,7 @@ pub fn validate_dispute_resolution_conditions(
 
     let mut total: i128 = 0;
     for (_addr, amount) in distributions.iter() {
-        if amount < 0 {
+        if amount <= 0 {
             return Err(ContractError::AmountsToBeTransferredShouldBePositive);
         }
         total = BasicMath::safe_add(total, amount)?;
@@ -55,8 +55,8 @@ pub fn validate_withdraw_remaining_funds_conditions(
     escrow: &Escrow,
     dispute_resolver: &Address,
     all_processed: bool,
-    remaining_balance: i128,
-    required: i128,
+    current_balance: i128,
+    total: i128,
 ) -> Result<(), ContractError> {
     if dispute_resolver != &escrow.roles.dispute_resolver {
         return Err(ContractError::OnlyDisputeResolverCanExecuteThisFunction);
@@ -66,11 +66,11 @@ pub fn validate_withdraw_remaining_funds_conditions(
         return Err(ContractError::EscrowNotFullyProcessed);
     }
 
-    if remaining_balance <= 0 {
-        return Err(ContractError::InsufficientEscrowFundsToMakeTheRefund);
+    if total <= 0 {
+        return Err(ContractError::TotalAmountCannotBeZero);
     }
 
-    if required > remaining_balance {
+    if current_balance < total {
         return Err(ContractError::InsufficientFundsForResolution);
     }
 

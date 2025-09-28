@@ -36,30 +36,23 @@ impl DisputeManager {
         }
 
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
-        let remaining_balance = token_client.balance(&contract_address);
-
+        let current_balance = token_client.balance(&contract_address);
         let mut total: i128 = 0;
         for (_addr, amount) in distributions.iter() {
-            if amount < 0 {
+            if amount <= 0 {
                 return Err(ContractError::AmountsToBeTransferredShouldBePositive);
             }
             total = BasicMath::safe_add(total, amount)?;
         }
 
-        if total == 0 {
-            e.storage().instance().set(&DataKey::Escrow, &escrow);
-            return Ok(escrow);
-        }
-
         let fee_result = FeeCalculator::calculate_standard_fees(total, escrow.platform_fee)?;
-        let required = total;
 
         validate_withdraw_remaining_funds_conditions(
             &escrow,
             &dispute_resolver,
             all_processed,
-            remaining_balance,
-            required,
+            current_balance,
+            total
         )?;
 
         if fee_result.trustless_work_fee > 0 {
