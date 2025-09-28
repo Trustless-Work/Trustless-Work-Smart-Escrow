@@ -173,7 +173,7 @@ impl fmt::Display for ContractError {
             ContractError::AmountsToBeTransferredShouldBePositive => {
                 write!(
                     f,
-                    "None of the amounts to be transferred should be less than 0."
+                    "None of the amounts to be transferred should be less or equalP than 0."
                 )
             }
             ContractError::InsufficientFundsForRefund => {
