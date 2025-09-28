@@ -109,21 +109,22 @@ impl DisputeManager {
             None => return Err(ContractError::InvalidMileStoneIndex),
         };
 
-        validate_dispute_resolution_conditions(
-            &escrow,
-            &milestone,
-            &dispute_resolver,
-            &distributions,
-            current_balance,
-        )?;
-
         let mut total: i128 = 0;
         for (_addr, amount) in distributions.iter() {
-            if amount < 0 {
+            if amount <= 0 {
                 return Err(ContractError::AmountsToBeTransferredShouldBePositive);
             }
             total = BasicMath::safe_add(total, amount)?;
         }
+
+        validate_dispute_resolution_conditions(
+            &escrow,
+            &milestone,
+            &dispute_resolver,
+            current_balance,
+            total
+        )?;
+
         let fee_result = FeeCalculator::calculate_standard_fees(total, escrow.platform_fee)?;
         let total_fees =
             BasicMath::safe_add(fee_result.trustless_work_fee, fee_result.platform_fee)?;
