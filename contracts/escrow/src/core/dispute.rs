@@ -29,17 +29,24 @@ impl DisputeManager {
         let token_client = TokenClient::new(&e, &escrow.trustline.address);
         let current_balance = token_client.balance(&contract_address);
 
+        let mut total: i128 = 0;
+        for (_addr, amount) in distributions.iter() {
+            if amount <= 0 {
+                return Err(ContractError::AmountsToBeTransferredShouldBePositive);
+            }
+            total = BasicMath::safe_add(total, amount)?;
+        }
+        if total <= 0 {
+            return Err(ContractError::TotalAmountCannotBeZero);
+    }
+
         validate_dispute_resolution_conditions(
             &escrow,
             &dispute_resolver,
-            &distributions,
             current_balance,
+            total,
         )?;
 
-        let mut total: i128 = 0;
-        for (_addr, amount) in distributions.iter() {
-            total = BasicMath::safe_add(total, amount)?;
-        }
         let fee_result = FeeCalculator::calculate_standard_fees(total, escrow.platform_fee)?;
         let total_fees =
             BasicMath::safe_add(fee_result.trustless_work_fee, fee_result.platform_fee)?;
