@@ -23,8 +23,13 @@ pub fn validate_dispute_resolution_conditions(
     if current_balance < total {
         return Err(ContractError::InsufficientFundsForResolution);
     }
+
     if total != current_balance {
         return Err(ContractError::DistributionsMustEqualEscrowBalance);
+    }
+
+    if total <= 0 {
+        return Err(ContractError::TotalAmountCannotBeZero);
     }
 
     Ok(())

@@ -36,9 +36,6 @@ impl DisputeManager {
             }
             total = BasicMath::safe_add(total, amount)?;
         }
-        if total <= 0 {
-            return Err(ContractError::TotalAmountCannotBeZero);
-    }
 
         validate_dispute_resolution_conditions(
             &escrow,
