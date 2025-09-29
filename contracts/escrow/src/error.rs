@@ -50,6 +50,7 @@ pub enum ContractError {
     PlatformAddressCannotBeChanged = 44,
     InsufficientEscrowFundsToMakeTheRefund = 45,
     DisputeResolverCannotDisputeTheMilestone = 46,
+    TotalAmountCannotBeZero = 47,
 }
 
 impl fmt::Display for ContractError {
@@ -172,7 +173,7 @@ impl fmt::Display for ContractError {
             ContractError::AmountsToBeTransferredShouldBePositive => {
                 write!(
                     f,
-                    "None of the amounts to be transferred should be less than 0."
+                    "None of the amounts to be transferred should be less or equalP than 0."
                 )
             }
             ContractError::InsufficientFundsForRefund => {
@@ -195,6 +196,9 @@ impl fmt::Display for ContractError {
                     f,
                     "The dispute resolver cannot be the one to raise a dispute on a milestone."
                 )
+            }
+            ContractError::TotalAmountCannotBeZero => {
+                write!(f, "The total amount to be transferred cannot be zero.")
             }
         }
     }

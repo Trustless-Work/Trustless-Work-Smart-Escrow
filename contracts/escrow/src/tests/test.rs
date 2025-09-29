@@ -967,7 +967,7 @@ fn test_dispute_management() {
     let escrow = escrow_approver.get_escrow();
     assert!(!escrow.milestones.get(0).unwrap().flags.disputed);
 
-    escrow_approver.dispute_milestone(&0, &dispute_resolver_address);
+    escrow_approver.dispute_milestone(&0, &approver_address);
 
     let escrow_after_change = escrow_approver.get_escrow();
     assert!(
@@ -985,7 +985,7 @@ fn test_dispute_management() {
         escrow_approver.try_release_milestone_funds(&release_signer_address, &0);
     assert!(result.is_err());
 
-    let _ = escrow_approver.try_dispute_milestone(&0, &dispute_resolver_address);
+    let _ = escrow_approver.try_dispute_milestone(&0, &approver_address);
 
     let escrow_after_second_change = escrow_approver.get_escrow();
     assert!(
@@ -2078,8 +2078,8 @@ fn test_withdraw_remaining_funds_zero_balance_ok() {
 
     assert_eq!(usdc.0.balance(&client.address), 0);
 
-    // Should not error and keep balances unchanged
+    // With empty distributions total == 0, we now expect an error (TotalAmountCannotBeZero)
     let dist: Map<Address, i128> = Map::new(&env);
-    client.withdraw_remaining_funds(&dispute_resolver, &dist);
-    assert_eq!(usdc.0.balance(&client.address), 0);
+    let res = client.try_withdraw_remaining_funds(&dispute_resolver, &trustless_work_address, &dist);
+    assert!(res.is_err(), "Expected error when total distribution amount is zero");
 }
