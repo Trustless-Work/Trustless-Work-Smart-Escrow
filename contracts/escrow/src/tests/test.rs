@@ -2080,6 +2080,6 @@ fn test_withdraw_remaining_funds_zero_balance_ok() {
 
     // With empty distributions total == 0, we now expect an error (TotalAmountCannotBeZero)
     let dist: Map<Address, i128> = Map::new(&env);
-    let res = client.try_withdraw_remaining_funds(&dispute_resolver, &trustless_work_address, &dist);
+    let res = client.try_withdraw_remaining_funds(&dispute_resolver, &dist);
     assert!(res.is_err(), "Expected error when total distribution amount is zero");
 }
