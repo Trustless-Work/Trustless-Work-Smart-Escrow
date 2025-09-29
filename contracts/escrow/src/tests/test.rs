@@ -892,7 +892,7 @@ fn test_dispute_management() {
     let escrow = escrow_approver.get_escrow();
     assert!(!escrow.flags.disputed);
 
-    escrow_approver.dispute_escrow(&dispute_resolver_address);
+    escrow_approver.dispute_escrow(&approver_address);
 
     let escrow_after_change = escrow_approver.get_escrow();
     assert!(escrow_after_change.flags.disputed);
@@ -903,7 +903,7 @@ fn test_dispute_management() {
         escrow_approver.try_release_funds(&release_signer_address);
     assert!(result.is_err());
 
-    let _ = escrow_approver.try_dispute_escrow(&dispute_resolver_address);
+    let _ = escrow_approver.try_dispute_escrow(&approver_address);
 
     let escrow_after_second_change = escrow_approver.get_escrow();
     assert!(escrow_after_second_change.flags.disputed);

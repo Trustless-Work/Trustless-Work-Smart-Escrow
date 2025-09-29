@@ -44,6 +44,7 @@ pub enum ContractError {
     IncompatibleEscrowWasmHash = 36,
     PlatformAddressCannotBeChanged = 37,
     DisputeResolverCannotDisputeTheEscrow = 40,
+    TotalAmountCannotBeZero = 41,
 }
 
 impl fmt::Display for ContractError {
@@ -122,7 +123,7 @@ impl fmt::Display for ContractError {
             ContractError::AmountsToBeTransferredShouldBePositive => {
                 write!(
                     f,
-                    "None of the amounts to be transferred should be less than 0."
+                    "None of the amounts to be transferred should be less or equal than 0."
                 )
             }
             ContractError::DistributionsMustEqualEscrowBalance => {
@@ -169,6 +170,9 @@ impl fmt::Display for ContractError {
             }
             ContractError::DisputeResolverCannotDisputeTheEscrow => {
                 write!(f, "The dispute resolver cannot dispute the escrow.")
+            }
+            ContractError::TotalAmountCannotBeZero => {
+                write!(f, "The total amount to be distributed cannot be equal to zero.")
             }
         }
     }
