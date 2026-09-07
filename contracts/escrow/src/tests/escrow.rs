@@ -1038,3 +1038,141 @@ fn test_dispute_resolver_cannot_equal_platform() {
     let res = test_data.client.try_initialize_escrow(&escrow_valid);
     assert!(res.is_ok(), "Non-overlapping platform and dispute_resolver must succeed");
 }
+
+/// A dispute resolver is a resolution-only authority. A milestone receiver may
+/// open a dispute, so the two must never share an address — otherwise a
+/// resolver would acquire dispute-opening authority through the receiver role.
+/// Single-release enforces the same invariant through `roles.receiver`.
+#[test]
+fn test_dispute_resolver_cannot_be_milestone_receiver() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let admin = Address::generate(&env);
+    let escrow_admin = Address::generate(&env);
+    let platform = Address::generate(&env);
+    let dispute_resolver = Address::generate(&env);
+
+    let usdc_token = create_usdc_token(&env, &admin);
+
+    let make_escrow = |receiver: Address| Escrow {
+        engagement_id: String::from_str(&env, "resolver_receiver_overlap"),
+        title: String::from_str(&env, "Test"),
+        description: String::from_str(&env, "Test"),
+        roles: Roles {
+            approvers: vec![&env, Address::generate(&env)],
+            service_providers: vec![&env, Address::generate(&env)],
+            platform: platform.clone(),
+            release_signers: vec![&env, Address::generate(&env)],
+            dispute_resolvers: vec![&env, dispute_resolver.clone()],
+            admin: escrow_admin.clone(),
+            observers: vec![&env],
+        },
+        platform_fee: 0,
+        milestones: vec![
+            &env,
+            Milestone {
+                description: String::from_str(&env, "M1"),
+                status: String::from_str(&env, "Pending"),
+                evidence: String::from_str(&env, ""),
+                approvals: MilestoneApprovals {
+                    target: 1,
+                    approval_count: 0,
+                    approved_by: vec![&env],
+                },
+                amount: 100_000_000,
+                dispute: Dispute {
+                    is_disputed: false,
+                    reason: String::from_str(&env, ""),
+                    resolved: false,
+                },
+                released: false,
+                receiver,
+            },
+        ],
+        trustline: Trustline {
+            address: usdc_token.0.address.clone(),
+        },
+        receiver_memo: 0,
+    };
+
+    // dispute_resolver == milestone.receiver must be rejected at initialization.
+    let test_data = create_escrow_contract(&env, &escrow_admin);
+    let res = test_data
+        .client
+        .try_initialize_escrow(&make_escrow(dispute_resolver.clone()));
+    assert!(
+        matches!(
+            res,
+            Err(Ok(EscrowError::DisputeResolverOverlapsWithOtherRole))
+        ),
+        "dispute_resolver as milestone receiver must be rejected"
+    );
+
+    // A distinct receiver keeps the configuration valid.
+    let test_data = create_escrow_contract(&env, &escrow_admin);
+    let res = test_data
+        .client
+        .try_initialize_escrow(&make_escrow(Address::generate(&env)));
+    assert!(
+        res.is_ok(),
+        "a receiver distinct from every dispute_resolver must be accepted"
+    );
+}
+
+/// `admin` and `platform` are a capability distinction, not an address-separation
+/// invariant, so sharing one address between them stays valid.
+#[test]
+fn test_admin_can_equal_platform() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let admin = Address::generate(&env);
+    let shared = Address::generate(&env); // both admin and platform
+    let usdc_token = create_usdc_token(&env, &admin);
+
+    let escrow = Escrow {
+        engagement_id: String::from_str(&env, "admin_eq_platform"),
+        title: String::from_str(&env, "Test"),
+        description: String::from_str(&env, "Test"),
+        roles: Roles {
+            approvers: vec![&env, Address::generate(&env)],
+            service_providers: vec![&env, Address::generate(&env)],
+            platform: shared.clone(),
+            release_signers: vec![&env, Address::generate(&env)],
+            dispute_resolvers: vec![&env, Address::generate(&env)],
+            admin: shared.clone(),
+            observers: vec![&env],
+        },
+        platform_fee: 0,
+        milestones: vec![
+            &env,
+            Milestone {
+                description: String::from_str(&env, "M1"),
+                status: String::from_str(&env, "Pending"),
+                evidence: String::from_str(&env, ""),
+                approvals: MilestoneApprovals {
+                    target: 1,
+                    approval_count: 0,
+                    approved_by: vec![&env],
+                },
+                amount: 100_000_000,
+                dispute: Dispute {
+                    is_disputed: false,
+                    reason: String::from_str(&env, ""),
+                    resolved: false,
+                },
+                released: false,
+                receiver: Address::generate(&env),
+            },
+        ],
+        trustline: Trustline {
+            address: usdc_token.0.address.clone(),
+        },
+        receiver_memo: 0,
+    };
+
+    let test_data = create_escrow_contract(&env, &shared);
+    let res = test_data.client.try_initialize_escrow(&escrow);
+    assert!(res.is_ok(), "admin == platform must remain valid");
+}

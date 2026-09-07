@@ -144,12 +144,18 @@ fn validate_role_limits(roles: &Roles) -> Result<(), EscrowError> {
 }
 
 #[inline]
-fn validate_dispute_resolver_role_overlap(roles: &Roles) -> Result<(), EscrowError> {
+fn validate_dispute_resolver_role_overlap(
+    roles: &Roles,
+    milestones: &Vec<Milestone>,
+) -> Result<(), EscrowError> {
     for resolver in roles.dispute_resolvers.iter() {
+        // A milestone receiver may open a dispute, so a resolver must never be
+        // one. Single-release enforces the same through `roles.receiver`.
         if roles.approvers.contains(&resolver)
             || roles.service_providers.contains(&resolver)
             || roles.release_signers.contains(&resolver)
             || resolver == roles.platform
+            || milestones.iter().any(|m| m.receiver == resolver)
         {
             return Err(EscrowError::DisputeResolverOverlapsWithOtherRole);
         }
@@ -187,7 +193,7 @@ pub fn validate_escrow_conditions(
         return Err(EscrowError::DisputeResolversListEmpty);
     }
     validate_role_limits(&new_escrow.roles)?;
-    validate_dispute_resolver_role_overlap(&new_escrow.roles)?;
+    validate_dispute_resolver_role_overlap(&new_escrow.roles, &new_escrow.milestones)?;
 
     if is_init {
         if new_escrow.milestones.len() > 50 {
@@ -313,6 +319,13 @@ pub fn validate_manage_milestones_conditions(
             }
             if milestone.approvals.target > existing_escrow.roles.approvers.len() {
                 return Err(EscrowError::TargetExceedsApprovers);
+            }
+            if existing_escrow
+                .roles
+                .dispute_resolvers
+                .contains(&milestone.receiver)
+            {
+                return Err(EscrowError::DisputeResolverOverlapsWithOtherRole);
             }
         }
     }
