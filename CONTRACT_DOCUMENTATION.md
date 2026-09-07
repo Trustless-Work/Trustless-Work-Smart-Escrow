@@ -849,8 +849,8 @@ APPROVALS (approve_milestones)
 | `EscrowAlreadyInDispute` error | Code 5 (explicit) | Not present (checked per-milestone as `MilestoneAlreadyDisputed`) |
 | Reentrancy error | `EscrowError::Reentrancy` (code 47) | `EscrowError::FlagsMustBeFalse` (code 10) |
 | `Roles.receiver` field | Present | Not present |
-| Admin overlap includes receiver | Yes | No |
-| Dispute resolver overlap includes receiver | Yes | No |
+| Admin overlap includes receiver | Yes (`admin != receiver`) | Yes (against every `milestone.receiver`) |
+| Dispute resolver overlap includes receiver | Yes (`resolver != receiver`) | Yes (against every `milestone.receiver`) |
 | `all_processed` check in `withdraw` | `released \|\| dispute.resolved` | All milestones `released \|\| dispute.resolved` |
 | Release requires milestones | All must be approved | Only specified indices must be approved |
 | `EscrowPropertyChanges` fields | Includes `amount` flag + `old_amount`/`new_amount` (escrow-level amount) | No amount fields (amounts are per-milestone) |
