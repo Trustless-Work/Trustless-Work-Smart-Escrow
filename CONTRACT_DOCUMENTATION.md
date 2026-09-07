@@ -255,8 +255,8 @@ pub enum DataKey {
 | `milestone.receiver` | Payee per milestone | Receives `net_amount` when milestone is released; can `dispute_milestones` |
 
 **Role constraints enforced at initialization:**
-- `admin` cannot overlap with `approvers`, `service_providers`, `release_signers`, or `dispute_resolvers`
-- `dispute_resolvers` cannot overlap with `approvers`, `service_providers`, `release_signers`, or `platform` (`DisputeResolverOverlapsWithOtherRole`)
+- `admin` cannot overlap with `approvers`, `service_providers`, `release_signers`, `dispute_resolvers`, or any `milestone.receiver` (`AdminAddressOverlapsWithOtherRole`)
+- `dispute_resolvers` cannot overlap with `approvers`, `service_providers`, `release_signers`, `platform`, or any `milestone.receiver` (`DisputeResolverOverlapsWithOtherRole`)
 - No duplicate addresses within any role list
 - Each role list is capped at **5 members** maximum
 - `admin` and `platform` addresses **cannot be changed** after initialization (immutable)
@@ -373,6 +373,7 @@ Adds new milestones or updates descriptions/amounts of existing milestones.
 - Cannot change milestone `amount` if contract has funds (`FundedAmount > 0`)
 - `new_amount` must be > 0 (`AmountCannotBeZero`)
 - New milestones: must have `amount > 0`, `approvals.target > 0`, all flags clear, `target <= approvers.len()`
+- New milestones: `receiver` cannot be the `admin` (`AdminAddressOverlapsWithOtherRole`) or any `dispute_resolver` (`DisputeResolverOverlapsWithOtherRole`)
 - String limits enforced on inputs: new-milestone `description`/`evidence` ≤ 500 chars, `status` ≤ 50 chars, and `new_description` ≤ 500 chars (`StringTooLong`)
 - Total milestone count cannot exceed 50
 - Cannot be called if any milestone is disputed, already released, or dispute-resolved
@@ -618,8 +619,10 @@ Both are mathematically identical to `a * b / divisor` with floor rounding; they
 | `dispute_resolvers` list empty | `DisputeResolversListEmpty` |
 | Any role list > 5 members | `RoleLimitExceeded` |
 | Duplicate address within a role list | `DuplicateAddressInRole` |
-| `dispute_resolver` in `approvers`/`service_providers`/`release_signers` | `DisputeResolverOverlapsWithOtherRole` |
+| `dispute_resolver` in `approvers`/`service_providers`/`release_signers`/`platform` | `DisputeResolverOverlapsWithOtherRole` |
+| `dispute_resolver` is a `milestone.receiver` | `DisputeResolverOverlapsWithOtherRole` |
 | `admin` in any operational role | `AdminAddressOverlapsWithOtherRole` |
+| `admin` is a `milestone.receiver` | `AdminAddressOverlapsWithOtherRole` |
 | Milestones count > 50 | `TooManyMilestones` |
 | Milestone `amount <= 0` | `AmountCannotBeZero` |
 | Milestone `approvals.target == 0` | `TargetCannotBeZero` |
@@ -867,5 +870,5 @@ APPROVALS (approve_milestones)
 | `MilestoneAddedEntry` fields | `index`, `amount`, `description_hash` | `index`, `description_hash` (no per-milestone amount) |
 | `MilestoneUpdatedEntry` fields | `index`, `new_amount`, `new_description_hash` | `index`, `new_description_hash` |
 | `Roles.receiver` field | Not present | Present |
-| Admin overlap check includes receiver | No | Yes (`admin != receiver`) |
-| Dispute resolver overlap check includes receiver | No | Yes (`resolver != receiver`) |
+| Admin overlap check includes receiver | Yes (against every `milestone.receiver`) | Yes (`admin != receiver`) |
+| Dispute resolver overlap check includes receiver | Yes (against every `milestone.receiver`) | Yes (`resolver != receiver`) |
