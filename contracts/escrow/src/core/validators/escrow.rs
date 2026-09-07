@@ -98,11 +98,17 @@ pub fn validate_release_milestones_conditions(
 }
 
 #[inline]
-fn validate_admin_role_overlap(roles: &Roles) -> Result<(), EscrowError> {
+fn validate_admin_role_overlap(
+    roles: &Roles,
+    milestones: &Vec<Milestone>,
+) -> Result<(), EscrowError> {
+    // The admin must not be a payee. Single-release enforces the same through
+    // `roles.receiver`; here the receivers live on the milestones.
     if roles.approvers.contains(&roles.admin)
         || roles.service_providers.contains(&roles.admin)
         || roles.release_signers.contains(&roles.admin)
         || roles.dispute_resolvers.contains(&roles.admin)
+        || milestones.iter().any(|m| m.receiver == roles.admin)
     {
         return Err(EscrowError::AdminAddressOverlapsWithOtherRole);
     }
@@ -227,7 +233,7 @@ pub fn validate_escrow_conditions(
                 return Err(EscrowError::TargetExceedsApprovers);
             }
         }
-        validate_admin_role_overlap(&new_escrow.roles)?;
+        validate_admin_role_overlap(&new_escrow.roles, &new_escrow.milestones)?;
     } else {
         let existing = existing_escrow.ok_or(EscrowError::EscrowNotFound)?;
         let caller = admin.ok_or(EscrowError::OnlyAdminAddressExecuteThisFunction)?;
@@ -260,7 +266,7 @@ pub fn validate_escrow_conditions(
                 return Err(EscrowError::EscrowPropertiesMismatch);
             }
         }
-        validate_admin_role_overlap(&new_escrow.roles)?;
+        validate_admin_role_overlap(&new_escrow.roles, &new_escrow.milestones)?;
     }
 
     Ok(())
@@ -326,6 +332,9 @@ pub fn validate_manage_milestones_conditions(
                 .contains(&milestone.receiver)
             {
                 return Err(EscrowError::DisputeResolverOverlapsWithOtherRole);
+            }
+            if milestone.receiver == existing_escrow.roles.admin {
+                return Err(EscrowError::AdminAddressOverlapsWithOtherRole);
             }
         }
     }
