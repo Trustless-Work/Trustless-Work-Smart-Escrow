@@ -1797,3 +1797,94 @@ fn test_manage_milestones_rejects_dispute_resolver_as_receiver() {
     assert!(result.is_ok(), "a non-resolver receiver must be accepted");
     assert_eq!(client.get_escrow().milestones.len(), 1);
 }
+
+/// The admin/receiver invariant must also hold for milestones introduced after
+/// initialization.
+#[test]
+fn test_manage_milestones_rejects_admin_as_receiver() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let admin = Address::generate(&env);
+    let escrow_admin = Address::generate(&env);
+
+    let (token_client, _) = create_usdc_token(&env, &admin);
+
+    let escrow_properties = Escrow {
+        engagement_id: String::from_str(&env, "late-milestone-admin"),
+        title: String::from_str(&env, "Deferred Milestones Escrow"),
+        description: String::from_str(&env, "Init without milestones, add later"),
+        roles: Roles {
+            approvers: vec![&env, Address::generate(&env)],
+            service_providers: vec![&env, Address::generate(&env)],
+            platform: Address::generate(&env),
+            release_signers: vec![&env, Address::generate(&env)],
+            dispute_resolvers: vec![&env, Address::generate(&env)],
+            admin: escrow_admin.clone(),
+            observers: vec![&env],
+        },
+        platform_fee: 0,
+        milestones: vec![&env],
+        trustline: Trustline {
+            address: token_client.address.clone(),
+        },
+        receiver_memo: 0,
+    };
+
+    let test_data = create_escrow_contract(&env, &escrow_admin);
+    let client = test_data.client;
+    client.initialize_escrow(&escrow_properties);
+
+    let milestone_for = |receiver: Address| {
+        vec![
+            &env,
+            Milestone {
+                description: String::from_str(&env, "Late milestone"),
+                status: String::from_str(&env, "Pending"),
+                evidence: String::from_str(&env, ""),
+                approvals: MilestoneApprovals {
+                    target: 1,
+                    approval_count: 0,
+                    approved_by: vec![&env],
+                },
+                amount: 100_000_000,
+                dispute: Dispute {
+                    is_disputed: false,
+                    reason: String::from_str(&env, ""),
+                    resolved: false,
+                },
+                released: false,
+                receiver,
+            },
+        ]
+    };
+    let no_updates = vec![&env];
+
+    // A milestone paying the admin must be rejected.
+    let result = client.try_manage_milestones(
+        &escrow_admin,
+        &milestone_for(escrow_admin.clone()),
+        &no_updates,
+    );
+    assert!(
+        matches!(
+            result,
+            Err(Ok(EscrowError::AdminAddressOverlapsWithOtherRole))
+        ),
+        "adding a milestone whose receiver is the admin must be rejected"
+    );
+    assert_eq!(
+        client.get_escrow().milestones.len(),
+        0,
+        "the rejected milestone must not be stored"
+    );
+
+    // Any other receiver is still accepted.
+    let result = client.try_manage_milestones(
+        &escrow_admin,
+        &milestone_for(Address::generate(&env)),
+        &no_updates,
+    );
+    assert!(result.is_ok(), "a non-admin receiver must be accepted");
+    assert_eq!(client.get_escrow().milestones.len(), 1);
+}

@@ -1176,3 +1176,78 @@ fn test_admin_can_equal_platform() {
     let res = test_data.client.try_initialize_escrow(&escrow);
     assert!(res.is_ok(), "admin == platform must remain valid");
 }
+
+/// The admin must not be a payee. Single-release enforces this through
+/// `roles.receiver`; in multi-release the receivers live on the milestones, so
+/// the same rule has to be checked against every milestone.
+#[test]
+fn test_admin_cannot_be_milestone_receiver() {
+    let env = Env::default();
+    env.mock_all_auths();
+
+    let admin = Address::generate(&env);
+    let escrow_admin = Address::generate(&env);
+
+    let usdc_token = create_usdc_token(&env, &admin);
+
+    let make_escrow = |receiver: Address| Escrow {
+        engagement_id: String::from_str(&env, "admin_receiver_overlap"),
+        title: String::from_str(&env, "Test"),
+        description: String::from_str(&env, "Test"),
+        roles: Roles {
+            approvers: vec![&env, Address::generate(&env)],
+            service_providers: vec![&env, Address::generate(&env)],
+            platform: Address::generate(&env),
+            release_signers: vec![&env, Address::generate(&env)],
+            dispute_resolvers: vec![&env, Address::generate(&env)],
+            admin: escrow_admin.clone(),
+            observers: vec![&env],
+        },
+        platform_fee: 0,
+        milestones: vec![
+            &env,
+            Milestone {
+                description: String::from_str(&env, "M1"),
+                status: String::from_str(&env, "Pending"),
+                evidence: String::from_str(&env, ""),
+                approvals: MilestoneApprovals {
+                    target: 1,
+                    approval_count: 0,
+                    approved_by: vec![&env],
+                },
+                amount: 100_000_000,
+                dispute: Dispute {
+                    is_disputed: false,
+                    reason: String::from_str(&env, ""),
+                    resolved: false,
+                },
+                released: false,
+                receiver,
+            },
+        ],
+        trustline: Trustline {
+            address: usdc_token.0.address.clone(),
+        },
+        receiver_memo: 0,
+    };
+
+    // admin == milestone.receiver must be rejected at initialization.
+    let test_data = create_escrow_contract(&env, &escrow_admin);
+    let res = test_data
+        .client
+        .try_initialize_escrow(&make_escrow(escrow_admin.clone()));
+    assert!(
+        matches!(res, Err(Ok(EscrowError::AdminAddressOverlapsWithOtherRole))),
+        "admin as milestone receiver must be rejected"
+    );
+
+    // A distinct receiver keeps the configuration valid.
+    let test_data = create_escrow_contract(&env, &escrow_admin);
+    let res = test_data
+        .client
+        .try_initialize_escrow(&make_escrow(Address::generate(&env)));
+    assert!(
+        res.is_ok(),
+        "a receiver distinct from the admin must be accepted"
+    );
+}
